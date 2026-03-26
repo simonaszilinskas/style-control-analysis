@@ -1,0 +1,388 @@
+# Formatting Bias in French LLM Evaluation: Evidence from the Compar:IA Arena
+
+---
+
+## Abstract
+
+LLM evaluation arenas, where users compare model outputs side-by-side, have become a primary source of model rankings. However, these rankings may conflate content quality with superficial formatting preferences. We analyze the Compar:IA dataset — a French government-backed LLM arena with 145,096 cleaned battles across 89 models — to quantify the effect of markdown formatting (bold, lists, headers) on user preferences. Using a style-controlled Bradley-Terry model, we find that each standard deviation increase in bold formatting, list items, or headers independently increases a model's win probability by 16–19%. After controlling for these formatting features, rankings shift substantially: 76 of 89 models show statistically significant rating changes after Benjamini-Hochberg correction for multiple comparisons (bootstrap CIs, n=1,000, FDR < 0.05). Formatting-heavy models drop sharply (qwen-3-8b: −21 ranks, mistral-large-2512: −20), while some reasoning models rise modestly (mean +2.3 ranks). Despite these per-battle effects, the overall ranking correlation between standard and style-controlled ratings remains high (r=0.976), suggesting that formatting bias inflates some models' positions without dominating the signal. Our analysis is the first to apply style control to a non-English LLM arena and reveals that formatting preferences observed in English-language evaluations are equally present in a French-speaking population.
+
+---
+
+## 1. Introduction
+
+The rise of LLM evaluation arenas — platforms where users interact with two anonymous models and select a preferred response — has established a new paradigm for model comparison. The LMSYS Chatbot Arena pioneered this approach, and its Elo-based rankings are widely cited as measures of model quality. The methodology has since been adopted by multiple platforms, including Compar:IA, a French government-backed arena launched in October 2024.
+
+A key concern with arena-based evaluation is the extent to which user preferences reflect genuine content quality versus superficial presentation. Zheng et al. (2023) first noted that LLM judges exhibit a preference for longer, more verbosely formatted outputs. The LMSYS team subsequently introduced "style control" — a methodology that decomposes win probability into model skill and formatting effects using a modified Bradley-Terry model. Their analysis of English-language data found that controlling for response length, markdown formatting, and list usage modestly reshuffled rankings.
+
+We apply style control analysis to the Compar:IA dataset, which provides a unique opportunity:
+
+1. **Scale:** 145,096 cleaned battles across 89 models, spanning 16 months of organic user interactions.
+2. **Language:** French-language evaluation, enabling the first cross-linguistic test of whether formatting preferences are culturally invariant.
+3. **Multi-signal design:** Both explicit votes (141K) and per-message reactions (27K) provide independent signals that we can cross-validate.
+4. **Arena mode metadata:** The platform tracks whether model pairs were randomly assigned, user-selected, or drawn from specialized pools (reasoning, small models, big-vs-small).
+5. **Reasoning models:** The dataset includes reasoning models (o3-mini, deepseek-r1, qwq-32b) whose chain-of-thought outputs produce systematically different formatting profiles.
+
+Our central question: **Does controlling for markdown formatting change which models are ranked highest?**
+
+---
+
+## 2. Data
+
+### 2.1 The Compar:IA Platform
+
+Compar:IA is an LLM evaluation arena operated by the French government's Direction interministérielle du numérique (DINUM). Users submit prompts and receive responses from two anonymous models side-by-side, then vote for a winner or declare a tie. The platform also supports per-message reactions (like/dislike) with optional quality attribute annotations. Models are identified only after voting.
+
+The platform offers five arena modes: **random** (56%), **custom** (27%, user-selected model pairs), **big-vs-small** (5%, deliberately pairing large and small models), **reasoning** (3%, ensuring at least one reasoning model), and **small-models** (2%).
+
+### 2.2 Datasets
+
+We use three datasets published on HuggingFace (`ministere-culture/comparia-*`):
+
+| Dataset | Raw Rows | After Cleaning | Content |
+|---------|----------|---------------|---------|
+| Conversations | 459,849 | — | All conversation pairs with full response text, metadata |
+| Votes | 148,957 | 141,054 | Explicit winner selections per conversation pair |
+| Reactions | 89,717 | 88,939 | Per-message like/dislike with quality attributes |
+
+### 2.3 Data Quality and Cleaning
+
+We applied the following filters, documented in a comprehensive data quality audit:
+
+**Votes:** Removed 508 same-model pairs (0.34%), 3,994 no-choice votes (user revealed models without voting), and 3,401 duplicate conversation_pair_ids (keeping most recent).
+
+**Reactions:** Removed 362 same-model pairs, 995 reactions on even-indexed messages (user messages rather than model responses), and 431 reactions on empty/very short responses (<10 characters).
+
+**Reaction-to-vote conversion:** Reactions were converted to pairwise preferences: for each conversation with reactions on both models, we computed a net score (likes minus dislikes) per model and assigned the winner by higher net score, with ties when scores were equal. This produced 26,669 reaction-derived battles from 50,849 unique conversations; the remaining 45.4% of conversations had reactions on only one model and were excluded (requiring an inner merge).
+
+**Combined dataset (before reasoning filter):** 167,715 battles (141,054 from explicit votes + 26,661 from reactions). Only 8 conversation_pair_ids appeared in both sources; these were deduplicated in favor of explicit votes.
+
+**Reasoning-only content filter.** We identified 25,778 battles (15.1%) where at least one model's response had empty user-visible `content` but non-empty `reasoning` or `reasoning_content` fields — indicating that the chain-of-thought was recorded but the final response text was lost. These battles cannot be meaningfully analyzed for formatting bias since all style features are necessarily zero due to missing text, not because the model produced unformatted output. Removing these battles yielded 145,338 battles, of which **145,096 involve 89 models** with ≥100 battles each. The most affected models were gemini-3-pro-preview (2,635 battles removed), gpt-5-mini (2,383), qwen3-30b-a3b (2,320), and qwen-3-8b (2,311).
+
+### 2.4 Notable Data Quality Findings
+
+**Reasoning content separation.** The dataset stores chain-of-thought reasoning in dedicated `reasoning` and `reasoning_content` fields for 27 reasoning-capable models. However, for a substantial fraction of these models' battles, the user-visible `content` field is empty while reasoning fields are populated — indicating a data pipeline issue where only the chain-of-thought was persisted. These 25,778 affected battles were excluded (see reasoning-only content filter above). Among the remaining battles, only 117 messages (0.08%) across 98 conversations had `<think>` tags leaked into the user-visible content field, primarily from `qwen2.5-coder-32b-instruct` (82) and `deepseek-r1-distill-llama-70b` (33). These were filtered during style feature extraction.
+
+**Security probes.** 56 entries in the arena mode column contained SQL injection, XSS, and SSRF payloads — artifacts of penetration testing against the platform. These were mapped to the "unknown" mode category.
+
+**Reaction-derived tie inflation.** The structural properties of binary reactions produce a 46.8% tie rate in reaction-derived battles versus 30.7% in explicit votes. When a user likes both models or dislikes both, the conversion always yields a tie. Reaction-derived battles therefore provide less discriminating information per battle.
+
+**Near-zero overlap.** Only 8 conversation_pair_ids appear in both the votes and reactions datasets. The two signal sources come from almost entirely different conversations, making cross-validation meaningful.
+
+---
+
+## 3. Methodology
+
+### 3.1 Style Features
+
+We extracted five formatting features from each model's response text:
+
+| Feature | Description | Regex Pattern |
+|---------|-------------|---------------|
+| **Headers** | Markdown headers (# through ######) | `^#{1,6}\s` (multiline) |
+| **Lists** | Ordered and unordered list items | `^\s*[-*+]\s` and `^\s*\d+\.\s` |
+| **Bold** | Bold-formatted text | `\*\*[^*]+\*\*` |
+| **Code blocks** | Fenced code blocks | ` ``` ` or `~~~` (counted in pairs) |
+| **Emoji** | Emoji characters | Unicode emoji ranges |
+
+We deliberately excluded response length from the style control. Length was the dominant feature in the original LMSYS style control analysis, but it confounds with completeness — a core quality dimension. Users asked about response length in a French-language arena may genuinely prefer more thorough answers, and controlling for length risks removing legitimate quality signal. The `complete` quality attribute in reaction data correlates with higher like rates (28.9% of liked messages were tagged "complete" versus 0% of disliked), supporting the view that length partly proxies for quality rather than mere formatting preference.
+
+### 3.2 Bradley-Terry Model
+
+We rank models using a Bradley-Terry model estimated via logistic regression, following the methodology of the LMSYS Chatbot Arena.
+
+**Standard model.** For each decisive battle (A wins or B wins), we construct a feature vector with +1 for the winning model's index and -1 for the losing model's index, then fit a logistic regression without regularization. Ratings are computed as:
+
+$$\text{Rating}_i = 1000 + \frac{400 \cdot \beta_i}{\ln(10)}$$
+
+**Style-controlled model.** We augment the model indicator features with style difference features. For each formatting feature $f$, we compute $\Delta f = f_A - f_B$ (standardized to zero mean and unit variance), then fit:
+
+$$P(\text{A wins}) = \sigma\left(\sum_i \beta_i \cdot \mathbb{1}_i + \sum_f \gamma_f \cdot \Delta f\right)$$
+
+where $\beta_i$ are model skill parameters and $\gamma_f$ are style coefficients. The style-controlled rating uses only the $\beta_i$ coefficients, with formatting effects absorbed by $\gamma_f$.
+
+### 3.3 Bootstrap Inference
+
+We computed 95% confidence intervals via nonparametric bootstrap (1,000 iterations for both style coefficients and BT ratings). Each bootstrap sample drew battles with replacement from the full dataset and re-estimated the model.
+
+For each test, we derived two-sided bootstrap p-values as $p = 2 \cdot \min(\hat{F}(0), 1 - \hat{F}(0))$, where $\hat{F}(0)$ is the proportion of bootstrap replicates with the statistic $\leq 0$, with a floor of $1/(B+1)$ to avoid zero p-values.
+
+### 3.4 Multiple Comparison Correction
+
+We applied the Benjamini-Hochberg (BH) procedure to control the false discovery rate (FDR) at 0.05. Corrections were applied separately to two families of tests: the 5 style coefficient tests and the 89 model rank change tests. The BH procedure ranks p-values and adjusts each as $p_{\text{BH}}^{(i)} = p^{(i)} \cdot m / i$, enforcing monotonicity via step-up.
+
+---
+
+## 4. Results
+
+### 4.1 Style Coefficients
+
+Table 1 shows the estimated effect of each formatting feature on win probability, after controlling for model identity. Figure 1 presents these coefficients as a forest plot with bootstrap confidence intervals.
+
+![Figure 1. Style coefficients with 95% bootstrap CIs (BH-corrected). Bold, lists, and headers each increase win odds by 16–19% per SD, while code blocks and emoji have negligible effects.](figures/fig1_forest_plot.png)
+
+**Table 1. Style coefficients from the Bradley-Terry model (145,096 battles, 89 models). p-values are BH-adjusted across 5 tests.**
+
+| Feature | Coefficient | 95% CI | % Odds Change | 95% CI | p (BH) | Significant? |
+|---------|------------|--------|---------------|--------|--------|-------------|
+| **Bold** | +0.174 | [+0.140, +0.210] | **+19.0%** | [+15.0%, +23.4%] | 0.003 | Yes |
+| **Lists** | +0.165 | [+0.134, +0.196] | **+18.0%** | [+14.4%, +21.7%] | 0.003 | Yes |
+| **Headers** | +0.145 | [+0.105, +0.175] | **+15.6%** | [+11.1%, +19.1%] | 0.003 | Yes |
+| Code blocks | +0.007 | [-0.009, +0.081] | +0.7% | [-0.9%, +8.4%] | 0.550 | No |
+| Emoji | +0.020 | [-0.015, +0.052] | +2.0% | [-1.5%, +5.3%] | 0.360 | No |
+
+**Interpretation.** A one-standard-deviation increase in bold formatting gives a response a 19.0% boost in win odds, independent of which model produced it. Lists and headers have comparable effects (+18.0% and +15.6%). Code blocks and emoji have negligible effects that are not statistically distinguishable from zero. These effects are somewhat larger than before the reasoning-only content filter, consistent with the filter having removed battles where zero-valued style features diluted the estimated formatting effect.
+
+The three significant features — bold, lists, and headers — all relate to structural formatting that makes responses visually organized. The null effect for code blocks suggests that code formatting per se does not influence preferences (its effect may depend on the task being coding-related). The null effect for emoji runs counter to the popular assumption that emoji-laden responses are preferred.
+
+### 4.2 Ablation Study
+
+To understand which features contribute most to rank changes, we ran the BT model controlling for one feature at a time.
+
+**Table 2. Ablation: single-feature style control**
+
+| Feature Controlled | Coefficient (alone) | Rank Correlation with Standard |
+|-------------------|--------------------|-----------------------------|
+| Bold only | +0.307 (+36.0%) | 0.982 |
+| Lists only | +0.277 (+32.0%) | 0.992 |
+| Headers only | +0.255 (+29.0%) | 0.993 |
+| Code blocks only | +0.068 (+7.0%) | 0.999 |
+| Emoji only | +0.101 (+10.6%) | 0.997 |
+| **All five** | **(see Table 1)** | **0.976** |
+
+When features are controlled individually, their coefficients are roughly double those in the joint model (e.g., bold alone: +36.0% vs. bold joint: +19.0%), as shown in Figure 5. This reflects the correlation among formatting features — models that use more bold also tend to use more lists and headers. The joint model partitions the shared variance among correlated features.
+
+![Figure 5. Single-feature vs. joint model coefficients. The gap between the two shows the shared variance among correlated formatting features.](figures/fig6_ablation.png)
+
+Bold alone produces the most rank disruption (r=0.982), consistent with it having the largest joint coefficient.
+
+### 4.3 Ranking Impact
+
+The overall correlation between standard and style-controlled BT ratings is **r = 0.976** (Figure 2). Rankings are highly stable overall, but specific models shift substantially. Note that mistral-medium-3.1, originally tracked as a separate model, was merged into mistral-medium-2508 based on model registry information, yielding 89 rather than 90 distinct models.
+
+**Table 3. Top 10 models: standard vs. style-controlled rankings.**
+
+| Rank | Standard Ranking | Rating | | Rank | Style-Controlled Ranking | Rating |
+|:----:|:-----------------|-------:|-|:----:|:-------------------------|-------:|
+| 1 | gemini-3-pro-preview | 1279.2 | | 1 | gemini-3-pro-preview | 1283.3 |
+| 2 | gemini-3-flash-preview | 1204.8 | | 2 | gemini-3-flash-preview | 1197.2 |
+| 3 | **mistral-large-2512** | 1178.6 | | 3 | gemini-2.5-flash *(std #5)* | 1139.9 |
+| 4 | mistral-medium-2508 | 1171.3 | | 4 | magistral-medium *(std #6)* | 1130.6 |
+| 5 | gemini-2.5-flash | 1168.3 | | 5 | gemini-2.0-flash *(std #8)* | 1121.8 |
+| 6 | magistral-medium | 1148.0 | | 6 | qwen3-max-2025-09-23 *(std #7)* | 1120.9 |
+| 7 | qwen3-max-2025-09-23 | 1147.0 | | 7 | grok-4.1-fast *(std #17)* | 1106.4 |
+| 8 | gemini-2.0-flash | 1130.2 | | 8 | mistral-medium-2508 *(std #4)* | 1106.2 |
+| 9 | gpt-5.1 | 1128.4 | | 9 | gpt-5.1 *(std #9)* | 1104.3 |
+| 10 | deepseek-v3-0324 | 1118.1 | | 10 | kimi-k2-thinking *(std #24)* | 1104.2 |
+
+**mistral-large-2512** (bolded), which dominates standard rankings at #3, drops out of the style-controlled top 10 entirely — replaced by models like kimi-k2-thinking and grok-4.1-fast that produce less formatted output. Figure 3 shows the top 20 rank movers.
+
+![Figure 2. Standard vs. style-controlled BT ratings for all 89 models (r = 0.976). Models above the diagonal rise after style control; those below drop.](figures/fig2_scatter_ratings.png)
+
+![Figure 3. Top 20 rank changes after style control. Hatched bars indicate changes not significant after BH correction.](figures/fig3_rank_changes.png)
+
+**Table 4. Top 10 rank changes after style control. p-values are BH-adjusted across all 89 models (FDR < 0.05).**
+
+| Model | Std Rank | Ctrl Rank | ΔRank | ΔRating | p (BH) | Sig? |
+|-------|---------|-----------|-------|---------|--------|------|
+| qwen-3-8b | 55 | 76 | **-21** | -57.6 | 0.003 | Yes |
+| mistral-large-2512 | 3 | 23 | **-20** | -95.2 | 0.003 | Yes |
+| qwen3-30b-a3b | 59 | 73 | **-14** | -44.6 | 0.003 | Yes |
+| kimi-k2-thinking | 24 | 10 | +14 | +13.5 | 0.578 | No |
+| qwen3-32b | 31 | 44 | **-13** | -45.8 | 0.003 | Yes |
+| o4-mini | 49 | 38 | **+11** | +41.6 | 0.003 | Yes |
+| grok-4.1-fast | 17 | 7 | +10 | +1.3 | 0.536 | No |
+| glm-4.6 | 11 | 21 | **-10** | -28.9 | 0.003 | Yes |
+| grok-3-mini-beta | 23 | 14 | +9 | +8.5 | 0.405 | No |
+| glm-4.5 | 21 | 30 | **-9** | -43.0 | 0.003 | Yes |
+
+**7 of 10 top rank changes remain statistically significant** after BH correction (FDR < 0.05). Across all 89 models, **76 of 89 (85%)** show significant rating changes after style control, indicating that formatting bias affects the vast majority of models, not just a few outliers.
+
+The most dramatic shift is for **mistral-large-2512**, which drops from rank 3 to rank 23 (−95.2 rating points). This model produces heavily formatted outputs (abundant bold, headers, and lists) that are rewarded in standard rankings but absorbed by the style control.
+
+### 4.4 Reasoning Models and Formatting
+
+Reasoning models show a mixed but on-average positive pattern after style control.
+
+**Table 5. Reasoning model rank changes**
+
+| Model | Std Rank → Ctrl Rank | ΔRank | Sig? |
+|-------|---------------------|-------|------|
+| kimi-k2-thinking | 24 → 10 | +14 | No |
+| o4-mini | 49 → 38 | **+11** | Yes |
+| grok-3-mini-beta | 23 → 14 | +9 | No |
+| o3-mini | 52 → 46 | **+6** | Yes |
+| deepseek-r1-distill-llama-70b | 74 → 75 | -1 | No |
+| deepseek-r1-0528 | 15 → 17 | **-2** | Yes |
+| deepseek-r1 | 37 → 41 | **-4** | Yes |
+| olmo-3-32b-think | 83 → 88 | -5 | No |
+| qwq-32b | 73 → 80 | **-7** | Yes |
+
+**Mean rank change for reasoning models: +2.3** (modestly rising). Four of nine rise and five fall — a pattern that is directionally positive but less uniform than might be expected.
+
+The two largest risers — kimi-k2-thinking (+14) and grok-3-mini-beta (+9) — are not statistically significant after BH correction, likely because the reasoning-only content filter removed many of their battles (1,121 and an unknown number, respectively), reducing statistical power. Among significant movers, o4-mini (+11) and o3-mini (+6) rise, while deepseek-r1 (−4), qwq-32b (−7), and deepseek-r1-0528 (−2) fall.
+
+This mixed pattern has an important methodological implication. Before applying the reasoning-only content filter (Section 2.3), the mean reasoning model rank change was +4.4 with 7 of 9 models rising or holding. The reduction to +2.3 after the filter demonstrates that the earlier finding was partially inflated by battles where reasoning models had zero-valued style features due to missing content rather than genuinely plain-text output. The corrected pattern suggests that while some reasoning models do benefit from style control (plausibly because they prioritize reasoning depth over visual formatting), others produce output that is comparably or even more formatted than non-reasoning models.
+
+### 4.5 Position Bias
+
+We observe a statistically significant but negligible position bias: model A wins 50.40% of decisive battles versus 49.60% for model B (binomial test p = 0.013). The effect size (0.80 percentage points) is too small to meaningfully affect rankings.
+
+### 4.6 Sensitivity Analyses
+
+**Votes only versus combined.** BT ratings computed from explicit votes alone correlate at r = 0.943 with the combined (votes + reactions) ratings, with a maximum rank difference of 45 positions. The reasoning-only content filter disproportionately removed vote battles (22,521 of 25,778 removed), which reduced the vote-only sample to 118,533 battles and increased the relative weight of reaction-derived battles in the combined rankings. This explains the lower correlation compared to what would be expected with the full vote dataset.
+
+**Reaction versus vote agreement.** Among the 85 models with sufficient battles in both sources, reaction-derived BT ratings correlate at r = 0.867 with vote-derived ratings (Figure 6). This agreement from two independent signal sources — with near-zero conversation overlap — supports the validity of both measures, though the moderate correlation also indicates meaningful disagreement on some models' relative positions.
+
+![Figure 6. Reaction-derived vs. vote-derived BT ratings. Agreement (r = 0.867) from nearly independent data sources validates both signals, though some models diverge between the two evaluation modes.](figures/fig7_reaction_vs_vote.png)
+
+Note: The votes-only and reaction-vs-vote correlations (r = 0.943 and r = 0.867 respectively) are lower than in preliminary analyses because the reasoning-only content filter disproportionately affected vote battles, altering the relative composition of the combined dataset.
+
+---
+
+## 5. Discussion
+
+### 5.1 Formatting Bias Is Real but Bounded
+
+Our results establish that markdown formatting independently influences user preferences in the Compar:IA arena. Each standard deviation of bold, lists, or headers increases win odds by 16–19%. This is a nontrivial effect at the individual battle level.
+
+However, the aggregate impact on rankings is moderate. The overall correlation between standard and style-controlled ratings is 0.976 — formatting bias reshuffles some models' positions but does not fundamentally reorder the leaderboard. The signal is dominated by genuine quality differences between models.
+
+This finding is consistent with the LMSYS analysis of English-language data, which also found modest formatting effects. The cross-linguistic agreement suggests that formatting preferences are not culturally specific to English-speaking users — French users exhibit comparable biases.
+
+### 5.2 Implications for Arena Design
+
+The systematic benefit to formatting-heavy models has practical implications for arena operators:
+
+1. **Ranking interpretation.** Models like mistral-large-2512 (rank 3 → 23 after style control) and mistral-medium-2508 (rank 4 → 8) may be overranked due to formatting rather than content quality. Arena leaderboards should consider publishing both standard and style-controlled rankings.
+
+2. **Reasoning model evaluation.** The current arena format may systematically undervalue reasoning models, which sacrifice formatting for reasoning depth. Specialized evaluation tracks or formatting-agnostic presentation (e.g., rendering all responses in plain text) could address this.
+
+3. **Model development incentives.** If arena rankings drive model development priorities, formatting bias creates perverse incentives: teams may optimize for visually appealing output rather than substantive quality.
+
+### 5.3 Endogeneity: Confounder or Mediator?
+
+A fundamental interpretive challenge for observational style control is endogeneity. Our style features are covariates, not experimental manipulations, and two competing causal models fit the data:
+
+**Confounder hypothesis (formatting as bias).** Users are partially "fooled" by visual presentation. Formatting creates a halo effect that inflates win probability independent of content quality. Under this model, style control removes a bias, and style-controlled rankings better reflect true model quality.
+
+**Mediator hypothesis (formatting as quality signal).** Better models produce better-structured output *because they are more capable* — they understand when to use headers, lists, and bold emphasis to organize complex information. Formatting mediates the relationship between model capability and user preference. Under this model, style control inadvertently removes legitimate quality signal.
+
+We present three empirical tests that shed light on this question, though they cannot fully resolve it.
+
+**Test 1: Quality–formatting correlation.** We computed each model's average formatting intensity (composite of bold, lists, and headers per response) and correlated it with standard BT ratings across all 89 models. The correlation is strong and positive: Pearson r = 0.66 (p < 10⁻¹¹), Spearman ρ = 0.74 (p < 10⁻¹⁶). Higher-rated models produce substantially more formatted output. This is consistent with the mediator hypothesis — better models do format more — but it is also consistent with the confounder hypothesis if formatting inflates ratings.
+
+After style control, the correlation between model ratings and formatting intensity drops from r = 0.66 to r = 0.50. Style control weakens but does not eliminate the quality–formatting association, suggesting that the relationship is partially genuine (mediation) and partially artifactual (confounding).
+
+**Test 2: Tier-stratified style effects.** If formatting is purely a mediator of quality, its effect on win probability should be similar regardless of model tier — good formatting should help a top model as much as a bottom model. If formatting is a confounder (bias), its effect might differ by tier, potentially helping weaker models more. We split the 89 models into three tiers of approximately equal size (top, middle, bottom) by standard BT rating and ran the style-controlled BT model separately on within-tier battles.
+
+**Table 6. Style effects by battle pair tier (interaction model, implied total odds change per SD).**
+
+| Feature | Bottom-bottom | Middle-middle | Top-top |
+|---------|:------------:|:------------:|:-------:|
+| Bold | +24.6% | +10.5% | +16.0% |
+| Lists | +24.0% | +9.5% | +20.5% |
+| Headers | +6.7% | +14.8% | +10.3% |
+| N battles | 20,290 | 12,524 | 7,793 |
+
+![Figure 4. Style effects by model-pair tier. Formatting bias is roughly twice as large in bottom-tier battles as in top-tier, consistent with the confounder interpretation.](figures/fig4_tier_effects.png)
+
+The style effect is notably larger in bottom-tier battles than in top-tier battles for bold (+24.6% vs. +16.0%) and lists (+24.0% vs. +20.5%). Headers show a reversed but less pronounced pattern (+6.7% vs. +10.3%). To test statistical significance, we fit an interaction model with tier × style terms in a unified logistic regression controlling for model identity. Of the six interaction terms (3 features × 2 tiers), three — top×bold (bootstrap 95% CI: [−0.16, −0.01]), top×lists ([−0.17, −0.01]), and top×headers ([−0.16, −0.02]) — were statistically significant, all with negative signs indicating reduced style effects for top-tier battles. The three middle-tier interactions showed consistent negative signs but did not reach significance at the 5% level.
+
+The overall gradient — with the largest effects in bottom-tier battles for bold and lists — is more consistent with the confounder interpretation: formatting bias has a larger effect on user preferences when comparing weaker models, where content quality differences may be smaller and superficial presentation cues more decisive.
+
+**Test 3: Rating change as a function of formatting intensity.** Across all 89 models, the rating change after style control (controlled rating minus standard rating) correlates at r = −0.92 (p < 10⁻³⁵) with formatting intensity (Figure 7). Models that format heavily lose the most rating points. This mechanical relationship confirms that style control operates as intended, but it does not resolve whether the removed signal was bias or quality.
+
+![Figure 7. Rating change vs. formatting intensity (r = -0.916). Formatting-heavy models (right) lose the most rating points after style control.](figures/fig5_rating_vs_formatting.png)
+
+**Synthesis.** The evidence suggests that formatting is *both* a partial mediator and a partial confounder — a common outcome in observational studies. Better models genuinely produce better-structured output (mediator component: r = 0.50 between controlled ratings and formatting), but formatting also exerts an independent influence on user preferences beyond what model quality would predict (confounder component: the tier gradient, where formatting effects are largest among weaker models). This dual role means that neither standard rankings (which include formatting bias) nor style-controlled rankings (which may overcorrect) are a definitive measure of model quality. We recommend that arena operators report both, allowing consumers to triangulate.
+
+### 5.4 Qualitative Analysis of Winner-Flipping Battles
+
+To move beyond aggregate statistics, we examine individual conversations where style control changes the predicted outcome. We define a "winner-flipping" battle as one where the standard BT model and the style-controlled BT model disagree on which model is stronger — i.e., model A has a higher standard rating but model B has a higher controlled rating, or vice versa.
+
+**Prevalence.** Of 94,044 non-tie battles, 5,600 (5.95%) are winner-flipping.
+
+**Formatting asymmetry in flips.** In flipped battles, the vote winner uses more total formatting (headers + lists + bold) in 53.1% of cases, while the vote loser formats more in 38.4% (Figure 8). This asymmetry — modest but consistent — suggests that formatting provides a marginal advantage in closely contested battles.
+
+![Figure 8. Formatting asymmetry in winner-flipping battles. The vote winner formats more in 53.1% of cases vs. 38.4% for the loser.](figures/fig8_flip_asymmetry.png)
+
+**Which models flip?** The models appearing most frequently in flips are a mix of heavy formatters whose standard ratings are inflated (mistral-large-2512: 642 flips, claude-4-5-sonnet: 456, o4-mini: 460) and lower-ranked models that serve as frequent opponents (ministral-8b-instruct-2410: 651, llama-3.1-405b: 571). This is expected: flips require two models whose relative ranking reverses after style control, which is most likely when one is a heavy formatter whose inflation creates a spurious advantage.
+
+**Illustrative examples.** Manual inspection of 20 high-style-boost flips reveals three recurring patterns:
+
+*Pattern 1 — Similar content, different packaging.* In the most common pattern, both models provide substantively equivalent information, but the vote winner deploys dramatically more formatting. For instance, when asked to list famous athletes known for injuries, mistral-medium-2508 (41,474 chars; 103 headers, 412 list items, 652 bold spans) and gemini-2.5-flash (15,388 chars; 0 headers, 34 list items, 36 bold spans) cover the same athletes and injuries, but the heavily formatted version won the vote. Similarly, on questions about energy sources and the value of work, we observe near-identical coverage where formatting — not content — is the primary differentiator. Style boost in these cases ranges from 39 to 151.
+
+*Pattern 2 — Appropriate brevity penalized.* When asked to "describe BS1" (an ambiguous acronym), gpt-5.1 appropriately asked for clarification in 553 characters, while mistral-large-2512 produced a 33,372-character encyclopedic survey with 58 headers, 159 list items, and 487 bold spans. The user voted for the longer, formatted response despite the arguably more appropriate behavior of recognizing ambiguity. This pattern recurs for simple factual questions where exhaustive formatting adds volume without improving the answer.
+
+*Pattern 3 — Users sometimes see through formatting.* In roughly one-third of flips, the vote goes *against* the more formatted model. For example, when asked whether a French sentence is grammatically correct, a user preferred a concise 6,035-character answer over a 22,170-character analysis with 48 headers that dramatically overanalyzed a simple question. Similarly, when asked about oil platforms, a user chose a clear 5,485-character explanation over a heavily formatted 21,627-character response covering the same content. These counter-examples suggest that formatting bias, while real, is not deterministic: some users prefer conciseness, especially for simple queries.
+
+**User-reported formatting quality.** The Compar:IA platform asks users to tag responses as having "clear formatting." Among winner-flipping battles with this attribute, the vote winner is tagged as having clear formatting in 17.6% of cases, versus only 2.4% for the vote loser. This 7:1 ratio suggests that when users explicitly evaluate formatting quality, they align with their vote — consistent with formatting acting as a conscious preference rather than a purely unconscious bias.
+
+### 5.5 Limitations
+
+**Correlated features.** Bold, lists, and headers are correlated (models that use one tend to use all three). The joint model partitions their shared effect, but the individual contributions may not be identifiable.
+
+**Response length excluded.** We excluded response length from the style control to avoid removing genuine quality signal. This means our "style-controlled" rankings still contain any formatting-correlated length bias. Including length would likely increase the measured style effect and produce larger rank changes.
+
+**Bootstrap convergence.** We used 1,000 bootstrap iterations for both style coefficients and BT ratings, providing stable confidence intervals suitable for publication.
+
+**Reaction-derived data.** The conversion of binary like/dislike reactions to pairwise preferences produces structural tie inflation (46.8% vs. 30.7%), and the inner merge drops 45.4% of conversations with one-sided reactions. These are documented but not corrected.
+
+**Platform-specific population.** Compar:IA users are predominantly French civil servants and technology-interested citizens. Results may not generalize to other populations.
+
+**Reasoning-only content filter.** The exclusion of 25,778 battles (15.1%) where model response content was missing but reasoning content was present represents a substantial data loss. These battles are concentrated among specific models (e.g., gemini-3-pro-preview, gpt-5-mini, qwen3-30b-a3b), which reduces statistical power for those models. The filter is necessary — without it, zero-valued style features from missing text would be conflated with genuinely unformatted output — but it means our analysis covers a subset of the platform's interactions.
+
+**Tier stratification is endogenous.** The tier-based interaction analysis (Section 5.3) stratifies on the standard BT rating, which itself includes formatting effects. This means tier assignments partially reflect the quantity we are trying to analyze. A fully exogenous stratification (e.g., by model parameter count or by a third-party benchmark) would strengthen the test, though the large tier boundaries make this concern modest in practice.
+
+---
+
+## 6. Conclusion
+
+We find that markdown formatting — specifically bold text, lists, and headers — independently influences user preferences in the French Compar:IA LLM arena, with each feature increasing win odds by 16–19% per standard deviation. After controlling for these formatting effects, 76 of 89 models (85%) show statistically significant rating changes after Benjamini-Hochberg correction (FDR < 0.05), demonstrating that formatting bias is pervasive rather than concentrated in a few models. Formatting-heavy models are most affected: qwen-3-8b drops 21 ranks and mistral-large-2512 drops 20 ranks. Reasoning models show a modestly positive mean rank change (+2.3) after style control, though the pattern is mixed across individual models.
+
+These findings replicate and extend the LMSYS style control methodology to a non-English arena for the first time, demonstrating that formatting bias in LLM evaluation is not an English-language phenomenon. The practical implication is that arena rankings should be interpreted with awareness that they partially reflect formatting preferences rather than pure content quality. A notable methodological finding is that excluding battles with missing response content (a data pipeline artifact affecting 15.1% of battles) substantially changes the estimated reasoning model benefit, highlighting the importance of careful data cleaning in arena analyses.
+
+---
+
+## Appendix A: Data Quality Summary
+
+| Filter | Rows Removed | % of Original |
+|--------|-------------|---------------|
+| Same-model pairs (votes) | 508 | 0.34% |
+| No-choice votes | 3,994 | 2.68% |
+| Duplicate conversation_pair_ids | 3,401 | 2.28% |
+| Same-model pairs (reactions) | 362 | 0.40% |
+| Even msg_index (user messages) | 995 | 1.11% |
+| Short responses (<10 chars) | 431 | 0.48% |
+| One-sided reactions (inner merge) | ~23,680 conv | 45.4% of reaction conv |
+| `<think>` contamination in content | 98 conversations | 0.07% |
+| Reasoning-only content (empty `content`, non-empty `reasoning`) | 25,778 battles | 15.1% of combined |
+
+Final analysis dataset: 145,096 battles across 89 models with ≥100 battles each.
+
+## Appendix B: Full Model Rankings
+
+| Rank (Std) | Model | Std Rating | Ctrl Rating | Rank (Ctrl) | ΔRank |
+|-----------|-------|-----------|------------|------------|-------|
+| 1 | gemini-3-pro-preview | 1279.2 | 1283.3 | 1 | 0 |
+| 2 | gemini-3-flash-preview | 1204.8 | 1197.2 | 2 | 0 |
+| 3 | mistral-large-2512 | 1178.6 | 1083.5 | 23 | -20 |
+| 4 | mistral-medium-2508 | 1171.3 | 1106.2 | 8 | -4 |
+| 5 | gemini-2.5-flash | 1168.3 | 1139.9 | 3 | +2 |
+| 6 | magistral-medium | 1148.0 | 1130.6 | 4 | +2 |
+| 7 | qwen3-max-2025-09-23 | 1147.0 | 1120.9 | 6 | +1 |
+| 8 | gemini-2.0-flash | 1130.2 | 1121.8 | 5 | +3 |
+| 9 | gpt-5.1 | 1128.4 | 1104.3 | 9 | 0 |
+| 10 | deepseek-v3-0324 | 1118.1 | 1101.2 | 12 | -2 |
+| 11 | glm-4.6 | 1116.6 | 1087.7 | 21 | -10 |
+| 12 | gemma-3-27b | 1112.6 | 1103.3 | 11 | +1 |
+| 13 | claude-4-5-sonnet | 1112.2 | 1090.5 | 20 | -7 |
+| 14 | deepseek-chat-v3.1 | 1111.0 | 1091.6 | 19 | -5 |
+| 15 | deepseek-r1-0528 | 1110.7 | 1092.9 | 17 | -2 |
+| 16 | gpt-5.2 | 1110.7 | 1092.3 | 18 | -2 |
+| 17 | grok-4.1-fast | 1105.1 | 1106.4 | 7 | +10 |
+| 18 | DeepSeek-V3.2 | 1102.1 | 1093.9 | 15 | +3 |
+| 19 | deepseek-v3-chat | 1100.5 | 1093.2 | 16 | +3 |
+| 20 | gpt-oss-120b | 1099.5 | 1065.6 | 27 | -7 |
+
+*(Full 89-model table available in supplementary materials)*
