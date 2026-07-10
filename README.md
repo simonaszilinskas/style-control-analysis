@@ -91,4 +91,4 @@ Python 3.10+, with: `pandas`, `numpy`, `scipy`, `scikit-learn`, `pyarrow`, `tqdm
 
 ## License
 
-Research use. Data sourced from the [Compar:IA](https://comparia.beta.gouv.fr/) platform by the French Ministry of Culture.
+[Open Licence 2.0 / Licence Ouverte 2.0](LICENSE) (Etalab). Data sourced from the [Compar:IA](https://comparia.beta.gouv.fr/) platform by the French Ministry of Culture, which is itself published under Etalab 2.0 / CC-BY-4.0. The vendored `style_control.py` originates from compar:IA (Apache-2.0); its upstream notice is retained in the file.
