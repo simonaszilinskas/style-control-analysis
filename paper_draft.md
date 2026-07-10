@@ -1,10 +1,10 @@
-# Formatting Bias in French LLM Evaluation: Evidence from the Compar:IA Arena
+# What Wins a Vote? Formatting, Length, and Lexical Diversity in the French Compar:IA LLM Arena
 
 ---
 
 ## Abstract
 
-LLM evaluation arenas, where users compare model outputs side-by-side, have become a primary source of model rankings. However, these rankings may conflate content quality with superficial formatting preferences. We analyze the Compar:IA dataset — a French government-backed LLM arena with 145,096 cleaned battles across 89 models — to quantify the effect of markdown formatting (bold, lists, headers) on user preferences. Using a style-controlled Bradley-Terry model, we find that each standard deviation increase in bold formatting, list items, or headers independently increases a model's win probability by 16–19%. After controlling for these formatting features, rankings shift substantially: 76 of 89 models show statistically significant rating changes after Benjamini-Hochberg correction for multiple comparisons (bootstrap CIs, n=1,000, FDR < 0.05). Formatting-heavy models drop sharply (qwen-3-8b: −21 ranks, mistral-large-2512: −20), while some reasoning models rise modestly (mean +2.3 ranks). Despite these per-battle effects, the overall ranking correlation between standard and style-controlled ratings remains high (r=0.976), suggesting that formatting bias inflates some models' positions without dominating the signal. Our analysis is the first to apply style control to a non-English LLM arena and reveals that formatting preferences observed in English-language evaluations are equally present in a French-speaking population. Extending the model with answer length and linguistic features (readability, lexical diversity, sentence structure, perplexity) shows that the formatting effects survive these controls, that length accounts for a substantial share of them, and that the one additional robust signal is length-independent lexical diversity, while perplexity contributes essentially nothing. Bold formatting and length-independent diversity replicate on a second, independently collected dataset (comparia-fr-arena).
+LLM evaluation arenas, where users compare two model outputs side-by-side, have become a primary source of model rankings, and a standing worry is that these rankings reward *presentation* over substance. We study this on Compar:IA, a French government-backed arena, decomposing preference into model skill and presentation with a style-controlled Bradley-Terry model, and going beyond markdown formatting to a full presentation account: **formatting** (bold, lists, headers, code, emoji), **length**, and **linguistic** properties of the text (readability, lexical diversity, sentence structure, and CamemBERT pseudo-perplexity). Three findings emerge. First, presentation genuinely moves votes, but most of it is a single collinear "verbosity" dimension — length, bold, and lists rise and fall together — so their individual attributions are not stable. Second, only two presentation signals survive the full joint control *and* replicate on a second, independently collected dataset: **bold formatting** (about +13% win odds per standard deviation) and **length-independent lexical diversity** (MATTR, +15–19%); readability metrics are collinear and sign-unstable, and perplexity adds essentially nothing. Third, much of the *apparent* linguistic effect is model skill in disguise — coefficients roughly halve when per-model strengths are included, the difference between a confounder and a mediator. Controlling for the full presentation bundle reshuffles the leaderboard more than formatting alone (rating correlation 0.92; 21 of 83 models move by ≥10 ranks; heavy formatters such as mistral-large-2512 fall ~28 places while concise strong models rise). To our knowledge this is the first style-control analysis of a non-English arena; the formatting effect matches English-language findings, and the core results hold across two independently built French datasets (~145K and ~126K battles). The practical message for arena operators is that "quality" rankings partly measure verbosity, and that reporting both raw and presentation-controlled leaderboards is the honest option.
 
 ---
 
@@ -14,15 +14,17 @@ The rise of LLM evaluation arenas — platforms where users interact with two an
 
 A key concern with arena-based evaluation is the extent to which user preferences reflect genuine content quality versus superficial presentation. Zheng et al. (2023) first noted that LLM judges exhibit a preference for longer, more verbosely formatted outputs. The LMSYS team subsequently introduced "style control" — a methodology that decomposes win probability into model skill and formatting effects using a modified Bradley-Terry model. Their analysis of English-language data found that controlling for response length, markdown formatting, and list usage modestly reshuffled rankings.
 
-We apply style control analysis to the Compar:IA dataset, which provides a unique opportunity:
+Most style-control work stops at markdown and length. But "presentation" is broader: how readable the prose is, how varied its vocabulary, how long its sentences — properties a user can respond to without them tracking correctness. These linguistic features are correlated with formatting and length, so studying any one in isolation risks mis-attributing a shared effect. We therefore analyze all three families together — **formatting** (bold, lists, headers, code, emoji), **length**, and **linguistic** properties (readability, lexical diversity, sentence structure, perplexity) — in a single style-controlled model, and ask which presentation features carry an *independent* effect once the others, and model identity, are held fixed.
 
-1. **Scale:** 145,096 cleaned battles across 89 models, spanning 16 months of organic user interactions.
-2. **Language:** French-language evaluation, enabling the first cross-linguistic test of whether formatting preferences are culturally invariant.
+We apply this analysis to the Compar:IA dataset, which provides a strong setting:
+
+1. **Scale:** ~145,000 cleaned battles across 89 models, spanning 16 months of organic user interactions, with a second independent export (comparia-fr-arena, ~126,000 French battles) for replication.
+2. **Language:** French-language evaluation, enabling the first cross-linguistic test of whether presentation preferences are culturally invariant.
 3. **Multi-signal design:** Both explicit votes (141K) and per-message reactions (27K) provide independent signals that we can cross-validate.
 4. **Arena mode metadata:** The platform tracks whether model pairs were randomly assigned, user-selected, or drawn from specialized pools (reasoning, small models, big-vs-small).
-5. **Reasoning models:** The dataset includes reasoning models (o3-mini, deepseek-r1, qwq-32b) whose chain-of-thought outputs produce systematically different formatting profiles.
+5. **Reasoning models:** The dataset includes reasoning models (o3-mini, deepseek-r1, qwq-32b) whose chain-of-thought outputs produce systematically different presentation profiles.
 
-Our central question: **Does controlling for markdown formatting change which models are ranked highest?**
+Our central question: **which presentation features independently change which models rank highest, and which apparent effects are really model skill?** Our contributions are: (i) a joint presentation-controlled ranking that separates formatting, length, and linguistic effects from each other and from model skill; (ii) the finding that presentation is largely one collinear verbosity dimension, with only bold formatting and length-independent lexical diversity surviving as robust, replicable signals; (iii) a confounder-versus-mediator analysis showing much apparent linguistic effect is model skill; and (iv) replication across two independently built French datasets.
 
 ---
 
@@ -72,9 +74,11 @@ We applied the following filters, documented in a comprehensive data quality aud
 
 ## 3. Methodology
 
-### 3.1 Style Features
+### 3.1 Presentation Features
 
-We extracted five formatting features from each model's response text:
+We measure presentation in three families, all computed per response.
+
+**Formatting** — five markdown features:
 
 | Feature | Description | Regex Pattern |
 |---------|-------------|---------------|
@@ -84,7 +88,11 @@ We extracted five formatting features from each model's response text:
 | **Code blocks** | Fenced code blocks | ` ``` ` or `~~~` (counted in pairs) |
 | **Emoji** | Emoji characters | Unicode emoji ranges |
 
-We deliberately excluded response length from the style control. Length was the dominant feature in the original LMSYS style control analysis, but it confounds with completeness — a core quality dimension. Users asked about response length in a French-language arena may genuinely prefer more thorough answers, and controlling for length risks removing legitimate quality signal. The `complete` quality attribute in reaction data correlates with higher like rates (28.9% of liked messages were tagged "complete" versus 0% of disliked), supporting the view that length partly proxies for quality rather than mere formatting preference. §4.7 revisits this decision quantitatively, adding length and a set of linguistic features (readability, lexical diversity, sentence structure, perplexity) to the same model.
+**Length** — the response's output-token count from the dataset metadata (not a whitespace word count, which is unreliable for French).
+
+**Linguistic** — text properties beyond formatting: readability (Kandel-Moles REL, calibrated for French; Coleman-Liau; Flesch-Kincaid grade), lexical diversity (type-token ratio TTR and its length-robust moving-average variant MATTR, over a 50-token window), sentence structure (mean sentence length and the fraction of long sentences), and CamemBERT pseudo-perplexity as a fluency proxy.
+
+Our primary formatting analysis (§4.1–§4.6) uses the five markdown features only, so it is directly comparable to prior English-language style control. We hold length and the linguistic family back to §4.7 for a specific reason: **length confounds with completeness**, a genuine quality dimension. Users may prefer more thorough answers, and the `complete` quality attribute in reaction data correlates with higher like rates (28.9% of liked messages were tagged "complete" versus 0% of disliked), so controlling for length risks removing legitimate quality signal rather than bias. §4.7 confronts that trade-off head-on by adding length and all linguistic features to the same model, and §4.8 replicates the result on an independent dataset. The linguistic features are computed with the exact formulas of a companion internship analysis, so a feature means the same thing across the two datasets.
 
 ### 3.2 Bradley-Terry Model
 
@@ -157,7 +165,7 @@ Bold alone produces the most rank disruption (r=0.982), consistent with it havin
 
 ### 4.3 Ranking Impact
 
-The overall correlation between standard and style-controlled BT ratings is **r = 0.976** (Figure 2). Rankings are highly stable overall, but specific models shift substantially. Note that mistral-medium-3.1, originally tracked as a separate model, was merged into mistral-medium-2508 based on model registry information, yielding 89 rather than 90 distinct models.
+The overall correlation between standard and style-controlled BT ratings is **r = 0.976** (Figure 2). Rankings are highly stable overall, but specific models shift substantially. Note that mistral-medium-3.1, originally tracked as a separate model, was merged into mistral-medium-2508 based on model registry information, yielding 89 rather than 90 distinct models. (This reshuffle controls for markdown formatting only; §4.7 shows that additionally controlling for length and linguistic features moves the leaderboard further, since length carries part of the presentation effect.)
 
 **Table 3. Top 10 models: standard vs. style-controlled rankings.**
 
@@ -253,6 +261,8 @@ The formatting model of §3–§4 deliberately excludes length (§3.1) and consi
 
 **Adding these features improves fit** — held-out-free battle-prediction accuracy rises from 0.643 (formatting) to 0.645 (+length) to **0.651** (joint) — modest, consistent with style being a real but secondary driver of the vote.
 
+**The full presentation control reshuffles the leaderboard more than formatting alone.** On this common support (100,545 battles, 83 models), the standard ranking correlates with the formatting-only style-controlled ranking at r = 0.954, but with the *joint* (formatting + length + linguistic) style-controlled ranking at only **r = 0.916** (Spearman 0.90). Under the joint control, **21 of 83 models move by ≥10 ranks**. The movers are exactly the verbosity story made concrete: heavy formatters fall (mistral-large-2512 −28 ranks, glm-4.5 −29, gpt-oss-120b −24), while concise but strong models rise (claude-3-7-sonnet +26, claude-4-sonnet +24). This is the honest counterpart to §4.3: controlling for presentation, rather than markdown alone, does not overturn the leaderboard but does materially rearrange its middle and upper-middle.
+
 Finally, the confounder-vs-mediator pattern of §5.3 reappears feature by feature: moving from a reduced-form logit (no per-model strengths) to the full Bradley-Terry roughly halves bold (+24.4%→+12.2%) and collapses mean sentence length (+15.3%→−2.2%), confirming that a large part of the apparent linguistic effects is model strength rather than presentation bias.
 
 ### 4.8 Robustness on an independent dataset (comparia-fr-arena)
@@ -280,13 +290,13 @@ Bold formatting (~+13%) and length-independent lexical diversity (MATTR, +15–1
 
 ## 5. Discussion
 
-### 5.1 Formatting Bias Is Real but Bounded
+### 5.1 Presentation Bias Is Real, but It Is Mostly One Dimension
 
-Our results establish that markdown formatting independently influences user preferences in the Compar:IA arena. Each standard deviation of bold, lists, or headers increases win odds by 16–19%. This is a nontrivial effect at the individual battle level.
+Three things hold together across our analyses. First, presentation genuinely influences French arena votes: in the formatting-only model, bold, lists, and headers each raise win odds by 16–19% per standard deviation, and the effect matches English-language style control, so this is not a culture-specific quirk. Second, once length and linguistic features enter the model, most of that effect turns out to be a **single collinear "verbosity" dimension** — length, bold, and lists are correlated (Δlength–Δbold ρ = 0.65), they trade coefficient weight among themselves, and their individual attributions are not stable across datasets (§4.8). The honest summary is not "bold is worth exactly +13%" but "answers that are longer and more heavily marked up win, and we cannot cleanly divide the credit."
 
-However, the aggregate impact on rankings is moderate. The overall correlation between standard and style-controlled ratings is 0.976 — formatting bias reshuffles some models' positions but does not fundamentally reorder the leaderboard. The signal is dominated by genuine quality differences between models.
+Third, and more usefully, two signals stand apart from that bundle and survive every control we apply, on both datasets: **bold formatting** and **length-independent lexical diversity** (MATTR). MATTR is the more interesting of the two — it is essentially uncorrelated with length (ρ = 0.02), so it is not verbosity in disguise: holding length fixed, answers that use a more varied vocabulary win. This is a genuinely new result relative to formatting-only style control, and it points at a preference for richer language rather than merely more of it. By contrast, readability scores are collinear and sign-unstable across datasets, and CamemBERT perplexity adds nothing once length and readability are present — so "fluency" as a fluency model measures it does not explain votes.
 
-This finding is consistent with the LMSYS analysis of English-language data, which also found modest formatting effects. The cross-linguistic agreement suggests that formatting preferences are not culturally specific to English-speaking users — French users exhibit comparable biases.
+The aggregate impact on rankings is moderate but real, and larger under full presentation control than under formatting alone (r = 0.92 vs 0.95; §4.7). Presentation reshuffles the middle of the leaderboard — heavy formatters fall ~25–30 places, concise strong models rise — without overturning the very top, which is still governed by genuine quality gaps.
 
 ### 5.2 Implications for Arena Design
 
@@ -359,11 +369,15 @@ To move beyond aggregate statistics, we examine individual conversations where s
 
 ### 5.5 Limitations
 
-**Correlated features.** Bold, lists, and headers are correlated (models that use one tend to use all three). The joint model partitions their shared effect, but the individual contributions may not be identifiable.
+**Collinear presentation features.** Length, bold, and lists move together, and the joint model cannot cleanly identify their individual contributions — a limitation we make central rather than incidental (§4.8 shows their coefficients are not stable across datasets). Claims should be read at the level of "verbosity" and of the two features that do replicate (bold, MATTR), not of every individual coefficient.
 
-**Response length excluded.** We excluded response length from the style control to avoid removing genuine quality signal. This means our "style-controlled" rankings still contain any formatting-correlated length bias. Including length would likely increase the measured style effect and produce larger rank changes.
+**English-calibrated readability on French text.** Coleman-Liau and Flesch-Kincaid are English-calibrated; only REL is French-specific. This is one reason we decline to interpret the readability coefficients individually, and it likely contributes to their cross-dataset instability. Length is the output-token count from metadata, which sidesteps the French word-tokenization problem for that feature.
 
-**Bootstrap convergence.** We used 1,000 bootstrap iterations for both style coefficients and BT ratings, providing stable confidence intervals suitable for publication.
+**No task or topic controls.** Presentation features may proxy for task type: coding prompts naturally produce code blocks and lists, and some topics invite longer answers. We do not stratify by task or topic, so part of a presentation effect could reflect which questions elicit which formatting. This is the most important open item for a future version.
+
+**Perplexity on one dataset only.** CamemBERT pseudo-perplexity requires a GPU and was computed only on the primary export; §4.7 finds it null there, and §4.8 cannot re-test it on comparia-fr-arena.
+
+**Bootstrap.** We used 1,000 bootstrap iterations for both style coefficients and BT ratings, providing stable confidence intervals; the joint-model and replication analyses use the same procedure.
 
 **Reaction-derived data.** The conversion of binary like/dislike reactions to pairwise preferences produces structural tie inflation (46.8% vs. 30.7%), and the inner merge drops 45.4% of conversations with one-sided reactions. These are documented but not corrected.
 
@@ -377,9 +391,15 @@ To move beyond aggregate statistics, we examine individual conversations where s
 
 ## 6. Conclusion
 
-We find that markdown formatting — specifically bold text, lists, and headers — independently influences user preferences in the French Compar:IA LLM arena, with each feature increasing win odds by 16–19% per standard deviation. After controlling for these formatting effects, 76 of 89 models (85%) show statistically significant rating changes after Benjamini-Hochberg correction (FDR < 0.05), demonstrating that formatting bias is pervasive rather than concentrated in a few models. Formatting-heavy models are most affected: qwen-3-8b drops 21 ranks and mistral-large-2512 drops 20 ranks. Reasoning models show a modestly positive mean rank change (+2.3) after style control, though the pattern is mixed across individual models.
+Presentation shapes preference votes in the French Compar:IA arena, but not in the tidy, feature-by-feature way a formatting-only analysis suggests. In a formatting-only model, bold, lists, and headers each raise win odds by 16–19% per standard deviation, 76 of 89 models shift significantly after correction, and heavy formatters drop sharply — a clean replication of English-language style control to a non-English arena for the first time. But when we add length and a family of linguistic features, most of that effect resolves into one collinear "verbosity" dimension: length, bold, and lists share their explanatory weight, and their individual coefficients are not stable across two independently built datasets. What *is* stable, and replicates on both, is narrower and more interpretable: bold formatting (~+13% per SD) and length-independent lexical diversity (MATTR, +15–19%), the latter a signal that richer vocabulary wins even at equal length. Readability and perplexity add nothing beyond these, and a confounder-versus-mediator analysis shows much of the apparent linguistic effect is model skill rather than bias — coefficients roughly halve once per-model strengths are included.
 
-These findings replicate and extend the LMSYS style control methodology to a non-English arena for the first time, demonstrating that formatting bias in LLM evaluation is not an English-language phenomenon. The practical implication is that arena rankings should be interpreted with awareness that they partially reflect formatting preferences rather than pure content quality. A notable methodological finding is that excluding battles with missing response content (a data pipeline artifact affecting 15.1% of battles) substantially changes the estimated reasoning model benefit, highlighting the importance of careful data cleaning in arena analyses.
+For arena operators the message is concrete: "quality" leaderboards partly rank verbosity, controlling for the full presentation bundle rearranges the middle of the ranking (heavy formatters fall ~25–30 places) more than controlling for markdown alone, and the only defensible option is to publish both raw and presentation-controlled rankings. Methodologically, the analysis is a caution against reading single style coefficients too literally when the features are collinear, and a demonstration that per-model strengths are essential to telling presentation bias apart from presentation that tracks quality. Two extensions would sharpen it: stratifying by task and topic (presentation may proxy for the kind of question asked), and a controlled study that manipulates presentation directly rather than observing it.
+
+---
+
+## Author Contributions
+
+Simon Zilinskas-Inta (compar:IA, Ministère de la Culture / DINUM) designed and implemented the style-controlled ranking, the formatting analysis, the data pipeline, and the joint and cross-dataset integration. Maayeesha Farzana (PSL — AI & Society) designed and computed the linguistic feature set (readability, lexical diversity, sentence structure, perplexity) that the joint model builds on. Christophe Benavent (Université Paris Dauphine) supervised the project and set its Bradley-Terry-with-covariates direction. *(Author order and affiliations to be confirmed by the authors.)*
 
 ---
 

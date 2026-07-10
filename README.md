@@ -1,20 +1,19 @@
-# Style Control Bias in French LLM Evaluation
+# What Wins a Vote? Presentation Bias in the French Compar:IA LLM Arena
 
-Analysis of style control bias in the **Compar:IA** dataset — a French government-backed LLM arena for evaluating language models through human preference judgments.
+Analysis of how presentation — formatting, length, and linguistic properties of the text — biases human preference judgments in the **Compar:IA** dataset, a French government-backed LLM arena.
 
 ## Research Question
 
-Do formatting features (bold, lists, headers, emoji, code blocks) bias human preference judgments, inflating rankings for "stylish" models?
+Which presentation features (markdown formatting, length, readability, lexical diversity, sentence structure, perplexity) independently change which models rank highest, and which apparent effects are really model skill?
 
 ## Key Findings
 
-- **Bold** (+19.0%), **lists** (+18.0%), and **headers** (+15.6%) significantly increase win probability
-- Code blocks and emoji have no significant effect
-- Standard vs style-controlled Bradley-Terry rankings correlate at **r = 0.976**, but **76/89 models** show significant rank changes
-- Reasoning models gain **+2.3 ranks** on average after style control
-- Style bias is stronger among lower-quality models (bottom-tier: bold +24.6%) than top-tier (+16.0%)
-- **Linguistic extension** (§4.7): adding length and linguistic features shows formatting survives these controls (bold +13.0%, lists +10.8%, headers +9.3%), that length carries a substantial share of the raw formatting effect, and that the one additional robust signal is length-independent lexical diversity (MATTR +19.3%); perplexity adds essentially nothing
-- **Replication** (§4.8): on the independent `comparia-fr-arena` dataset (126K French battles), bold (+13.7%) and length-independent diversity (MATTR +15.2%) reproduce almost exactly; the divergent features (length↔lists, readability) confirm the collinearity/instability caveats
+- **Presentation is mostly one collinear "verbosity" dimension.** Length, bold, and lists rise together (Δlength–Δbold ρ = 0.65) and trade coefficient weight; their individual attributions are not stable across datasets.
+- **Two signals survive full control and replicate on a second dataset:** **bold formatting** (~+13% win odds/SD) and **length-independent lexical diversity** (MATTR, +15–19% — richer vocabulary wins even at equal length).
+- **Readability and perplexity add essentially nothing** once length and formatting are controlled.
+- **Much apparent linguistic effect is model skill:** coefficients roughly halve when per-model strengths are added (confounder vs mediator).
+- **Formatting-only view (for comparison with English style control):** bold +19.0%, lists +18.0%, headers +15.6%; 76/89 models shift significantly; heavy formatters drop sharply. Controlling for the *full* presentation bundle moves the leaderboard more (r = 0.92 vs 0.95; 21/83 models move ≥10 ranks).
+- **Robustness:** results replicate across two independently built French datasets (~145K votes+reactions and ~126K comparia-fr-arena battles).
 
 ## Data
 
