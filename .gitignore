@@ -16,3 +16,6 @@ __pycache__/
 # IDE / tools
 .claude/
 CLAUDE.md
+
+# Run logs
+*.log

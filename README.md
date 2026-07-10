@@ -13,6 +13,7 @@ Do formatting features (bold, lists, headers, emoji, code blocks) bias human pre
 - Standard vs style-controlled Bradley-Terry rankings correlate at **r = 0.976**, but **76/89 models** show significant rank changes
 - Reasoning models gain **+2.3 ranks** on average after style control
 - Style bias is stronger among lower-quality models (bottom-tier: bold +24.6%) than top-tier (+16.0%)
+- **Linguistic extension** (§4.7): adding length and linguistic features shows formatting survives these controls (bold +13.0%, lists +10.8%, headers +9.3%), that length carries a substantial share of the raw formatting effect, and that the one additional robust signal is length-independent lexical diversity (MATTR +19.3%); perplexity adds essentially nothing
 
 ## Data
 
@@ -38,6 +39,9 @@ python qualitative_analysis.py
 
 # 4. Generate publication figures
 python generate_figures.py
+
+# 5. Linguistic extension: length + readability/diversity/structure/perplexity
+python linguistic_analysis.py
 ```
 
 ### Style Features
@@ -61,14 +65,17 @@ Python 3.10+, with: `pandas`, `numpy`, `scipy`, `scikit-learn`, `pyarrow`, `tqdm
 ├── clean_and_analyze.py          # Main analysis pipeline
 ├── endogeneity_analysis.py       # Tier-stratified interaction tests
 ├── qualitative_analysis.py       # Winner-flipping battle analysis
+├── linguistic_analysis.py        # Length + linguistic-feature joint model (§4.7)
 ├── generate_figures.py           # Publication-quality figures
 ├── paper_draft.md                # Paper draft
 ├── clean_analysis_results.json   # Main analysis outputs
 ├── endogeneity_results.json      # Endogeneity test outputs
 ├── qualitative_results.json      # Qualitative analysis outputs
 ├── qualitative_examples.json     # Illustrative battle examples
+├── linguistic_results.json       # Linguistic extension outputs
 ├── battles_bt_styled.parquet     # Intermediate styled battle data
-├── figures/                      # 8 publication figures (PDF + PNG)
+├── linguistic_features.parquet   # Per-conversation linguistic features (merge key: conversation_pair_id)
+├── figures/                      # publication figures (PDF + PNG)
 └── feedback.md                   # Peer review tracker
 ```
 
