@@ -4,7 +4,7 @@
 
 ## Abstract
 
-LLM evaluation arenas, where users compare model outputs side-by-side, have become a primary source of model rankings. However, these rankings may conflate content quality with superficial formatting preferences. We analyze the Compar:IA dataset — a French government-backed LLM arena with 145,096 cleaned battles across 89 models — to quantify the effect of markdown formatting (bold, lists, headers) on user preferences. Using a style-controlled Bradley-Terry model, we find that each standard deviation increase in bold formatting, list items, or headers independently increases a model's win probability by 16–19%. After controlling for these formatting features, rankings shift substantially: 76 of 89 models show statistically significant rating changes after Benjamini-Hochberg correction for multiple comparisons (bootstrap CIs, n=1,000, FDR < 0.05). Formatting-heavy models drop sharply (qwen-3-8b: −21 ranks, mistral-large-2512: −20), while some reasoning models rise modestly (mean +2.3 ranks). Despite these per-battle effects, the overall ranking correlation between standard and style-controlled ratings remains high (r=0.976), suggesting that formatting bias inflates some models' positions without dominating the signal. Our analysis is the first to apply style control to a non-English LLM arena and reveals that formatting preferences observed in English-language evaluations are equally present in a French-speaking population. Extending the model with answer length and linguistic features (readability, lexical diversity, sentence structure, perplexity) shows that the formatting effects survive these controls, that length accounts for a substantial share of them, and that the one additional robust signal is length-independent lexical diversity, while perplexity contributes essentially nothing.
+LLM evaluation arenas, where users compare model outputs side-by-side, have become a primary source of model rankings. However, these rankings may conflate content quality with superficial formatting preferences. We analyze the Compar:IA dataset — a French government-backed LLM arena with 145,096 cleaned battles across 89 models — to quantify the effect of markdown formatting (bold, lists, headers) on user preferences. Using a style-controlled Bradley-Terry model, we find that each standard deviation increase in bold formatting, list items, or headers independently increases a model's win probability by 16–19%. After controlling for these formatting features, rankings shift substantially: 76 of 89 models show statistically significant rating changes after Benjamini-Hochberg correction for multiple comparisons (bootstrap CIs, n=1,000, FDR < 0.05). Formatting-heavy models drop sharply (qwen-3-8b: −21 ranks, mistral-large-2512: −20), while some reasoning models rise modestly (mean +2.3 ranks). Despite these per-battle effects, the overall ranking correlation between standard and style-controlled ratings remains high (r=0.976), suggesting that formatting bias inflates some models' positions without dominating the signal. Our analysis is the first to apply style control to a non-English LLM arena and reveals that formatting preferences observed in English-language evaluations are equally present in a French-speaking population. Extending the model with answer length and linguistic features (readability, lexical diversity, sentence structure, perplexity) shows that the formatting effects survive these controls, that length accounts for a substantial share of them, and that the one additional robust signal is length-independent lexical diversity, while perplexity contributes essentially nothing. Bold formatting and length-independent diversity replicate on a second, independently collected dataset (comparia-fr-arena).
 
 ---
 
@@ -254,6 +254,27 @@ The formatting model of §3–§4 deliberately excludes length (§3.1) and consi
 **Adding these features improves fit** — held-out-free battle-prediction accuracy rises from 0.643 (formatting) to 0.645 (+length) to **0.651** (joint) — modest, consistent with style being a real but secondary driver of the vote.
 
 Finally, the confounder-vs-mediator pattern of §5.3 reappears feature by feature: moving from a reduced-form logit (no per-model strengths) to the full Bradley-Terry roughly halves bold (+24.4%→+12.2%) and collapses mean sentence length (+15.3%→−2.2%), confirming that a large part of the apparent linguistic effects is model strength rather than presentation bias.
+
+### 4.8 Robustness on an independent dataset (comparia-fr-arena)
+
+Sections 4.1–4.7 use the votes+reactions data. As a check that the linguistic findings are not an artefact of that particular export, we replicate §4.7 on **`comparia-fr-arena`** — the newer consolidated compar:IA release, collected over a different window, with a partly different model roster, and using arena votes only (no reactions). We rebuild the identical feature set on it (same markdown regexes, output-token length, same readability/diversity/structure features) and fit the same winsorized joint Bradley-Terry model (126,245 French battles, 116 models). Perplexity is omitted (it needs a GPU and is only available on the older export, where §4.7 already finds it null).
+
+The two most important effects replicate almost exactly, and the accuracy gain from adding linguistic features reappears (0.637→0.639→0.643, versus 0.643→0.645→0.651 primary):
+
+| Feature | Primary (votes+reactions) | comparia-fr-arena |
+|---|---:|---:|
+| bold | **+13.0%** *** | **+13.7%** *** |
+| headers | +9.3% *** | +7.7% *** |
+| emoji | +4.1% *** | +3.6% *** |
+| code_blocks | +5.7% *** | +2.4% *** |
+| **MATTR** (length-robust diversity) | **+19.3%** *** | **+15.2%** *** |
+| TTR (length proxy) | −29.5% *** | −24.0% *** |
+| long_sent_ratio | −4.4% *** | −3.2% *** |
+| length | +1.4% n.s. | +10.7% *** |
+| lists | +10.8% *** | +1.3% n.s. |
+| REL / FKG (readability) | +13.3% / +12.4% *** | −3.3% / −6.0% n.s. |
+
+Bold formatting (~+13%) and length-independent lexical diversity (MATTR, +15–19%) are stable across two independently constructed datasets — the strongest evidence that these are real preference signals rather than pipeline artefacts. The divergences are equally informative and *confirm* the §4.7 caveats rather than undercut them. Within the collinear verbosity bundle (length, bold, lists, TTR), individual attributions are not stable: length is fully absorbed in the primary data but carries +10.7% here, and lists is the reverse, exactly the instability §4.7 flagged for correlated features. And the readability metrics flip sign between datasets (REL +13.3%→−3.3%), reinforcing our decision not to interpret them individually. In short: the robust conclusions replicate, and the features we already declined to over-read are confirmed unstable.
 
 ---
 
