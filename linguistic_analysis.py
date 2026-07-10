@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Compar:IA Style Control — Linguistic Extension
+Compar:IA Style Control, Linguistic Extension
 
 The main pipeline (clean_and_analyze.py) controls preferences for markdown
 *formatting* (headers, lists, bold, code blocks, emoji) but not for answer

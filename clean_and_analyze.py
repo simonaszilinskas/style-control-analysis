@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Compar:IA Style Control Analysis — Clean Pipeline
+Compar:IA Style Control Analysis, Clean Pipeline
 Applies all data quality filters identified in the audit, then runs the analysis.
 Outputs: clean_analysis_results.json with all key metrics and tables.
 """
@@ -978,7 +978,7 @@ else:
 # 14. ABLATION STUDY
 # ============================================================
 print("\n" + "=" * 60)
-print("STEP 14: Ablation study — one feature at a time")
+print("STEP 14: Ablation study, one feature at a time")
 print("=" * 60)
 
 ablation_results = {}

@@ -1,6 +1,6 @@
 # What Wins a Vote? Presentation Bias in the French Compar:IA LLM Arena
 
-Analysis of how presentation — formatting, length, and linguistic properties of the text — biases human preference judgments in the **Compar:IA** dataset, a French government-backed LLM arena.
+Analysis of how presentation, formatting, length, and linguistic properties of the text, biases human preference judgments in the **Compar:IA** dataset, a French government-backed LLM arena.
 
 ## Research Question
 
@@ -9,7 +9,7 @@ Which presentation features (markdown formatting, length, readability, lexical d
 ## Key Findings
 
 - **Presentation is mostly one collinear "verbosity" dimension.** Length, bold, and lists rise together (Δlength–Δbold ρ = 0.65) and trade coefficient weight; their individual attributions are not stable across datasets.
-- **Two signals survive full control and replicate on a second dataset:** **bold formatting** (~+13% win odds/SD) and **length-independent lexical diversity** (MATTR, +15–19% — richer vocabulary wins even at equal length).
+- **Two signals survive full control and replicate on a second dataset:** **bold formatting** (~+13% win odds/SD) and **length-independent lexical diversity** (MATTR, +15–19%, richer vocabulary wins even at equal length).
 - **Readability and perplexity add essentially nothing** once length and formatting are controlled.
 - **Much apparent linguistic effect is model skill:** coefficients roughly halve when per-model strengths are added (confounder vs mediator).
 - **Formatting-only view (for comparison with English style control):** bold +19.0%, lists +18.0%, headers +15.6%; 76/89 models shift significantly; heavy formatters drop sharply. Controlling for the *full* presentation bundle moves the leaderboard more (r = 0.92 vs 0.95; 21/83 models move ≥10 ranks).

@@ -2,13 +2,13 @@
 
 ## Overall Assessment
 
-**Paper-worthy?** Yes — suitable for a workshop or short/findings paper (ACL Findings, EMNLP Findings, LREC-COLING, Eval4NLP). A full conference paper requires significant additional work.
+**Paper-worthy?** Yes, suitable for a workshop or short/findings paper (ACL Findings, EMNLP Findings, LREC-COLING, Eval4NLP). A full conference paper requires significant additional work.
 
 **Core contribution:** First style control analysis on a non-English (French) government-backed LLM evaluation dataset, with three-dataset triangulation (conversations, reactions, votes).
 
 ---
 
-## P0 — Blocking Issues (fix before anything else)
+## P0, Blocking Issues (fix before anything else)
 
 ### Summary contradicts actual output
 
@@ -18,7 +18,7 @@ The final summary table states effect sizes of ~0.02–0.03 (odds ratio ~1.03), 
 
 ---
 
-## P1 — Methodological Fixes (required for any submission)
+## P1, Methodological Fixes (required for any submission)
 
 ### Tokenization is fundamentally flawed
 
@@ -26,7 +26,7 @@ The final summary table states effect sizes of ~0.02–0.03 (odds ratio ~1.03), 
 
 **Fix:** Replace with proper tokenization (tiktoken, HuggingFace tokenizers, or model-specific token counts from the dataset). Re-run all length-dependent analyses. Estimated effort: 1 day.
 
-### The correlation drop is the most interesting finding — and it's unexplored
+### The correlation drop is the most interesting finding, and it's unexplored
 
 The correlation between like rate and BT rating drops from **0.829 → 0.645** after style control (~22% decrease). This is the paper's most provocative result: is style control removing bias or removing genuine quality signal?
 
@@ -34,7 +34,7 @@ The correlation between like rate and BT rating drops from **0.829 → 0.645** a
 
 ---
 
-## P2 — Statistical Rigor (expected for peer review)
+## P2, Statistical Rigor (expected for peer review)
 
 ### Bootstrap sample sizes are too small
 
@@ -50,7 +50,7 @@ The correlation between like rate and BT rating drops from **0.829 → 0.645** a
 
 ### ~~Endogeneity is not addressed~~ ✅ DONE
 
-~~Style is treated as a confounder to remove, but it may be a **mediator** — better models may produce better-structured output because they are more capable, not because users are fooled by formatting. No causal framework is presented.~~
+~~Style is treated as a confounder to remove, but it may be a **mediator**, better models may produce better-structured output because they are more capable, not because users are fooled by formatting. No causal framework is presented.~~
 
 **Resolved:** Added dedicated section 5.3 "Endogeneity: Confounder or Mediator?" with three empirical tests: (1) quality-formatting correlation (r=0.60), (2) tier-stratified style effects showing ~2x larger formatting bias for bottom-tier battles vs top-tier, (3) interaction model with bootstrap CIs. Conclusion: formatting is both partial mediator and partial confounder. Analysis in `endogeneity_analysis.py`, results in `endogeneity_results.json`.
 
@@ -62,7 +62,7 @@ No stratification by topic, task type, or difficulty. Style features may proxy f
 
 ---
 
-## P3 — Enhancements (strengthen the contribution)
+## P3, Enhancements (strengthen the contribution)
 
 ### Ablation study on style features
 
@@ -70,7 +70,7 @@ Which features actually drive rank changes? Length alone vs. markdown features v
 
 **Fix:** Run the BT model with subsets of style features. Show incremental contribution. Estimated effort: 2 days.
 
-### ~~Qualitative analysis~~ — DONE
+### ~~Qualitative analysis~~, DONE
 
 ~~Sample 30–50 conversations where style control flips the winner. Manual inspection: did the style-adjusted winner actually produce better content?~~
 
@@ -82,7 +82,7 @@ Compare findings with English Chatbot Arena results (same methodology, same time
 
 **Fix:** Replicate on a subset of English data. Estimated effort: 1 week.
 
-### ~~Visualization~~ — DONE
+### ~~Visualization~~, DONE
 
 ~~The notebook is entirely tables. Add forest plots for style coefficients with CIs, scatter plots of standard vs. style-controlled ELO, and distribution plots of markdown features by model.~~
 
@@ -92,7 +92,7 @@ Compare findings with English Chatbot Arena results (same methodology, same time
 
 ## Strengths to Preserve
 
-- **Novel dataset:** Compar:IA is rare — a French government-backed arena with 133K votes across 100+ models.
+- **Novel dataset:** Compar:IA is rare, a French government-backed arena with 133K votes across 100+ models.
 - **Three-dataset triangulation:** Combining message-level reactions with conversation-level votes is a strong validation design.
 - **Statistical self-awareness (Part D):** Bootstrap CIs, effect size interpretation, and CI overlap analysis demonstrate rigor.
 - **Honest findings:** Modest but real style effects, and the observation that most adjacent models are statistically indistinguishable, are valuable contributions.

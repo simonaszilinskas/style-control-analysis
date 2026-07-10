@@ -194,7 +194,7 @@ def fig2_scatter_ratings():
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# Figure 3: Rank change waterfall — top 20 movers
+# Figure 3: Rank change waterfall, top 20 movers
 # ═══════════════════════════════════════════════════════════════════════════
 def fig3_rank_changes():
     rank_sig = results["rank_significance"]
@@ -355,7 +355,7 @@ def fig5_rating_vs_formatting():
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# Figure 6: Ablation — single-feature vs joint coefficients
+# Figure 6: Ablation, single-feature vs joint coefficients
 # ═══════════════════════════════════════════════════════════════════════════
 def fig6_ablation():
     ablation = results["ablation"]
