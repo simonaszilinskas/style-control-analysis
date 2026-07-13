@@ -468,7 +468,7 @@ For arena operators the message is concrete: "quality" leaderboards partly rank 
 
 ## Author Contributions
 
-Simon Zilinskas-Inta (compar:IA, Ministère de la Culture / DINUM) designed and implemented the style-controlled ranking, the formatting analysis, the data pipeline, and the joint and cross-dataset integration. Maayeesha Farzana (PSL, AI & Society) designed and computed the linguistic feature set (readability, lexical diversity, sentence structure, perplexity) that the joint model builds on. Christophe Benavent (Université Paris Dauphine) supervised the project and set its Bradley-Terry-with-covariates direction. *(Author order and affiliations to be confirmed by the authors.)*
+Maayeesha Farzana (PSL, AI & Society) designed and computed the linguistic feature set (readability, lexical diversity, sentence structure, perplexity) that the joint model is built on. Christophe Benavent (Université Paris Dauphine) supervised the project, set its Bradley-Terry-with-covariates direction, and proposed the reading-level framing and the reading-depth test. Simon Zilinskas-Inta (compar:IA, Ministère de la Culture / DINUM) carried out the analysis: applying compar:IA's style-controlled ranking, running the formatting, joint and cross-dataset work, and merging the two feature sets into one model. All authors contributed to the interpretation. *(Author order and affiliations to be confirmed by the authors.)*
 
 ---
 
