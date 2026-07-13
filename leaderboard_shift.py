@@ -25,9 +25,7 @@ def ranks(ratings):
 
 
 def main():
-    battles = pd.read_parquet("battles_bt_styled.parquet")
-    ling = pd.read_parquet("linguistic_features.parquet")
-    battles = battles.merge(ling, on="conversation_pair_id", how="left")
+    battles = pd.read_parquet("fr_battles.parquet")
 
     core = FORMATTING + ["length"] + LINGUISTIC
     sub = battles.dropna(subset=[f"{f}_{s}" for f in core for s in ("a", "b")]).copy()

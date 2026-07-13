@@ -1,128 +1,30 @@
 {
-  "tier_stratified_coefficients": {
-    "top-top": {
-      "n_battles": 7793,
-      "n_models": 29,
-      "coefficients": {
-        "headers": 0.09765135776436748,
-        "lists": 0.18658310896078395,
-        "bold": 0.1485582950653889,
-        "code_blocks": 0.04263202500136445,
-        "emoji": 0.046688222765420076
-      },
-      "odds_change_pct": {
-        "bold": 16.0160427431149,
-        "lists": 20.51247745914846,
-        "headers": 10.257831272283857
-      }
-    },
-    "middle-middle": {
-      "n_battles": 12524,
-      "n_models": 29,
-      "coefficients": {
-        "headers": 0.13772918023926,
-        "lists": 0.09045942515687136,
-        "bold": 0.10028847727707771,
-        "code_blocks": 0.043023623920907667,
-        "emoji": 0.07308635316125735
-      },
-      "odds_change_pct": {
-        "bold": 10.548978076290826,
-        "lists": 9.467709038932215,
-        "headers": 14.766469790470005
-      }
-    },
-    "bottom-bottom": {
-      "n_battles": 20290,
-      "n_models": 31,
-      "coefficients": {
-        "headers": 0.0644830912640061,
-        "lists": 0.2152955937196029,
-        "bold": 0.21965604533522376,
-        "code_blocks": 0.0654899673924107,
-        "emoji": 0.004078561969833919
-      },
-      "odds_change_pct": {
-        "bold": 24.56482103832125,
-        "lists": 24.02284465281852,
-        "headers": 6.660754310681805
-      }
-    },
-    "top-middle": {
-      "n_battles": 17287,
-      "n_models": 58,
-      "coefficients": {
-        "headers": 0.15509677398814392,
-        "lists": 0.15384381922399598,
-        "bold": 0.1717360505946273,
-        "code_blocks": 0.05979374528836815,
-        "emoji": 0.027101881784959238
-      },
-      "odds_change_pct": {
-        "bold": 18.736438772474973,
-        "lists": 16.630871755257658,
-        "headers": 16.77709654906636
-      }
-    },
-    "top-bottom": {
-      "n_battles": 11599,
-      "n_models": 56,
-      "coefficients": {
-        "headers": 0.09483685026349116,
-        "lists": 0.18850070671283822,
-        "bold": 0.24567395525590435,
-        "code_blocks": -0.028594597346177843,
-        "emoji": 0.06282675394246019
-      },
-      "odds_change_pct": {
-        "bold": 27.848266302699322,
-        "lists": 20.743793629820438,
-        "headers": 9.947946070811353
-      }
-    },
-    "middle-bottom": {
-      "n_battles": 24551,
-      "n_models": 60,
-      "coefficients": {
-        "headers": 0.13681004635573948,
-        "lists": 0.14778785438428257,
-        "bold": 0.15090296474870143,
-        "code_blocks": 0.06270492125639732,
-        "emoji": 0.036052347719334084
-      },
-      "odds_change_pct": {
-        "bold": 16.288381188396194,
-        "lists": 15.926693687617854,
-        "headers": 14.66103250230848
-      }
-    }
+  "quality_formatting": {
+    "pearson_r": 0.6006154220692255,
+    "pearson_p": 1.0261207854946e-12,
+    "spearman_rho": 0.6644908315073232,
+    "pearson_r_controlled": 0.49875260338084687
   },
-  "interaction_model": {
-    "main_style_effects": {
-      "headers": 0.15224079015421005,
-      "lists": 0.19506604630670074,
-      "bold": 0.17663224771462804,
-      "code_blocks": 0.009646471621712671,
-      "emoji": 0.035337980499026346
+  "rating_change_vs_formatting_r": -0.9676796142945175,
+  "rating_change_vs_formatting_p": 4.809636513594653e-70,
+  "tiers": {
+    "bottom": {
+      "n_battles": 32414,
+      "bold": 18.571457491439958,
+      "lists": 13.986079863266966,
+      "headers": 8.717764645304161
     },
-    "top_interactions": {
-      "bold": -0.07969376698059821,
-      "lists": -0.09121188196709482,
-      "headers": -0.08730769885517363
+    "middle": {
+      "n_battles": 14466,
+      "bold": 5.821289513520234,
+      "lists": 8.069630234914737,
+      "headers": 0.8555620999495028
     },
-    "mid_interactions": {
-      "bold": -0.006360302079728293,
-      "lists": -0.07473362690016255,
-      "headers": 0.020984710784717857
+    "top": {
+      "n_battles": 15616,
+      "bold": 9.481098124985078,
+      "lists": -6.222300663410973,
+      "headers": 15.044296702062333
     }
-  },
-  "quality_formatting_correlation": {
-    "pearson_r": 0.6590753208866764,
-    "pearson_p": 2.191155200406039e-12,
-    "spearman_rho": 0.7372659176029963,
-    "spearman_p": 1.747627843432349e-16,
-    "ctrl_rating_vs_formatting_r": 0.4995031918724262,
-    "rating_change_vs_formatting_r": -0.916104238822122,
-    "rating_change_vs_formatting_p": 2.7288571585786468e-36
   }
 }
