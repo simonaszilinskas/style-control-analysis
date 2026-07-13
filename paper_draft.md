@@ -308,6 +308,8 @@ Rather than compare two separately estimated subsets, we fit a single pooled Bra
 
 Bold, the strongest surface cue, is also the one that fades most: its advantage falls from +42% win odds per SD in single-turn battles to +9% in multi-turn ones, roughly a 78% reduction. Only emoji, which carries no real effect to begin with, is unchanged. This is direct evidence for the glance interpretation of formatting: the visual-shape advantage is largest exactly when the reader is least engaged.
 
+![Figure 10. Reading depth. Left: win-odds change per SD for each feature in single-turn (circle) vs multi-turn (diamond) battles; formatting effects (purple) shrink toward zero with reading depth, length (black) grows from null to positive, and length-independent diversity MATTR (orange) is unchanged. Right: the multi-turn interaction (slope shift) with 95% bootstrap CIs; grey is not significant after BH.](figures/fig10_reading_depth.png)
+
 **Length and diversity go the other way, as the framing predicts.** Adding length and the linguistic features (joint model, 68,462 battles, 80 models) leaves the formatting pattern intact (bold interaction −0.190, headers −0.067, code −0.045, all significant) and reveals the complementary movements:
 
 - **Length matters more, not less, when reading is attentive.** Its coefficient moves from −3.6% (single-turn, effectively null once formatting is held fixed) to +3.3% (multi-turn); the interaction is +0.131 [+0.076, +0.182], significant. A longer answer does nothing for a glancing reader but helps once the reader engages with its content, precisely the level-(b) prediction that depth is read as substance only when it is actually read. The raw-TTR interaction (+0.165, significant) is the same fact seen through TTR's role as an inverse length proxy.
@@ -338,6 +340,8 @@ A natural objection is that presentation features stand in for topic: technical 
 | Environment | 2,045 | +22.7% | +29.5% | +27.5% |
 | Arts | 2,106 | +44.5% | +6.8% | +19.9% |
 | Law & Justice | 1,919 | +30.0% | +25.5% | +22.7% |
+
+![Figure 11. Topic controls. Left: the bold effect (win-odds change per SD) estimated within each topic, with 95% bootstrap CIs; it is positive in every subject and mostly excludes zero, against the pooled value (dashed). Right: the multi-turn interactions of §4.9 (circle) versus the same model with topic × formatting interactions added (diamond); the two nearly coincide, so the reading-depth effect is not a topic-composition artefact.](figures/fig11_topic_controls.png)
 
 The premium is therefore not an artefact of a few formatting-heavy subjects: it is present everywhere. The *magnitude* does vary across topics, and some of that is real (bold looks unusually strong in Politics and Arts), but the small strata also carry wide intervals, so we do not over-read the topic-by-topic ordering. Code blocks are near-null in every topic (consistent with the pooled result), and emoji produces implausibly large swings in a few sparse strata (for example Law & Justice), a sparse-feature artefact rather than a real subject effect. This heterogeneity is exactly why topic enters as an interaction rather than a control we can difference away.
 

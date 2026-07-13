@@ -71,7 +71,7 @@ Token length is excluded from style control (confounded with completeness).
 
 ## Requirements
 
-Python 3.10+, with: `pandas`, `numpy`, `scipy`, `scikit-learn`, `pyarrow`, `tqdm`
+Python 3.10+, with: `pandas`, `numpy`, `scipy`, `scikit-learn`, `pyarrow`, `matplotlib`, `tqdm`
 
 ## Repository Structure
 
