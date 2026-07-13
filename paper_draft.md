@@ -12,7 +12,7 @@ LLM evaluation arenas, where users compare two model outputs side-by-side, have 
 
 The rise of LLM evaluation arenas, platforms where users interact with two anonymous models and select a preferred response, has established a new paradigm for model comparison. The LMSYS Chatbot Arena pioneered this approach, and its Elo-based rankings are widely cited as measures of model quality. The methodology has since been adopted by multiple platforms, including Compar:IA, a French government-backed arena launched in October 2024.
 
-A key concern with arena-based evaluation is the extent to which user preferences reflect genuine content quality versus superficial presentation. Zheng et al. (2023) first noted that LLM judges exhibit a preference for longer, more verbosely formatted outputs. The LMSYS team subsequently introduced "style control", a methodology that decomposes win probability into model skill and formatting effects using a modified Bradley-Terry model. Their analysis of English-language data found that controlling for response length, markdown formatting, and list usage modestly reshuffled rankings.
+A key concern with arena-based evaluation is the extent to which user preferences reflect genuine content quality versus superficial presentation. Zheng et al. (2023) first noted that LLM judges exhibit a preference for longer, more verbosely formatted outputs, and subsequent work quantified a systematic length and verbosity bias in both human and automatic preference judgments (Singhal et al., 2023; Saito et al., 2023; Dubois et al., 2024). The LMSYS team subsequently introduced "style control" (Li et al., 2024), a methodology that decomposes win probability into model skill and formatting effects using a modified Bradley-Terry model (Bradley & Terry, 1952). Their analysis of English-language data found that controlling for response length, markdown formatting, and list usage modestly reshuffled rankings.
 
 Most style-control work stops at markdown and length. But "presentation" is broader: how readable the prose is, how varied its vocabulary, how long its sentences, all things a user can respond to without them tracking correctness. These linguistic features are correlated with formatting and length, so studying any one in isolation risks mis-attributing a shared effect. We therefore analyze all three families together, **formatting** (bold, lists, headers, code, emoji), **length**, and **linguistic** properties (readability, lexical diversity, sentence structure, perplexity), in a single style-controlled model, and ask which presentation features carry an *independent* effect once the others, and model identity, are held fixed.
 
@@ -40,7 +40,7 @@ The platform offers five arena modes: **random** (56%), **custom** (27%, user-se
 
 ### 2.2 Datasets
 
-We use three datasets published on HuggingFace (`ministere-culture/comparia-*`):
+We use three datasets published on HuggingFace by the Ministère de la Culture (`ministere-culture/comparia-*`; Ministère de la Culture, 2024):
 
 | Dataset | Raw Rows | After Cleaning | Content |
 |---------|----------|---------------|---------|
@@ -112,13 +112,13 @@ where $\beta_i$ are model skill parameters and $\gamma_f$ are style coefficients
 
 ### 3.3 Bootstrap Inference
 
-We computed 95% confidence intervals via nonparametric bootstrap (1,000 iterations for both style coefficients and BT ratings). Each bootstrap sample drew battles with replacement from the full dataset and re-estimated the model.
+We computed 95% confidence intervals via nonparametric bootstrap (Efron, 1979), with 1,000 iterations for both style coefficients and BT ratings. Each bootstrap sample drew battles with replacement from the full dataset and re-estimated the model.
 
 For each test, we derived two-sided bootstrap p-values as $p = 2 \cdot \min(\hat{F}(0), 1 - \hat{F}(0))$, where $\hat{F}(0)$ is the proportion of bootstrap replicates with the statistic $\leq 0$, with a floor of $1/(B+1)$ to avoid zero p-values.
 
 ### 3.4 Multiple Comparison Correction
 
-We applied the Benjamini-Hochberg (BH) procedure to control the false discovery rate (FDR) at 0.05. Corrections were applied separately to two families of tests: the 5 style coefficient tests and the 89 model rank change tests. The BH procedure ranks p-values and adjusts each as $p_{\text{BH}}^{(i)} = p^{(i)} \cdot m / i$, enforcing monotonicity via step-up.
+We applied the Benjamini-Hochberg (BH) procedure (Benjamini & Hochberg, 1995) to control the false discovery rate (FDR) at 0.05. Corrections were applied separately to two families of tests: the 5 style coefficient tests and the 89 model rank change tests. The BH procedure ranks p-values and adjusts each as $p_{\text{BH}}^{(i)} = p^{(i)} \cdot m / i$, enforcing monotonicity via step-up.
 
 ---
 
@@ -235,7 +235,7 @@ This mixed pattern has an important methodological implication. Before applying 
 
 ### 4.5 Position Bias
 
-We observe a statistically significant but negligible position bias: model A wins 50.40% of decisive battles versus 49.60% for model B (binomial test p = 0.013). The effect size (0.80 percentage points) is too small to meaningfully affect rankings.
+We observe a statistically significant but negligible position bias, a form of the ordering bias documented for LLM judges by Wang et al. (2023): model A wins 50.40% of decisive battles versus 49.60% for model B (binomial test p = 0.013). The effect size (0.80 percentage points) is too small to meaningfully affect rankings.
 
 ### 4.6 Sensitivity Analyses
 
@@ -484,6 +484,15 @@ Simon Zilinskas-Inta (compar:IA, Ministère de la Culture / DINUM) designed and 
 - Li, T., Chiang, W.-L., Frick, E., Dunlap, L., Zhu, B., Gonzalez, J. E., & Stoica, I. (2024). Does style matter? Disentangling style and substance in Chatbot Arena. *LMSYS Org blog* (style-control methodology).
 - Dubois, Y., Galambosi, B., Liang, P., & Hashimoto, T. B. (2024). Length-controlled AlpacaEval: A simple way to debias automatic evaluators. *arXiv:2404.04475*.
 - Wu, M., & Aji, A. F. (2023). Style over substance: Evaluation biases for large language models. *arXiv:2307.03025*.
+- Singhal, P., Goyal, T., Xu, J., & Durrett, G. (2023). A long way to go: Investigating length correlations in RLHF. *arXiv:2310.03716*.
+- Saito, K., Wachi, A., Wataoka, K., & Akimoto, Y. (2023). Verbosity bias in preference labeling by large language models. *arXiv:2310.10076*.
+- Wang, P., Li, L., Chen, L., Cai, Z., Zhu, D., Lin, B., Cao, Y., Liu, Q., Liu, T., & Sui, Z. (2023). Large language models are not fair evaluators. *arXiv:2305.17926*.
+- Ministère de la Culture (2024). *Compar:IA: French LLM evaluation arena datasets* (`ministere-culture/comparia-conversations`, `comparia-votes`, `comparia-reactions`, `comparia-fr-arena`). HuggingFace. https://huggingface.co/ministere-culture
+
+**Methods and statistics**
+
+- Benjamini, Y., & Hochberg, Y. (1995). Controlling the false discovery rate: A practical and powerful approach to multiple testing. *Journal of the Royal Statistical Society: Series B*, 57(1), 289–300.
+- Efron, B. (1979). Bootstrap methods: Another look at the jackknife. *Annals of Statistics*, 7(1), 1–26.
 
 **Reading and text comprehension**
 
