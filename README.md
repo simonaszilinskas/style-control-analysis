@@ -10,6 +10,7 @@ Which presentation features (markdown formatting, length, readability, lexical d
 
 - **Presentation is mostly one collinear "verbosity" dimension.** Length, bold, and lists rise together (Δlength–Δbold ρ = 0.65) and trade coefficient weight; their individual attributions are not stable across datasets.
 - **Two signals survive full control and replicate on a second dataset:** **bold formatting** (~+13% win odds/SD) and **length-independent lexical diversity** (MATTR, +15–19%, richer vocabulary wins even at equal length).
+- **Presentation acts on the vote through reading depth.** Proxying attention by conversation length, the formatting premium is concentrated in quick single-turn votes and fades by ~three-quarters (bold: +42%→+9% odds/SD) once readers engage over several turns, whereas length turns from null to positive and MATTR is unchanged. This maps the three feature families onto three levels of reading (shape / argument / words).
 - **Readability and perplexity add essentially nothing** once length and formatting are controlled.
 - **Much apparent linguistic effect is model skill:** coefficients roughly halve when per-model strengths are added (confounder vs mediator).
 - **Formatting-only view (for comparison with English style control):** bold +19.0%, lists +18.0%, headers +15.6%; 76/89 models shift significantly; heavy formatters drop sharply. Controlling for the *full* presentation bundle moves the leaderboard more (r = 0.92 vs 0.95; 21/83 models move ≥10 ranks).
@@ -48,6 +49,9 @@ python linguistic_analysis.py
 # 6. Robustness of the linguistic extension on comparia-fr-arena (independent dataset)
 HF_TOKEN=hf_... python build_fr_arena.py   # streams the gated dataset (~10-15 min)
 python robustness_fr_arena.py
+
+# 7. Reading depth: does presentation matter less when the answer is read more carefully? (§4.9)
+python turn_depth_analysis.py   # formatting x multi-turn interactions, needs the votes parquet for turn counts
 ```
 
 ### Style Features
@@ -74,6 +78,7 @@ Python 3.10+, with: `pandas`, `numpy`, `scipy`, `scikit-learn`, `pyarrow`, `tqdm
 ├── linguistic_analysis.py        # Length + linguistic-feature joint model (§4.7)
 ├── build_fr_arena.py             # Stream comparia-fr-arena -> fr_arena_battles.parquet
 ├── robustness_fr_arena.py        # Replicate §4.7 on comparia-fr-arena (§4.8)
+├── turn_depth_analysis.py        # Reading depth: formatting x multi-turn interactions (§4.9)
 ├── generate_figures.py           # Publication-quality figures
 ├── generate_linguistic_figure.py # Figure 9 (linguistic extension)
 ├── paper_draft.md                # Paper draft

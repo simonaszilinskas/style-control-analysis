@@ -60,6 +60,19 @@ No stratification by topic, task type, or difficulty. Style features may proxy f
 
 **Fix:** If task metadata is available, add stratified analysis. If not, acknowledge as a limitation. Estimated effort: 1–2 days if data permits.
 
+### Reading depth / attentive-vs-sloppy reading (C. Benavent), DONE
+
+Christophe: presentation may win mostly through a quick, surface read; a multi-turn
+conversation signals commitment and a more careful read, so formatting effects should
+weaken over turns. Also asked for a three-level theory of reading (shape / argument /
+words) to frame the features.
+
+**Done:** Added §4.9 (reading depth). Turn count from `conv_turns` (vote-only; matches
+user-message count 99%). Single-turn (81%) vs multi-turn (19%). Pooled BT with
+formatting×multi-turn interactions (rigorous test of the slope difference), 1000×
+bootstrap + BH. Three-level framing added to §1 and §5.1. Script:
+`turn_depth_analysis.py` → `turn_depth_results.json`.
+
 ---
 
 ## P3, Enhancements (strengthen the contribution)
