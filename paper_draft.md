@@ -40,13 +40,16 @@ The platform offers five arena modes: **random** (56%), **custom** (27%, user-se
 
 ### 2.2 Datasets
 
-We use three datasets published on HuggingFace by the Ministère de la Culture (`ministere-culture/comparia-*`; Ministère de la Culture, 2024):
+The primary analysis (§4.1–§4.7, §4.9–§4.10, §5) uses three datasets published on HuggingFace by the Ministère de la Culture (`ministere-culture/comparia-*`; Ministère de la Culture, 2024). A fourth export, `comparia-fr-arena`, is used only as an independent replication set in §4.8.
 
-| Dataset | Raw Rows | After Cleaning | Content |
-|---------|----------|---------------|---------|
-| Conversations | 459,849 |, | All conversation pairs with full response text, metadata |
-| Votes | 148,957 | 141,054 | Explicit winner selections per conversation pair |
-| Reactions | 89,717 | 88,939 | Per-message like/dislike with quality attributes |
+| Dataset | Raw Rows | After Cleaning | Role | Content |
+|---------|----------|---------------|------|---------|
+| Conversations | 459,849 | n/a | primary | Conversation pairs with full response text and metadata; source of the style and linguistic features |
+| Votes | 148,957 | 141,054 | primary | Explicit winner selections per conversation pair |
+| Reactions | 89,717 | 88,939 | primary | Per-message like/dislike with quality attributes |
+| comparia-fr-arena | ~138,000 | 126,245 | robustness (§4.8) | Newer consolidated French arena export; features recomputed, no perplexity |
+
+The three primary datasets carry the linguistic-feature merge and CamemBERT perplexity, so every analysis except §4.8 runs on them. `comparia-fr-arena` was collected over a different window with a partly different model roster, which is exactly what makes it a genuine replication check rather than a reuse of the same data (§4.8).
 
 ### 2.3 Data Quality and Cleaning
 
