@@ -105,6 +105,25 @@ Compare findings with English Chatbot Arena results (same methodology, same time
 
 ---
 
+## Fact-check pass (swarm), DONE
+
+Cross-checked all references, every numeric claim vs its source JSON, the new
+code, and internal consistency. Result: paper is accurate. Fixes applied:
+- fr-arena accuracy sequence 0.639 -> 0.638 (§4.8 rounding).
+- §4.10 within-topic significance restated precisely: bold CI excludes zero in
+  8/10 topics (not "9 of 11"), lists 9/10 (Arts is the exception), headers 8/10.
+- §4.9 turn split clarified: 81.3/18.7 is the full export, 80.5/19.5 is the sample.
+- Kincaid (1975) reference completed with report number; van Dijk & Kintsch (1983)
+  and Rayner (1998) now cited in §1 (were listed but uncited).
+- §4.7 leaderboard-shift numbers (r=0.954/0.916, 21 movers, mistral-large-2512 -28,
+  etc.) had no saved provenance; recomputed and confirmed exactly, now reproducible
+  via `leaderboard_shift.py` -> `leaderboard_shift_results.json`.
+
+Two pre-existing NO-SOURCE items left for the authors: the §5.3 tier-interaction
+CIs and the §5.4 illustrative char counts (from original manual analysis, not in
+the stored JSON). Code audit found no bugs (the high-risk coefficient-slice
+indexing in topic/turn-depth is correct).
+
 ## Strengths to Preserve
 
 - **Novel dataset:** Compar:IA is rare, a French government-backed arena with 133K votes across 100+ models.

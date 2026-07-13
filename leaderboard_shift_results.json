@@ -1,0 +1,24 @@
+{
+  "n_battles": 100545,
+  "n_models": 83,
+  "corr_standard_vs_formatting": 0.9539,
+  "corr_standard_vs_joint_pearson": 0.916,
+  "corr_standard_vs_joint_spearman": 0.9017,
+  "n_move_ge_10_ranks": 21,
+  "biggest_fallers": {
+    "glm-4.5": -29,
+    "mistral-large-2512": -28,
+    "qwen-3-8b": -25,
+    "gpt-oss-120b": -24,
+    "qwen3-30b-a3b": -22,
+    "qwen3-32b": -21
+  },
+  "biggest_risers": {
+    "claude-3-7-sonnet": 26,
+    "claude-3-5-sonnet-v2": 24,
+    "claude-4-sonnet": 24,
+    "claude-4-5-sonnet": 17,
+    "o4-mini": 16,
+    "gpt-4.1-mini": 15
+  }
+}

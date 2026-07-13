@@ -46,6 +46,7 @@ python generate_figures.py
 
 # 5. Linguistic extension: length + readability/diversity/structure/perplexity
 python linguistic_analysis.py
+python leaderboard_shift.py   # standard vs formatting vs joint ranking correlations + movers (§4.7)
 
 # 6. Robustness of the linguistic extension on comparia-fr-arena (independent dataset)
 HF_TOKEN=hf_... python build_fr_arena.py   # streams the gated dataset (~10-15 min)
@@ -80,6 +81,7 @@ Python 3.10+, with: `pandas`, `numpy`, `scipy`, `scikit-learn`, `pyarrow`, `matp
 ├── endogeneity_analysis.py       # Tier-stratified interaction tests
 ├── qualitative_analysis.py       # Winner-flipping battle analysis
 ├── linguistic_analysis.py        # Length + linguistic-feature joint model (§4.7)
+├── leaderboard_shift.py          # Standard vs formatting vs joint ranking shift (§4.7)
 ├── build_fr_arena.py             # Stream comparia-fr-arena -> fr_arena_battles.parquet
 ├── robustness_fr_arena.py        # Replicate §4.7 on comparia-fr-arena (§4.8)
 ├── turn_depth_analysis.py        # Reading depth: formatting x multi-turn interactions (§4.9)
