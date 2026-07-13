@@ -466,12 +466,6 @@ For arena operators the message is concrete: "quality" leaderboards partly rank 
 
 ---
 
-## Author Contributions
-
-Maayeesha Farzana (PSL, AI & Society) designed and computed the linguistic feature set (readability, lexical diversity, sentence structure, perplexity) that the joint model is built on. Christophe Benavent (Université Paris Dauphine) supervised the project, set its Bradley-Terry-with-covariates direction, and proposed the reading-level framing and the reading-depth test. Simon Zilinskas-Inta (compar:IA, Ministère de la Culture / DINUM) carried out the analysis: applying compar:IA's style-controlled ranking, running the formatting, joint and cross-dataset work, and merging the two feature sets into one model. All authors contributed to the interpretation. *(Author order and affiliations to be confirmed by the authors.)*
-
----
-
 ## References
 
 *(Preliminary. The reading-comprehension references anchor the three-level framing of §1 and §5; they are our reading of Christophe Benavent's proposal and should be confirmed or replaced by the authors.)*
