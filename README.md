@@ -9,13 +9,13 @@ Which presentation features (markdown formatting, length, readability, lexical d
 ## Key Findings
 
 - **Presentation is mostly one collinear "verbosity" dimension.** Length, bold, and lists rise together (Δlength–Δbold ρ = 0.65) and trade coefficient weight; their individual attributions are not stable across datasets.
-- **Two signals survive full control and replicate on a second dataset:** **bold formatting** (~+13% win odds/SD) and **length-independent lexical diversity** (MATTR, +15–19%, richer vocabulary wins even at equal length).
+- **Two signals survive full control and reproduce under a different processing pipeline:** **bold formatting** (~+13% win odds/SD) and **length-independent lexical diversity** (MATTR, +15–19%, richer vocabulary wins even at equal length).
 - **Presentation acts on the vote through reading depth.** Proxying attention by conversation length, the formatting premium is concentrated in quick single-turn votes and fades by ~three-quarters (bold: +42%→+9% odds/SD) once readers engage over several turns, whereas length turns from null to positive and MATTR is unchanged. This maps the three feature families onto three levels of reading (shape / argument / words).
 - **The premium is not a subject-matter artefact.** Bold, lists, and headers are positive within every topic (`categories` taxonomy), and the reading-depth result survives topic × formatting interactions. Topic is controlled; task type (coding vs summarising vs translating) is not, and is left to future work.
 - **Readability and perplexity add essentially nothing** once length and formatting are controlled.
 - **Much apparent linguistic effect is model skill:** coefficients roughly halve when per-model strengths are added (confounder vs mediator).
 - **Formatting-only view (for comparison with English style control):** bold +19.0%, lists +18.0%, headers +15.6%; 76/89 models shift significantly; heavy formatters drop sharply. Controlling for the *full* presentation bundle moves the leaderboard more (r = 0.92 vs 0.95; 21/83 models move ≥10 ranks).
-- **Robustness:** results replicate across two independently built French datasets (~145K votes+reactions and ~126K comparia-fr-arena battles).
+- **Robustness:** the two signals reproduce when the same votes are independently re-cleaned and reformatted (comparia-fr-arena, ~126K battles). This is a processing-pipeline check, not an independent-data replication (it is the same underlying votes), and the unstable coefficients stay unstable even across the two cleanings.
 
 ## Data
 
@@ -27,7 +27,7 @@ The primary analysis uses three datasets from HuggingFace (`ministere-culture/co
 | reactions | 82K | Message-level likes/dislikes + quality attributes |
 | votes | 133K | Conversation-level winner selections |
 
-The linguistic extension (§4.7) is replicated on a second, independent export, **`ministere-culture/comparia-fr-arena`** (the newer consolidated arena dataset, ~138K decisive French battles), as a robustness check (§4.8). See `build_fr_arena.py` / `robustness_fr_arena.py`.
+The linguistic extension (§4.7) is re-checked on **`ministere-culture/comparia-fr-arena`** (~138K decisive French battles), which is the same underlying votes re-cleaned and reformatted by the platform, not a separate collection. §4.8 uses it as a processing-pipeline robustness check, not an independent replication. See `build_fr_arena.py` / `robustness_fr_arena.py`.
 
 ## Analysis Pipeline
 
@@ -48,7 +48,7 @@ python generate_figures.py
 python linguistic_analysis.py
 python leaderboard_shift.py   # standard vs formatting vs joint ranking correlations + movers (§4.7)
 
-# 6. Robustness of the linguistic extension on comparia-fr-arena (independent dataset)
+# 6. Robustness of the linguistic extension on comparia-fr-arena (same votes, re-cleaned)
 HF_TOKEN=hf_... python build_fr_arena.py   # streams the gated dataset (~10-15 min)
 python robustness_fr_arena.py
 
