@@ -54,11 +54,13 @@ The correlation between like rate and BT rating drops from **0.829 → 0.645** a
 
 **Resolved:** Added dedicated section 5.3 "Endogeneity: Confounder or Mediator?" with three empirical tests: (1) quality-formatting correlation (r=0.60), (2) tier-stratified style effects showing ~2x larger formatting bias for bottom-tier battles vs top-tier, (3) interaction model with bootstrap CIs. Conclusion: formatting is both partial mediator and partial confounder. Analysis in `endogeneity_analysis.py`, results in `endogeneity_results.json`.
 
-### No content or task controls
+### Content/topic controls (topic DONE, task-type open)
 
 No stratification by topic, task type, or difficulty. Style features may proxy for task complexity (e.g., coding tasks naturally produce more structured output).
 
-**Fix:** If task metadata is available, add stratified analysis. If not, acknowledge as a limitation. Estimated effort: 1–2 days if data permits.
+**Done (topic):** Added §4.10. Topic from the conversations `categories` taxonomy (~18 classes, 94% coverage). Because topic differences out of the pairwise model, it enters as topic × style interactions. (1) Within-topic formatting fits: bold/lists/headers positive in every topic (bold CI excludes 0 in 9/11). (2) The §4.9 reading-depth interaction survives adding topic × formatting interactions (bold −0.212, essentially unchanged). Script: `topic_analysis.py` → `topic_results.json`.
+
+**Still open (task type):** `categories` is subject matter, not task type (summarise/translate/code/advise). A task-type signal mined from prompt text + repeating §4.10 is the remaining validity step.
 
 ### Reading depth / attentive-vs-sloppy reading (C. Benavent), DONE
 

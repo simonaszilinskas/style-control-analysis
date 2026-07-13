@@ -315,7 +315,35 @@ Bold, the strongest surface cue, is also the one that fades most: its advantage 
 
 Readability interactions are mixed and mostly not significant (only Coleman-Liau reaches significance), consistent with §4.7's decision not to interpret those coefficients individually.
 
-**Caveats.** Reading depth is proxied, not measured: multi-turn conversations may also differ in task type, difficulty, or user disposition (a user who continues may be harder to satisfy), and which conversations become multi-turn is not random. We hold model strengths common across depth, assuming a model's ability is the same in short and long conversations while only its style sensitivity varies. With those caveats, the pattern is coherent and hard to get by chance: the surface-formatting channel weakens with engagement, the depth channel strengthens, and the vocabulary channel is invariant, exactly the ordering the three-level reading account predicts.
+**Caveats.** Reading depth is proxied, not measured: multi-turn conversations may also differ in task type, difficulty, or user disposition (a user who continues may be harder to satisfy), and which conversations become multi-turn is not random. We hold model strengths common across depth, assuming a model's ability is the same in short and long conversations while only its style sensitivity varies. §4.10 shows the shrinkage is not merely a topic-composition effect. With those caveats, the pattern is coherent and hard to get by chance: the surface-formatting channel weakens with engagement, the depth channel strengthens, and the vocabulary channel is invariant, exactly the ordering the three-level reading account predicts.
+
+### 4.10 Topic Controls: Is the Formatting Premium Just a Proxy for Subject Matter?
+
+A natural objection is that presentation features stand in for topic: technical questions invite code blocks and lists, some subjects invite longer, more marked-up answers, so a formatting effect could really be a topic effect. We use the conversations export's `categories` field, an LLM-assigned taxonomy of about 18 subject classes present for 94% of battles (we take the first of a conversation's up-to-two categories as its primary topic). Because topic is a property of the shared prompt, it differences out of the pairwise A−B model, so a topic *main* effect is not estimable; topic can only enter through **topic × style interactions**, i.e. by letting each subject have its own formatting slope. We ask two things of it.
+
+**The formatting premium holds within every topic.** Refitting the headline formatting Bradley-Terry model separately inside each topic with at least 2,500 battles, bold, lists, and headers are positive in **all** strata; bold's 95% bootstrap CI excludes zero in 9 of 11 topics (and is positive in the other two), lists in all 11, headers in 9.
+
+**Table 8. Formatting effect (odds change per SD) within each topic. Code blocks and emoji omitted (near-null and, for emoji, unstable in sparse strata).**
+
+| Topic | Battles | Bold | Lists | Headers |
+|-------|:------:|:----:|:-----:|:-------:|
+| *All topics (pooled)* | 88,582 | +20.2% | +17.8% | +12.2% |
+| Education | 19,231 | +15.9% | +8.3% | +6.5% |
+| Natural Science & Technology | 16,963 | +16.5% | +21.8% | +12.0% |
+| Business & Economics & Finance | 8,873 | +15.6% | +12.9% | +19.4% |
+| Entertainment & Travel & Hobby | 7,449 | +15.1% | +44.7% | +1.4% |
+| Politics & Government | 5,306 | +69.8% | +24.4% | +4.8% |
+| Food & Drink & Cooking | 3,734 | +15.3% | +33.9% | +29.9% |
+| Health & Wellness & Medicine | 2,975 | +26.2% | +51.7% | +15.2% |
+| Environment | 2,045 | +22.7% | +29.5% | +27.5% |
+| Arts | 2,106 | +44.5% | +6.8% | +19.9% |
+| Law & Justice | 1,919 | +30.0% | +25.5% | +22.7% |
+
+The premium is therefore not an artefact of a few formatting-heavy subjects: it is present everywhere. The *magnitude* does vary across topics, and some of that is real (bold looks unusually strong in Politics and Arts), but the small strata also carry wide intervals, so we do not over-read the topic-by-topic ordering. Code blocks are near-null in every topic (consistent with the pooled result), and emoji produces implausibly large swings in a few sparse strata (for example Law & Justice), a sparse-feature artefact rather than a real subject effect. This heterogeneity is exactly why topic enters as an interaction rather than a control we can difference away.
+
+**The reading-depth result survives topic controls.** We re-fit the §4.9 formatting × multi-turn interaction model with the topic × formatting interactions added, so every subject gets its own formatting slope before we ask about reading depth (77,447 battles, 81 models, 13 topic dummies). The multi-turn interactions are essentially unchanged from §4.9: bold −0.212, lists −0.084, headers −0.071, code blocks −0.041 (all significant after BH), emoji −0.005 (n.s.). The formatting-fades-with-engagement pattern is thus not multi-turn battles being a different topic mix; it holds within topic.
+
+Topic here is subject matter, not task type (summarise, translate, write code, give advice); a task-type control would be a useful further step but is not cleanly available in the metadata, so we leave it to future work.
 
 ---
 
@@ -406,7 +434,7 @@ To move beyond aggregate statistics, we examine individual conversations where s
 
 **English-calibrated readability on French text.** Coleman-Liau and Flesch-Kincaid are English-calibrated; only REL is French-specific. This is one reason we decline to interpret the readability coefficients individually, and it likely contributes to their cross-dataset instability. Length is the output-token count from metadata, which sidesteps the French word-tokenization problem for that feature.
 
-**No task or topic controls.** Presentation features may proxy for task type: coding prompts naturally produce code blocks and lists, and some topics invite longer answers. We do not stratify by task or topic, so part of a presentation effect could reflect which questions elicit which formatting. This is the most important open item for a future version.
+**Topic controlled, task type not.** Presentation features could proxy for the kind of question asked. §4.10 controls for *topic* (subject matter, from the `categories` taxonomy): the formatting premium holds within every topic and the reading-depth result survives topic × formatting interactions, so the effects are not a subject-matter artefact. What remains uncontrolled is *task type* (summarise vs translate vs write code vs advise), which the metadata does not cleanly encode; a coding task, for instance, mechanically invites code blocks and lists. Building a task-type signal (e.g. from prompt text) and repeating §4.10 for it is the main remaining validity step.
 
 **Reading depth is a proxy.** §4.9 uses conversation turn count as a stand-in for how attentively an answer is read. Turn count also correlates with task type, difficulty, and user disposition, and which conversations become multi-turn is not random, so the reading-depth interactions are suggestive of a mechanism rather than a clean manipulation of attention. Turn counts are defined only for vote-derived battles, so §4.9 excludes reaction-derived data.
 
@@ -430,7 +458,7 @@ Presentation shapes preference votes in the French Compar:IA arena, but not in t
 
 Reading depth ties these threads together. When we split votes by how many turns the conversation ran, the formatting premium turns out to be concentrated in quick single-turn votes and to fade by about three-quarters once readers engage over several turns, while length moves the opposite way and lexical diversity stays put. What reads as one collinear verbosity dimension in the pooled model is better understood as a fast surface channel and a slower substance channel that happen to be correlated: formatting is largely a glance cue, and its pull is weakest exactly where the vote reflects the most considered reading.
 
-For arena operators the message is concrete: "quality" leaderboards partly rank verbosity, controlling for the full presentation bundle rearranges the middle of the ranking (heavy formatters fall ~25–30 places) more than controlling for markdown alone, and the only defensible option is to publish both raw and presentation-controlled rankings. Methodologically, the analysis is a caution against reading single style coefficients too literally when the features are collinear, and a demonstration that per-model strengths are essential to telling presentation bias apart from presentation that tracks quality. Two extensions would sharpen it: stratifying by task and topic (presentation may proxy for the kind of question asked), and a controlled study that manipulates presentation directly rather than observing it.
+For arena operators the message is concrete: "quality" leaderboards partly rank verbosity, controlling for the full presentation bundle rearranges the middle of the ranking (heavy formatters fall ~25–30 places) more than controlling for markdown alone, and the only defensible option is to publish both raw and presentation-controlled rankings. Methodologically, the analysis is a caution against reading single style coefficients too literally when the features are collinear, and a demonstration that per-model strengths are essential to telling presentation bias apart from presentation that tracks quality. Two extensions would sharpen it: a task-type control to complement the topic control of §4.10 (presentation may still proxy for the kind of task, such as coding, even though it survives subject-matter controls), and a controlled study that manipulates presentation directly rather than observing it.
 
 ---
 
