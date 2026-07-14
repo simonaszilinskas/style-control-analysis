@@ -66,7 +66,7 @@ def fig_reading_depth():
     ax1.set_yticklabels(labels)
     ax1.set_xlabel("win-odds change per SD (%)")
     ax1.set_title("Single-turn (circle) vs multi-turn (diamond)\n"
-                  "formatting shrinks, length grows, diversity holds")
+                  "formatting and length shrink, only diversity holds")
     handles = [plt.Line2D([], [], marker="o", ls="", color="black", label="single-turn (quick read)"),
                plt.Line2D([], [], marker="D", ls="", color="black", label="multi-turn (attentive read)")]
     ax1.legend(handles=handles, loc="lower right", frameon=True)
