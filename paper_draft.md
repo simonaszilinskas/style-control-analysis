@@ -4,7 +4,7 @@
 
 ## Abstract
 
-LLM evaluation arenas, where users compare two model outputs side-by-side, have become a primary source of model rankings, and a standing worry is that these rankings reward *presentation* over substance. We study this on Compar:IA, a French government-backed arena, using its consolidated `comparia-fr-arena` release (about 138,000 decisive French votes across 116 models). We decompose preference into model skill and presentation with a style-controlled Bradley-Terry model, and go beyond markdown formatting to a full presentation account: **formatting** (bold, lists, headers, code, emoji), **length**, and **linguistic** properties of the text (readability, lexical diversity, sentence structure). Four findings emerge. First, presentation genuinely moves votes, but most of it is a single collinear "verbosity" dimension: length, bold, and lists rise and fall together, and their individual attributions are unstable, one absorbs another as the model changes. Second, two signals stand out from that bundle and survive the full joint control: **bold formatting** (about +10% win odds per standard deviation) and **length-independent lexical diversity** (MATTR, about +18%), so at equal length, more varied vocabulary wins. Readability metrics are collinear and mostly weak, and raw type-token ratio is just length in disguise. Third, much of the *apparent* linguistic effect is model skill: coefficients roughly halve or more when per-model strengths are included, the difference between a confounder and a mediator. Fourth, presentation acts through the depth of reading: proxying reading depth by conversation length, the pull of formatting *and* of length fades sharply once a conversation runs several turns (bold falls from +38% to +6% win odds per SD), while length-independent lexical diversity is unchanged, so of the surface cues, only vocabulary richness survives an attentive read. Controlling for the full presentation bundle reshuffles the leaderboard (rating correlation 0.95; 33 of 116 models move by ≥10 ranks; heavy formatters such as gpt-oss-120b and mistral-large-2512 fall ~30 places while concise strong models rise). To our knowledge this is the first style-control analysis of a non-English arena, and the formatting effect matches English-language findings. The practical message for arena operators is that "quality" rankings partly measure verbosity, and that reporting both raw and presentation-controlled leaderboards is the honest option.
+LLM evaluation arenas, where users compare two model outputs side-by-side, have become a primary source of model rankings, and a standing worry is that these rankings reward *presentation* over substance. We study this on Compar:IA, a French government-backed arena, using its consolidated `comparia-fr-arena` release (about 138,000 decisive French votes across 116 models). We decompose preference into model skill and presentation with a style-controlled Bradley-Terry model, and go beyond markdown formatting to a full presentation account: **formatting** (bold, lists, headers, code, emoji), **length**, and **linguistic** properties of the text (readability, lexical diversity, sentence structure). Four findings emerge. First, presentation genuinely moves votes, but most of it is a single collinear "verbosity" dimension: length, bold, and lists rise and fall together, and their individual attributions are unstable, one absorbs another as the model changes. Second, two signals stand out from that bundle and survive the full joint control: **bold formatting** (about +10% win odds per standard deviation) and **length-independent lexical diversity** (MATTR, about +18%), so at equal length, more varied vocabulary wins. Readability metrics are collinear and mostly weak, and raw type-token ratio is just length in disguise. Third, much of the *apparent* linguistic effect is model skill: coefficients roughly halve or more when per-model strengths are included, the difference between a confounder and a mediator. Fourth, presentation acts through the depth of reading: proxying reading depth by conversation length, the pull of formatting *and* of length fades sharply once a conversation runs several turns (bold falls from +38% to +6% win odds per SD), while length-independent lexical diversity is unchanged, so of the surface cues, only vocabulary richness survives an attentive read. Controlling for the full presentation bundle reshuffles the leaderboard (rating correlation 0.94; 37 of 116 models move by ≥10 ranks; heavy formatters such as gpt-oss-120b and mistral-large-2512 fall ~30 places while concise strong models rise). To our knowledge this is the first style-control analysis of a non-English arena, and the formatting effect matches English-language findings. The practical message for arena operators is that "quality" rankings partly measure verbosity, and that reporting both raw and presentation-controlled leaderboards is the honest option.
 
 ---
 
@@ -43,7 +43,7 @@ We use **`ministere-culture/comparia-fr-arena`** (Ministère de la Culture, 2024
 
 | | Raw turns | Decisive French battles | Models (≥100 battles) |
 |---|---:|---:|---:|
-| comparia-fr-arena | 641,277 | 137,881 | 116 |
+| comparia-fr-arena | 641,277 | 137,217 | 116 |
 
 Ties and no-vote turns are dropped (decisive votes only, matching prior style-control work). Winner distribution is balanced (model A wins 49.9%, see §4.4).
 
@@ -109,17 +109,17 @@ We applied the Benjamini-Hochberg (BH) procedure (Benjamini & Hochberg, 1995) to
 
 Table 1 shows the estimated effect of each formatting feature on win probability, after controlling for model identity.
 
-**Table 1. Style coefficients from the Bradley-Terry model (137,701 battles, 116 models). p-values are BH-adjusted across 5 tests.**
+**Table 1. Style coefficients from the Bradley-Terry model (137,037 battles, 116 models). p-values are BH-adjusted across 5 tests.**
 
 | Feature | % Odds Change | 95% CI | p (BH) | Significant? |
 |---------|--------------:|--------|--------|-------------|
-| **Bold** | **+13.2%** | [+10.3%, +16.5%] | 0.002 | Yes |
-| **Headers** | +8.1% | [+2.8%, +11.7%] | 0.002 | Yes |
-| **Lists** | +6.8% | [+4.6%, +9.3%] | 0.002 | Yes |
-| **Emoji** | +4.1% | [+1.7%, +6.6%] | 0.002 | Yes |
-| Code blocks | −0.6% | [−2.3%, +2.4%] | 0.504 | No |
+| **Bold** | **+14.8%** | [+11.8%, +18.0%] | 0.002 | Yes |
+| **Headers** | +9.2% | [+3.5%, +12.5%] | 0.002 | Yes |
+| **Lists** | +6.8% | [+4.7%, +9.3%] | 0.002 | Yes |
+| **Emoji** | +3.5% | [+1.4%, +6.0%] | 0.002 | Yes |
+| Code blocks | −0.2% | [−1.6%, +3.5%] | 0.504 | No |
 
-**Interpretation.** A one-standard-deviation increase in bold formatting raises a response's win odds by 13.2%, independent of which model produced it. Headers, lists, and emoji have smaller but significant effects; code blocks have no detectable effect. Bold is the single strongest formatting cue, consistent with it being the most visually salient. These effects are more modest than the +16–19% reported on the older, reaction-augmented Compar:IA export, and we take the cleaner votes-only numbers here as the more reliable estimate.
+**Interpretation.** A one-standard-deviation increase in bold formatting raises a response's win odds by 14.8%, independent of which model produced it. Headers, lists, and emoji have smaller but significant effects; code blocks have no detectable effect. Bold is the single strongest formatting cue, consistent with it being the most visually salient. These effects are more modest than the +16–19% reported on the older, reaction-augmented Compar:IA export, and we take the cleaner votes-only numbers here as the more reliable estimate.
 
 ### 4.2 Ablation Study
 
@@ -129,61 +129,61 @@ Controlling for one feature at a time inflates each coefficient, because the for
 
 | Feature | Alone | Joint (Table 1) |
 |---------|------:|----------------:|
-| Bold | +21.5% | +13.2% |
-| Headers | +19.2% | +8.1% |
-| Lists | +15.4% | +6.8% |
-| Emoji | +8.8% | +4.1% |
-| Code blocks | +0.8% | −0.6% |
+| Bold | +23.0% | +14.8% |
+| Headers | +20.5% | +9.2% |
+| Lists | +16.0% | +6.8% |
+| Emoji | +9.1% | +3.5% |
+| Code blocks | +1.4% | −0.2% |
 
 Every coefficient roughly halves when the others are added, the first sign of the collinear "verbosity" bundle that recurs throughout the paper.
 
 ### 4.3 Ranking Impact
 
-The correlation between standard and formatting-controlled BT ratings is **r = 0.992**: rankings are stable overall, but specific models shift. Across all 116 models, **81 (70%)** show a statistically significant rating change after style control.
+The correlation between standard and formatting-controlled BT ratings is **r = 0.990**: rankings are stable overall, but specific models shift. Across all 116 models, **84 (72%)** show a statistically significant rating change after style control.
 
 **Table 3. Largest rank changes after formatting control (BH-adjusted).**
 
 | Model | Std → Ctrl | ΔRank | Sig? |
 |-------|:----------:|------:|------|
-| gpt-5.3 | 47 → 29 | **+18** | Yes |
 | qwen-3-8b | 80 → 98 | **−18** | Yes |
+| gpt-5.3 | 45 → 28 | **+17** | Yes |
 | mistral-small-2603 | 10 → 27 | **−17** | Yes |
-| mistral-large-2512 | 3 → 17 | **−14** | Yes |
-| qwen3-30b-a3b | 78 → 91 | **−13** | Yes |
-| gpt-oss-120b | 40 → 50 | **−10** | Yes |
+| mistral-large-2512 | 3 → 19 | **−16** | Yes |
+| qwen3-30b-a3b | 78 → 93 | **−15** | Yes |
+| gpt-oss-120b | 37 → 50 | **−13** | Yes |
+| qwen3-32b | 54 → 65 | **−11** | Yes |
+| o4-mini | 76 → 66 | **+10** | Yes |
 | mistral-medium-2508 | 2 → 11 | **−9** | Yes |
-| o3-mini | 85 → 76 | **+9** | Yes |
-| o4-mini | 76 → 67 | **+9** | Yes |
 
-Heavy formatters (mistral-large-2512, mistral-small-2603, gpt-oss-120b) fall; leaner models rise, including reasoning models such as o3-mini and o4-mini, consistent with reasoning models trading visible formatting for reasoning depth.
+Heavy formatters (mistral-large-2512, mistral-small-2603, gpt-oss-120b) fall; leaner models rise, including reasoning models such as o4-mini, consistent with reasoning models trading visible formatting for reasoning depth.
 
 ### 4.4 Position Bias and Arena Modes
 
-Position bias is negligible and not significant: model A wins 49.92% of decisive battles (binomial p = 0.55). Win rates are close to 50% within every arena mode (random 49.9%, custom 50.1%, big-vs-small 49.5%, small-models 50.7%). This is cleaner than the older export, which carried a small but significant A-side bias, and reflects the balanced construction of the consolidated release.
+Position bias is negligible and not significant: model A wins 49.94% of decisive battles (binomial p = 0.67). Win rates are close to 50% within every arena mode (random 49.9%, custom 50.1%, big-vs-small 49.6%, small-models 50.7%). This is cleaner than the older export, which carried a small but significant A-side bias, and reflects the balanced construction of the consolidated release.
 
 ### 4.5 Length and Linguistic Features
 
-The formatting model of §4.1–§4.4 excludes length and considers only markdown. Here we add, on the same battles, the answer's **length** (output-token count) and the **linguistic** features: readability (REL, Coleman-Liau, Flesch-Kincaid), diversity (TTR and length-robust MATTR), and sentence structure (mean sentence length, long-sentence ratio). The common support with every feature and ≥100 battles per model is **128,504 battles across 116 models**. Coefficients use the same standardized A−B contrast as §3.2, winsorized at 1/99%; bootstrap and BH follow §3.3–§3.4.
+The formatting model of §4.1–§4.4 excludes length and considers only markdown. Here we add, on the same battles, the answer's **length** (output-token count) and the **linguistic** features: readability (REL, Coleman-Liau, Flesch-Kincaid), diversity (TTR and length-robust MATTR), and sentence structure (mean sentence length, long-sentence ratio). The common support with every feature and ≥100 battles per model is **127,893 battles across 116 models**. Coefficients use the same standardized A−B contrast as §3.2, winsorized at 1/99%; bootstrap and BH follow §3.3–§3.4.
 
 **Length is large, and it is partly what "formatting" was measuring.** Adding length shrinks the formatting coefficients, unsurprising given how correlated length is with markdown density: longer answers carry more markup. The team's original argument for excluding length (it proxies completeness) still stands; the point here is quantitative, that a share of the headline formatting effect travels with length.
 
-**Formatting nonetheless survives the joint model.** With length and all linguistic features held fixed, the markdown effects remain: bold **+10.3%** [+7.9, +12.4], headers +6.7%, code blocks +1.9%, emoji +3.3% (all significant after BH); lists falls to +1.5% and is no longer significant, absorbed by its correlates.
+**Formatting nonetheless survives the joint model.** With length and all linguistic features held fixed, the markdown effects remain: bold **+10.4%** [+7.9, +12.7], headers +6.6%, code blocks +2.2%, emoji +3.5% (all significant after BH); lists falls to +1.7% and is no longer significant, absorbed by its correlates.
 
-**The one clean, robust linguistic signal is length-robust lexical diversity.** MATTR carries **+17.8%** [+15.8, +19.7] and is essentially uncorrelated with length, so it is not a verbosity proxy: at equal length, more varied vocabulary wins. Raw TTR (−27.9%) is the opposite face of the same coin, mechanically a decreasing function of length, and should not be read as an independent diversity effect. Length itself is +5.2% [+3.1, +7.7]. The honest reading is that length, markdown density, and raw diversity form one collinear "verbosity" bundle whose individual attributions shift as the specification changes (lists is significant alone but not jointly; length is null on the older export but significant here), while MATTR stands apart from the bundle.
+**The one clean, robust linguistic signal is length-robust lexical diversity.** MATTR carries **+17.7%** [+15.5, +19.5] and is essentially uncorrelated with length, so it is not a verbosity proxy: at equal length, more varied vocabulary wins. Raw TTR (−27.5%) is the opposite face of the same coin, mechanically a decreasing function of length, and should not be read as an independent diversity effect. Length itself is +6.5% [+4.4, +8.9]. The honest reading is that length, markdown density, and raw diversity form one collinear "verbosity" bundle whose individual attributions shift as the specification changes (lists is significant alone but not jointly), while MATTR stands apart from the bundle.
 
-**Readability adds little.** REL (+0.4%) and Flesch-Kincaid (−3.1%) are not significant; only Coleman-Liau (+4.4%) reaches significance, and the three are mutually collinear, so we do not interpret them individually. Mean sentence length is not significant.
+**Readability adds little.** REL (+0.9%) and Flesch-Kincaid (−2.8%) are not significant; only Coleman-Liau (+4.2%) reaches significance, and the three are mutually collinear, so we do not interpret them individually. Mean sentence length is not significant.
 
 ![Figure 1. Left: joint style coefficients with 95% bootstrap CIs, coloured by feature family (grey = not significant after BH). Length dominates alone but is absorbed in the joint model; bold survives; MATTR is the one clean length-independent linguistic effect. Right: formatting coefficients shrink as length and then the linguistic features are added.](figures/fig9_linguistic.png)
 
-**Adding these features improves fit**: battle-prediction accuracy rises from 0.634 (formatting) to 0.636 (+length) to **0.641** (joint), a modest gain consistent with style being a real but secondary driver of the vote.
+**Adding these features improves fit**: battle-prediction accuracy rises from 0.634 (formatting) to 0.637 (+length) to **0.642** (joint), a modest gain consistent with style being a real but secondary driver of the vote.
 
-**The joint control reshuffles the leaderboard more than formatting alone.** On the common support, the standard ranking correlates with the formatting-only controlled ranking at r = 0.975 but with the *joint* controlled ranking at only **0.945** (Spearman 0.929); **33 of 116 models move by ≥10 ranks**. Heavy formatters fall (gpt-oss-120b −42, mistral-small-2603 −34, mistral-large-2512 −31, glm-4.5 −28), while concise strong models rise (gpt-5.3 +42, claude-3-5-sonnet-v2 +31, claude-3-7-sonnet +27, claude-4-sonnet +27).
+**The joint control reshuffles the leaderboard more than formatting alone.** On the common support, the standard ranking correlates with the formatting-only controlled ranking at r = 0.973 but with the *joint* controlled ranking at only **0.938** (Spearman 0.920); **37 of 116 models move by ≥10 ranks**. Heavy formatters fall (gpt-oss-120b −44, mistral-small-2603 −37, mistral-large-2512 −31, glm-4.5 −30), while concise strong models rise (gpt-5.3 +40, claude-3-5-sonnet-v2 +34, claude-3-7-sonnet +29, claude-4-sonnet +29).
 
-**Much of the apparent effect is model skill.** Moving from a reduced-form logit (no per-model strengths) to the full Bradley-Terry roughly halves bold (+28.0%→+10.3%), collapses mean sentence length (+25.9%→+2.7%), and cuts MATTR (+33.7%→+17.8%). A large part of what looks like a presentation effect is really the strength of the models that happen to present that way.
+**Much of the apparent effect is model skill.** Moving from a reduced-form logit (no per-model strengths) to the full Bradley-Terry roughly halves bold (+28.2%→+10.4%), collapses mean sentence length (+25.4%→+2.9%), and cuts MATTR (+33.1%→+17.7%). A large part of what looks like a presentation effect is really the strength of the models that happen to present that way.
 
 ### 4.6 Reading Depth: Does Presentation Matter Less When the Answer Is Read More Carefully?
 
-The three-level framing of §1 predicts that surface cues should fade once a reader engages more deeply. We proxy reading depth with **conversation length**: a single-turn battle (the user asked once, then voted) invites a quick surface judgement, whereas a multi-turn battle (≥2 user turns before the vote) signals commitment and a more attentive read. Of 137,701 battles, 80.6% are single-turn and 19.4% multi-turn.
+The three-level framing of §1 predicts that surface cues should fade once a reader engages more deeply. We proxy reading depth with **conversation length**: a single-turn battle (the user asked once, then voted) invites a quick surface judgement, whereas a multi-turn battle (≥2 user turns before the vote) signals commitment and a more attentive read. Of 137,037 battles, 80.9% are single-turn and 19.1% multi-turn.
 
 We fit a single pooled Bradley-Terry model with per-model strengths, the standardized A−B contrasts, and each contrast **interacted with a multi-turn indicator**. The interaction is the object of interest: negative means the feature moves a vote less when the conversation ran long. Contrasts are standardized once on the full sample.
 
@@ -193,17 +193,17 @@ We fit a single pooled Bradley-Terry model with per-model strengths, the standar
 
 | Feature | Single-turn | Multi-turn | Interaction | Sig? |
 |---------|:-----------:|:----------:|:-----------:|------|
-| **Bold** | **+38.4%** | **+6.3%** | −0.228 | Yes |
-| Headers | +14.4% | +4.3% | −0.041 | Yes |
-| Lists | +11.9% | +3.0% | −0.035 | Yes |
-| Code blocks | +7.8% | +0.2% | −0.046 | Yes |
-| Emoji | +4.1% | +2.4% | +0.013 | No |
+| **Bold** | **+37.8%** | **+6.8%** | −0.219 | Yes |
+| Headers | +14.4% | +4.3% | −0.044 | Yes |
+| Lists | +11.6% | +3.7% | −0.032 | Yes |
+| Code blocks | +7.8% | +0.5% | −0.039 | Yes |
+| Emoji | +3.9% | +2.3% | +0.021 | No |
 
-Bold's advantage falls from +38% win odds per SD in single-turn battles to +6% in multi-turn ones, roughly an 84% reduction. The visual-shape advantage is largest exactly when the reader is least engaged.
+Bold's advantage falls from +38% win odds per SD in single-turn battles to +7% in multi-turn ones, roughly an 82% reduction. The visual-shape advantage is largest exactly when the reader is least engaged.
 
 ![Figure 2. Reading depth. Left: win-odds change per SD for each feature in single-turn (circle) vs multi-turn (diamond) battles; formatting effects and length both shrink toward zero with reading depth, and only length-independent diversity MATTR (orange) is unchanged. Right: the multi-turn interaction (slope shift) with 95% bootstrap CIs; grey is not significant after BH.](figures/fig10_reading_depth.png)
 
-**Length also fades, and only lexical diversity persists.** Adding length and the linguistic features (joint model), length's effect *falls* with reading depth as well: +14.6% single-turn to +5.2% multi-turn, interaction −0.081 (significant). This is where the data qualify the three-level prediction. We had expected length, as a proxy for the depth of the answer, to matter *more* to an engaged reader; instead it behaves like the other surface cues and fades. The one exception is **length-independent lexical diversity: MATTR is unchanged across reading depth** (+15.7% single-turn, +16.0% multi-turn; interaction −0.012, not significant). So the honest revision of the framing is: quick readers are swayed by size and formatting; attentive readers discount those size heuristics, and the only presentation signal that survives an attentive read is the richness of the vocabulary itself.
+**Length also fades, and only lexical diversity persists.** Adding length and the linguistic features (joint model), length's effect *falls* with reading depth as well: +14.1% single-turn to +6.0% multi-turn, interaction −0.055 (significant). This is where the data qualify the three-level prediction. We had expected length, as a proxy for the depth of the answer, to matter *more* to an engaged reader; instead it behaves like the other surface cues and fades. The one exception is **length-independent lexical diversity: MATTR is unchanged across reading depth** (+15.8% single-turn, +16.1% multi-turn; interaction −0.011, not significant). So the honest revision of the framing is: quick readers are swayed by size and formatting; attentive readers discount those size heuristics, and the only presentation signal that survives an attentive read is the richness of the vocabulary itself.
 
 **Caveats.** Reading depth is proxied, not measured: multi-turn conversations may also differ in task type, difficulty, or user disposition, and which conversations become multi-turn is not random. §4.7 shows the formatting result is not merely a topic-composition effect. We hold model strengths common across depth.
 
@@ -217,23 +217,23 @@ A natural objection is that presentation stands in for topic: technical question
 
 | Topic | Bold |
 |-------|-----:|
-| Natural Science & Technology | +18.0% |
-| Politics & Government | +62.1% |
-| Health & Wellness & Medicine | +29.2% |
-| Arts | +35.1% |
-| Personal Development & Career | +25.8% |
-| Food & Drink & Cooking | +22.1% |
-| Law & Justice | +22.1% |
-| Environment | +22.0% |
-| Entertainment & Travel & Hobby | +16.4% |
-| Education | +13.7% |
-| Business & Economics & Finance | +13.1% |
+| Natural Science & Technology | +19.5% |
+| Politics & Government | +61.0% |
+| Health & Wellness & Medicine | +30.7% |
+| Arts | +34.7% |
+| Personal Development & Career | +25.2% |
+| Food & Drink & Cooking | +21.1% |
+| Law & Justice | +21.4% |
+| Environment | +21.7% |
+| Entertainment & Travel & Hobby | +17.3% |
+| Education | +13.5% |
+| Business & Economics & Finance | +12.9% |
 
 The premium is present everywhere, not driven by a few formatting-heavy subjects. The magnitude varies (bold looks unusually strong in Politics and Arts), but the smaller strata carry wide intervals, so we do not over-read the topic-by-topic ordering.
 
 ![Figure 3. Topic controls. Left: the bold effect (win-odds change per SD) estimated within each topic, with 95% bootstrap CIs; positive in every subject. Right: the multi-turn interactions of §4.6 (circle) versus the same model with topic × formatting interactions added (diamond); the two nearly coincide, so the reading-depth effect is not a topic-composition artefact.](figures/fig11_topic_controls.png)
 
-**The reading-depth result survives topic controls.** Re-fitting the §4.6 formatting × multi-turn interaction model with topic × formatting interactions added, the multi-turn interactions are essentially unchanged: bold −0.224, headers −0.042, lists −0.034, code blocks −0.039 (all significant), emoji +0.011 (n.s.). The formatting-fades-with-engagement pattern is not a topic-mix artefact.
+**The reading-depth result survives topic controls.** Re-fitting the §4.6 formatting × multi-turn interaction model with topic × formatting interactions added, the multi-turn interactions are essentially unchanged: bold −0.214, headers −0.044, lists −0.031, code blocks −0.035 (all significant), emoji +0.017 (n.s.). The formatting-fades-with-engagement pattern is not a topic-mix artefact.
 
 Topic here is subject matter, not task type (summarise, translate, write code, give advice); a task-type control would be a useful further step but is not cleanly available in the metadata, so we leave it to future work.
 
@@ -243,11 +243,11 @@ Topic here is subject matter, not task type (summarise, translate, write code, g
 
 ### 5.1 Presentation Bias Is Real, but It Is Mostly One Dimension
 
-Three things hold together. First, presentation genuinely influences French arena votes: bold raises win odds by about 13% per standard deviation in the formatting-only model, headers and lists less, and the effect matches English-language style control, so this is not a culture-specific quirk. Second, once length and linguistic features enter, most of that effect is a **single collinear "verbosity" dimension**: length, bold, and lists are correlated, they trade coefficient weight, and their individual attributions shift with the specification (lists is significant alone but not jointly; length is absorbed on one export and significant on another). The honest summary is not "bold is worth exactly +10%" but "answers that are longer and more heavily marked up win, and we cannot cleanly divide the credit."
+Three things hold together. First, presentation genuinely influences French arena votes: bold raises win odds by about 15% per standard deviation in the formatting-only model, headers and lists less, and the effect matches English-language style control, so this is not a culture-specific quirk. Second, once length and linguistic features enter, most of that effect is a **single collinear "verbosity" dimension**: length, bold, and lists are correlated, they trade coefficient weight, and their individual attributions shift with the specification (each formatting coefficient roughly halves from the single-feature to the joint model, and lists is significant alone but not jointly). The honest summary is not "bold is worth exactly +10%" but "answers that are longer and more heavily marked up win, and we cannot cleanly divide the credit."
 
 Third, and more usefully, two signals stand apart from that bundle: **bold formatting** and **length-independent lexical diversity** (MATTR). MATTR is the more interesting. It is essentially uncorrelated with length, so it is not verbosity in disguise: holding length fixed, answers that use a more varied vocabulary win. This is a genuinely new result relative to formatting-only style control, and it points at a preference for richer language rather than merely more of it. Readability adds little once length is present, so "fluency" as generic readability metrics measure it does not explain votes.
 
-The reading-depth test (§4.6) gives the bundle a mechanism. The features do not act on the vote in the same way. Formatting behaves like a *glance* cue: its effect is large when the reader engages least and collapses (for bold, by ~84%) once the conversation runs several turns. Length behaves the same way, contrary to our initial expectation that it would signal argument depth: it too fades with engagement, which suggests users read length as a size heuristic rather than as evidence of substance. Length-independent lexical diversity is the exception, unchanged whether the answer is skimmed or read closely. So the sharper statement is: what a pooled model sees as one verbosity dimension is, under the reading-depth lens, a bundle of surface size-and-shape heuristics that attentive readers discount, plus one genuine language property (vocabulary richness) that they do not. It also sharpens the practical worry: the formatting premium is concentrated in precisely the low-engagement votes where it is least likely to reflect a considered judgement of quality.
+The reading-depth test (§4.6) gives the bundle a mechanism. The features do not act on the vote in the same way. Formatting behaves like a *glance* cue: its effect is large when the reader engages least and collapses (for bold, by ~82%) once the conversation runs several turns. Length behaves the same way, contrary to our initial expectation that it would signal argument depth: it too fades with engagement, which suggests users read length as a size heuristic rather than as evidence of substance. Length-independent lexical diversity is the exception, unchanged whether the answer is skimmed or read closely. So the sharper statement is: what a pooled model sees as one verbosity dimension is, under the reading-depth lens, a bundle of surface size-and-shape heuristics that attentive readers discount, plus one genuine language property (vocabulary richness) that they do not. It also sharpens the practical worry: the formatting premium is concentrated in precisely the low-engagement votes where it is least likely to reflect a considered judgement of quality.
 
 ### 5.2 Implications for Arena Design
 
@@ -265,7 +265,7 @@ Our style features are covariates, not experimental manipulations, and two causa
 
 Three tests shed light without fully resolving it.
 
-**Test 1: Quality–formatting correlation.** Model formatting intensity (bold+lists+headers per response) correlates with standard BT rating at Pearson r = 0.60 (Spearman 0.66): higher-rated models format more, consistent with mediation. After style control the correlation falls to r = 0.50, so the association is partly genuine and partly artefactual.
+**Test 1: Quality–formatting correlation.** Model formatting intensity (bold+lists+headers per response) correlates with standard BT rating at Pearson r = 0.60 (Spearman 0.66): higher-rated models format more, consistent with mediation. After style control the correlation falls to r = 0.49, so the association is partly genuine and partly artefactual.
 
 **Test 2: Tier-stratified style effects.** Splitting models into tiers by standard rating and fitting within-tier:
 
@@ -273,20 +273,20 @@ Three tests shed light without fully resolving it.
 
 | Feature | Bottom | Middle | Top |
 |---------|:------:|:------:|:---:|
-| Bold | +18.6% | +5.8% | +9.5% |
-| Lists | +14.0% | +8.1% | −6.2% |
-| Headers | +8.7% | +0.9% | +15.0% |
-| N battles | 32,414 | 14,466 | 15,616 |
+| Bold | +18.6% | +8.9% | +10.3% |
+| Lists | +14.0% | +7.0% | −6.0% |
+| Headers | +8.7% | +2.3% | +15.1% |
+| N battles | 32,414 | 14,214 | 15,698 |
 
-The bold effect is largest among weaker models (+18.6% bottom vs +9.5% top), more consistent with the confounder reading: presentation cues weigh more when content quality differences are smaller.
+The bold effect is largest among weaker models (+18.6% bottom vs +10.3% top), more consistent with the confounder reading: presentation cues weigh more when content quality differences are smaller.
 
-**Test 3: Rating change vs formatting intensity.** Across all models, the rating change after style control correlates at r = −0.97 with formatting intensity: the models that format most lose the most. This confirms style control operates as intended but does not settle whether the removed signal was bias or quality.
+**Test 3: Rating change vs formatting intensity.** Across all models, the rating change after style control correlates at r = −0.97 with formatting intensity (Pearson r = −0.967): the models that format most lose the most. This confirms style control operates as intended but does not settle whether the removed signal was bias or quality.
 
 **Synthesis.** Formatting is *both* a partial mediator and a partial confounder. Better models do format more (mediator), but formatting also exerts an independent pull, larger among weaker models (confounder). Neither standard nor style-controlled rankings is a definitive measure of quality, so operators should report both.
 
 ### 5.4 Qualitative Analysis of Winner-Flipping Battles
 
-A "winner-flipping" battle is one where the standard and style-controlled models disagree on which of its two models is stronger. Of 137,701 battles, **5,510 (4.0%)** flip. Within flips, the vote winner uses more total formatting (bold+lists+headers) in **51.2%** of cases versus **41.0%** for the loser, a modest but consistent asymmetry: formatting provides a marginal edge in closely contested battles. The models appearing most in flips are a mix of heavy formatters whose ratings deflate under control (mistral-large-2512, mistral-medium-2508) and frequent lower-ranked opponents (llama-3.1-405b, ministral-8b-instruct-2410).
+A "winner-flipping" battle is one where the standard and style-controlled models disagree on which of its two models is stronger. Of 137,037 battles, **6,038 (4.4%)** flip. Within flips, the vote winner uses more total formatting (bold+lists+headers) in **51.6%** of cases versus **41.1%** for the loser, a modest but consistent asymmetry: formatting provides a marginal edge in closely contested battles. The models appearing most in flips are a mix of heavy formatters whose ratings deflate under control (mistral-large-2512, mistral-medium-2508) and frequent opponents (llama-3.1-405b, claude-4-6-sonnet).
 
 This release carries no per-message reaction data, so the user-reported "clear formatting" attribute and the hand-picked response excerpts of an earlier analysis are not available here.
 
@@ -310,11 +310,11 @@ This release carries no per-message reaction data, so the user-reported "clear f
 
 ## 6. Conclusion
 
-Presentation shapes preference votes in the French Compar:IA arena, but not in the tidy, feature-by-feature way a formatting-only analysis suggests. In a formatting-only model, bold raises win odds by about 13% per standard deviation, headers and lists less, 81 of 116 models shift significantly after correction, and heavy formatters drop sharply, a clean transfer of English-language style control to a non-English arena for the first time. But when we add length and a family of linguistic features, most of that effect resolves into one collinear "verbosity" dimension whose individual coefficients are not stable across specifications. What stands apart is narrower and more interpretable: bold formatting (~+10% per SD) and length-independent lexical diversity (MATTR, ~+18%), the latter a signal that richer vocabulary wins even at equal length. Readability adds little, and a confounder-versus-mediator analysis shows much of the apparent linguistic effect is model skill: coefficients roughly halve once per-model strengths are included.
+Presentation shapes preference votes in the French Compar:IA arena, but not in the tidy, feature-by-feature way a formatting-only analysis suggests. In a formatting-only model, bold raises win odds by about 15% per standard deviation, headers and lists less, 84 of 116 models shift significantly after correction, and heavy formatters drop sharply, a clean transfer of English-language style control to a non-English arena for the first time. But when we add length and a family of linguistic features, most of that effect resolves into one collinear "verbosity" dimension whose individual coefficients are not stable across specifications. What stands apart is narrower and more interpretable: bold formatting (~+10% per SD) and length-independent lexical diversity (MATTR, ~+18%), the latter a signal that richer vocabulary wins even at equal length. Readability adds little, and a confounder-versus-mediator analysis shows much of the apparent linguistic effect is model skill: coefficients roughly halve once per-model strengths are included.
 
 Reading depth ties the threads together. Splitting votes by how many turns the conversation ran, the pull of formatting and of length is concentrated in quick single-turn votes and fades once readers engage, while lexical diversity does not move. What reads as one verbosity dimension is better understood as a set of surface size-and-shape heuristics that attentive readers discount, plus one genuine language property they keep. The formatting premium is weakest exactly where the vote reflects the most considered reading.
 
-For arena operators the message is concrete: "quality" leaderboards partly rank verbosity, controlling for the full presentation bundle rearranges the leaderboard (33 of 116 models move ≥10 ranks) more than controlling for markdown alone, and the only defensible option is to publish both raw and presentation-controlled rankings. Two extensions would sharpen the analysis: a task-type control to complement the topic control of §4.7, and a controlled study that manipulates presentation directly rather than observing it.
+For arena operators the message is concrete: "quality" leaderboards partly rank verbosity, controlling for the full presentation bundle rearranges the leaderboard (37 of 116 models move ≥10 ranks) more than controlling for markdown alone, and the only defensible option is to publish both raw and presentation-controlled rankings. Two extensions would sharpen the analysis: a task-type control to complement the topic control of §4.7, and a controlled study that manipulates presentation directly rather than observing it.
 
 ---
 

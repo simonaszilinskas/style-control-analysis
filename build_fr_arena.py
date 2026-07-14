@@ -192,6 +192,11 @@ def main():
     parts = [pd.read_parquet(os.path.join(PARTS, f)) for f in sorted(os.listdir(PARTS))
              if f.endswith(".parquet")]
     df = pd.concat([p for p in parts if len(p)], ignore_index=True)
+    # A few comparisons carry more than one decisive vote (voted at different
+    # turns); keep one battle per comparison (the last, i.e. most recent vote).
+    n0 = len(df)
+    df = df.drop_duplicates(subset="conversation_pair_id", keep="last").reset_index(drop=True)
+    print(f"  deduplicated {n0-len(df)} repeated comparison ids")
     for c in df.select_dtypes("float64").columns:
         df[c] = df[c].astype("float32")
     df.to_parquet(OUT, index=False, compression="zstd")

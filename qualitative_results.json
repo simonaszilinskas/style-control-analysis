@@ -1,19 +1,19 @@
 {
-  "n_battles": 137701,
-  "n_flips": 5510,
-  "flip_pct": 4.001423373831708,
-  "winner_formats_more_pct": 51.17967332123412,
-  "loser_formats_more_pct": 41.01633393829401,
+  "n_battles": 137037,
+  "n_flips": 6038,
+  "flip_pct": 4.40610929894846,
+  "winner_formats_more_pct": 51.5733686651209,
+  "loser_formats_more_pct": 41.12288837363366,
   "top_flip_models": {
-    "mistral-large-2512": 694,
+    "mistral-large-2512": 799,
     "llama-3.1-405b": 622,
-    "claude-4-6-sonnet": 523,
-    "mistral-medium-2508": 450,
+    "claude-4-6-sonnet": 519,
+    "mistral-medium-2508": 448,
+    "gpt-4.1-mini": 423,
+    "gemma-3-4b": 420,
     "ministral-8b-instruct-2410": 373,
-    "mistral-small-2603": 358,
-    "llama-3.1-nemotron-70b-instruct": 280,
-    "llama-3.1-8b": 280,
-    "gpt-5.3": 267,
-    "phi-4": 260
+    "mistral-small-2603": 345,
+    "llama-3.1-nemotron-70b-instruct": 299,
+    "llama-4-scout": 293
   }
 }

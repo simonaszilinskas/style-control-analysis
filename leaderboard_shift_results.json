@@ -1,24 +1,24 @@
 {
-  "n_battles": 128504,
+  "n_battles": 127893,
   "n_models": 116,
-  "corr_standard_vs_formatting": 0.9747,
-  "corr_standard_vs_joint_pearson": 0.9453,
-  "corr_standard_vs_joint_spearman": 0.9291,
-  "n_move_ge_10_ranks": 33,
+  "corr_standard_vs_formatting": 0.9734,
+  "corr_standard_vs_joint_pearson": 0.9383,
+  "corr_standard_vs_joint_spearman": 0.9202,
+  "n_move_ge_10_ranks": 37,
   "biggest_fallers": {
-    "gpt-oss-120b": -42,
-    "mistral-small-2603": -34,
+    "gpt-oss-120b": -44,
+    "mistral-small-2603": -37,
     "mistral-large-2512": -31,
-    "glm-4.5": -28,
-    "glm-4.6": -26,
+    "glm-4.5": -30,
+    "glm-4.6": -25,
     "nemotron-3-super-120b-a12b": -25
   },
   "biggest_risers": {
-    "gpt-5.3": 42,
-    "claude-3-5-sonnet-v2": 31,
-    "claude-3-7-sonnet": 27,
-    "claude-4-sonnet": 27,
-    "o4-mini": 24,
-    "trinity-large-preview": 24
+    "gpt-5.3": 40,
+    "claude-3-5-sonnet-v2": 34,
+    "claude-3-7-sonnet": 29,
+    "claude-4-sonnet": 29,
+    "o4-mini": 27,
+    "trinity-large-preview": 26
   }
 }
