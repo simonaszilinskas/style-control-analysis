@@ -25,7 +25,6 @@ scale. We bootstrap 1000x (resampling battles) and apply Benjamini-Hochberg.
 """
 
 import json
-import os
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
@@ -37,12 +36,6 @@ np.random.seed(42)
 
 MIN_BATTLES = 100
 N_BOOTSTRAP = 1000
-
-# The votes export carries conv_turns; the main pipeline auto-downloads it to the
-# working directory as comparia_votes.parquet. Use that if present, else fall back.
-VOTES_PATH = next((p for p in ["comparia_votes.parquet",
-                               os.path.expanduser("~/Style control/comparia_votes.parquet")]
-                   if os.path.exists(p)), "comparia_votes.parquet")
 
 
 def _contrasts(d, feats):
@@ -96,15 +89,9 @@ def _fit_subset(d, models, feats, scaler):
     return dict(zip(feats, lr.coef_[0][n:]))
 
 
-def _prep(feats, require_ling):
-    battles = pd.read_parquet("battles_bt_styled.parquet")
-    battles = battles[battles["source"] == "vote"].copy()
-    turns = pd.read_parquet(VOTES_PATH, columns=["conversation_pair_id", "conv_turns"])
-    battles = battles.merge(turns, on="conversation_pair_id", how="left")
-    if require_ling:
-        ling = pd.read_parquet("linguistic_features.parquet")
-        battles = battles.merge(ling, on="conversation_pair_id", how="left")
-
+def _prep(feats, require_ling=False):
+    # comparia-fr-arena battle table already carries conv_turns and every feature.
+    battles = pd.read_parquet("fr_battles.parquet")
     d = battles[battles["winner"].isin(["model_a", "model_b"])].copy()
     d = d.dropna(subset=["conv_turns"])
     d = d[d["conv_turns"] >= 1]

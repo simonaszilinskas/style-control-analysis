@@ -37,7 +37,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 
 from linguistic_analysis import bh, FORMATTING
-from turn_depth_analysis import _contrasts, VOTES_PATH
+from turn_depth_analysis import _contrasts
 
 np.random.seed(42)
 
@@ -48,26 +48,10 @@ MIN_TOPIC_DUMMY = 1500     # min battles for a topic to get its own interaction 
 N_BOOT_Q1 = 400
 N_BOOT_Q2 = 1000
 
-# The conversations export carries the `categories` topic taxonomy. The main
-# pipeline auto-downloads it as comparia_conversations.parquet; use that if
-# present, else fall back.
-CONV_PATH = next((p for p in ["comparia_conversations.parquet",
-                              os.path.expanduser("~/Style control/comparia_conversations.parquet")]
-                  if os.path.exists(p)), "comparia_conversations.parquet")
 
-
-def _load(vote_only, need_turns):
-    b = pd.read_parquet("battles_bt_styled.parquet")
-    if vote_only:
-        b = b[b["source"] == "vote"].copy()
-    cats = pq.ParquetFile(CONV_PATH).read(
-        columns=["conversation_pair_id", "categories"]).to_pandas()
-    cats["topic"] = cats["categories"].map(
-        lambda x: x[0] if x is not None and len(x) > 0 else None)
-    b = b.merge(cats[["conversation_pair_id", "topic"]], on="conversation_pair_id", how="left")
-    if need_turns:
-        turns = pd.read_parquet(VOTES_PATH, columns=["conversation_pair_id", "conv_turns"])
-        b = b.merge(turns, on="conversation_pair_id", how="left")
+def _load(vote_only=True, need_turns=False):
+    # comparia-fr-arena battle table carries primary_topic (categories[0]) and conv_turns.
+    b = pd.read_parquet("fr_battles.parquet").rename(columns={"primary_topic": "topic"})
     d = b[b["winner"].isin(["model_a", "model_b"])].copy()
     d = d.dropna(subset=["topic"] + [f"{s}_a" for s in FORMATTING] + [f"{s}_b" for s in FORMATTING])
     return d

@@ -121,17 +121,13 @@ def log_likelihood(y, X, lr):
 # --------------------------------------------------------------------------- #
 def main():
     results = {}
-    battles = pd.read_parquet("battles_bt_styled.parquet")
-    ling = pd.read_parquet("linguistic_features.parquet")
+    battles = pd.read_parquet("fr_battles.parquet")
     n_before = len(battles)
-    battles = battles.merge(ling, on="conversation_pair_id", how="left")
     have_ling = battles["rel_a"].notna()
-    have_ppl = battles["ppl_a"].notna()
     print(f"Battles: {n_before:,}; with linguistic features: {have_ling.sum():,} "
-          f"({have_ling.mean()*100:.1f}%); with perplexity: {have_ppl.sum():,}")
+          f"({have_ling.mean()*100:.1f}%)")
     results["coverage"] = {"battles": int(n_before),
-                           "with_linguistic": int(have_ling.sum()),
-                           "with_perplexity": int(have_ppl.sum())}
+                           "with_linguistic": int(have_ling.sum())}
 
     # Common support: battles that carry every formatting + length + linguistic
     # feature, so all nested models are compared on identical data.
@@ -213,16 +209,8 @@ def main():
         print(f"  {f:16s} {c['point']:+.4f} [{c['ci'][0]:+.4f},{c['ci'][1]:+.4f}] "
               f"({c['odds_pct']:+.1f}%)  p_BH={c['p_bh']:.4f}  {'***' if c['sig_bh'] else 'n.s.'}")
 
-    # Perplexity: does it add anything on top of the joint set? (subset with ppl)
-    ppl_sub = sub.dropna(subset=["ppl_a", "ppl_b"])
-    if len(ppl_sub) > 1000:
-        pc = pd.concat([ppl_sub["model_a_name"], ppl_sub["model_b_name"]]).value_counts()
-        pm = sorted(pc[pc >= MIN_BATTLES].index)
-        _, cppl, _, _, _ = fit_bt(ppl_sub, pm, allf + ["ppl"])
-        results["perplexity"] = {"n_battles": int(len(ppl_sub)), "coef_ppl": float(cppl["ppl"]),
-                                 "odds_pct": float((np.exp(cppl["ppl"]) - 1) * 100)}
-        print(f"\nPerplexity (n={len(ppl_sub):,}): coef={cppl['ppl']:+.4f} "
-              f"({(np.exp(cppl['ppl'])-1)*100:+.1f}% odds/SD) on top of the joint set")
+    # (comparia-fr-arena carries no CamemBERT perplexity; that check lived on the
+    # older votes+reactions export and is dropped here.)
 
     with open("linguistic_results.json", "w") as fh:
         json.dump(results, fh, indent=2, default=float)
