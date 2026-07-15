@@ -15,9 +15,9 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-HERE = Path(__file__).parent
-OUT = HERE / "figures"
-OUT.mkdir(exist_ok=True)
+from paths import RESULTS, FIGURES
+
+OUT = FIGURES
 plt.rcParams.update({
     "font.family": "serif", "font.size": 10, "axes.titlesize": 12,
     "axes.labelsize": 11, "xtick.labelsize": 9, "ytick.labelsize": 9,
@@ -40,7 +40,7 @@ def odds(b):
 # Figure 10: reading depth
 # --------------------------------------------------------------------------- #
 def fig_reading_depth():
-    td = json.load(open(HERE / "turn_depth_results.json"))
+    td = json.load(open(RESULTS / "turn_depth_results.json"))
     prim = td["primary"]["features"]        # formatting, single/multi/interaction
     joint = td["joint"]["features"]         # has length + mattr too
 
@@ -98,10 +98,10 @@ def fig_reading_depth():
 # Figure 11: topic controls
 # --------------------------------------------------------------------------- #
 def fig_topic_controls():
-    tp = json.load(open(HERE / "topic_results.json"))
+    tp = json.load(open(RESULTS / "topic_results.json"))
     q1 = tp["q1_topic_stratified"]
     q2 = tp["q2_reading_depth_topic_controlled"]["interactions"]
-    td = json.load(open(HERE / "turn_depth_results.json"))["primary"]["features"]
+    td = json.load(open(RESULTS / "turn_depth_results.json"))["primary"]["features"]
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.8),
                                    gridspec_kw={"width_ratios": [1.15, 1]})

@@ -17,6 +17,7 @@ import pandas as pd
 from scipy.stats import spearmanr
 
 from linguistic_analysis import fit_bt, FORMATTING, LINGUISTIC, MIN_BATTLES
+from paths import BATTLES, RESULTS
 
 
 def ranks(ratings):
@@ -25,7 +26,7 @@ def ranks(ratings):
 
 
 def main():
-    battles = pd.read_parquet("fr_battles.parquet")
+    battles = pd.read_parquet(BATTLES)
 
     core = FORMATTING + ["length"] + LINGUISTIC
     sub = battles.dropna(subset=[f"{f}_{s}" for f in core for s in ("a", "b")]).copy()
@@ -73,7 +74,7 @@ def main():
     for m in top_rise:
         print(f"  {m:32s} {deltas[m]:+d}")
 
-    with open("leaderboard_shift_results.json", "w") as fh:
+    with open(RESULTS / "leaderboard_shift_results.json", "w") as fh:
         json.dump(out, fh, indent=2)
     print("\nSaved leaderboard_shift_results.json")
 

@@ -15,8 +15,9 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-OUT = Path(__file__).parent / "figures"
-OUT.mkdir(exist_ok=True)
+from paths import RESULTS, FIGURES
+
+OUT = FIGURES
 plt.rcParams.update({
     "font.family": "serif", "font.size": 10, "axes.titlesize": 12,
     "axes.labelsize": 11, "xtick.labelsize": 9, "ytick.labelsize": 9,
@@ -33,7 +34,7 @@ COLOR = {"formatting": "#7570b3", "length": "#000000", "readability": "#1b9e77",
          "diversity": "#d95f02", "structure": "#e7298a"}
 NSIG = "#bdbdbd"
 
-res = json.load(open(Path(__file__).parent / "linguistic_results.json"))
+res = json.load(open(RESULTS / "linguistic_results.json"))
 jc = res["joint_coefficients"]
 order = ["headers", "lists", "bold", "code_blocks", "emoji", "length",
          "rel", "cli", "fkg", "ttr", "mattr", "asl", "long_sent_ratio"]

@@ -19,34 +19,35 @@ Which presentation features independently change which models rank highest, and 
 
 A single dataset: **`ministere-culture/comparia-fr-arena`** (Ministère de la Culture), the consolidated Compar:IA release. It is turn-level (641K turns); we keep decisive French votes, take the full conversation the voter saw, and compute all features on it. Topic (`categories`) and reading depth (turn count) are native to the export. Votes only, no reactions; no CamemBERT perplexity (GPU-only).
 
-## Analysis Pipeline
+## Quickstart
 
 ```bash
-# 0. Build the single battle table from comparia-fr-arena (reads a local copy of the
-#    gated parquet if present, else streams it with a HF token).
-python build_fr_arena.py               # -> fr_battles.parquet
+# One-time: build the single battle table from comparia-fr-arena (slow; reads a
+# local copy of the gated parquet if present, else streams it with a HF token).
+python src/build_fr_arena.py           # -> data/fr_battles.parquet
 
-# 1. Core formatting: BT rankings, rank changes, position bias, ablation (§4.1-4.4)
-python analyze_core.py
-
-# 2. Length + linguistic joint model (§4.5)
-python linguistic_analysis.py
-python leaderboard_shift.py            # standard vs formatting vs joint ranking shift
-
-# 3. Reading depth: formatting/length x multi-turn interactions (§4.6)
-python turn_depth_analysis.py
-
-# 4. Topic controls: within-topic fits + topic x style interactions (§4.7)
-python topic_analysis.py
-
-# 5. Endogeneity (confounder vs mediator) and qualitative winner-flips (§5.3-5.4)
-python endogeneity_analysis.py
-python qualitative_analysis.py
-
-# 6. Figures
-python generate_linguistic_figure.py   # Fig 1 (joint coefficients + shrinkage)
-python generate_polish_figures.py      # Fig 2 (reading depth), Fig 3 (topic controls)
+# Then run the whole analysis (results -> results/, figures -> figures/):
+python run.py
 ```
+
+Every script also runs on its own (e.g. `python src/topic_analysis.py`) and
+resolves `data/`, `results/`, `figures/` relative to the repo root, so it works
+from any directory.
+
+## What produces what
+
+| Script (`src/`) | Section | Output |
+|---|---|---|
+| `build_fr_arena.py` | §2 | `data/fr_battles.parquet` (one row per battle) |
+| `analyze_core.py` | §4.1–4.4 | `results/core_results.json` |
+| `linguistic_analysis.py` | §4.5 | `results/linguistic_results.json` |
+| `leaderboard_shift.py` | §4.5 | `results/leaderboard_shift_results.json` |
+| `turn_depth_analysis.py` | §4.6 | `results/turn_depth_results.json` |
+| `topic_analysis.py` | §4.7 | `results/topic_results.json` |
+| `endogeneity_analysis.py` | §5.3 | `results/endogeneity_results.json` |
+| `qualitative_analysis.py` | §5.4 | `results/qualitative_results.json` |
+| `generate_linguistic_figure.py` | §4.5 | `figures/fig9_linguistic.*` (Figure 1) |
+| `generate_polish_figures.py` | §4.6–4.7 | `figures/fig10_*`, `fig11_*` (Figures 2–3) |
 
 ## Requirements
 
@@ -55,21 +56,13 @@ Python 3.10+, with: `pandas`, `numpy`, `scipy`, `scikit-learn`, `pyarrow`, `text
 ## Repository Structure
 
 ```
-├── build_fr_arena.py             # comparia-fr-arena -> fr_battles.parquet (one battle table)
-├── analyze_core.py               # formatting BT, rank changes, position bias, ablation (§4.1-4.4)
-├── linguistic_analysis.py        # joint formatting+length+linguistic model (§4.5)
-├── leaderboard_shift.py          # standard vs formatting vs joint ranking shift (§4.5)
-├── turn_depth_analysis.py        # reading-depth interactions (§4.6)
-├── topic_analysis.py             # topic controls (§4.7)
-├── endogeneity_analysis.py       # confounder vs mediator (§5.3)
-├── qualitative_analysis.py       # winner-flip prevalence/asymmetry (§5.4)
-├── generate_linguistic_figure.py # Figure 1
-├── generate_polish_figures.py    # Figures 2-3
-├── paper_draft.md                # Paper draft
-├── *_results.json                # computed outputs
-├── fr_battles.parquet            # the single battle table
-├── figures/                      # publication figures
-└── feedback.md                   # peer review tracker
+├── paper_draft.md      # the paper
+├── run.py              # runs the full analysis pipeline in order
+├── README.md  LICENSE  feedback.md
+├── src/                # analysis scripts (+ paths.py, shared path helper)
+├── data/               # fr_battles.parquet (the single battle table)
+├── results/            # *_results.json (computed outputs)
+└── figures/            # publication figures (PNG + PDF)
 ```
 
 ## License
