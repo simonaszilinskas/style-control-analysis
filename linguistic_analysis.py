@@ -1,26 +1,26 @@
 #!/usr/bin/env python3
 """
-Compar:IA Style Control, Linguistic Extension
+Compar:IA Style Control, Length + Linguistic Joint Model (§4.5)
 
-The main pipeline (clean_and_analyze.py) controls preferences for markdown
+The formatting model (analyze_core.py) controls preferences for markdown
 *formatting* (headers, lists, bold, code blocks, emoji) but not for answer
 *length* or for *linguistic* properties of the text. This script adds both and
 asks the question the formatting-only model cannot: once we also hold length,
 readability, lexical diversity and sentence structure fixed, which presentation
 features still move a vote, and do the formatting effects survive?
 
-The linguistic features (readability REL/CLI/FKG, diversity TTR/MATTR, structure
-ASL/long-sentence-ratio, and CamemBERT pseudo-perplexity) were computed by
-Maayeesha Farzana for her internship analysis and are merged in here, keyed by
-conversation_pair_id, onto the exact same battle table the formatting analysis
-uses (75.7% of battles carry them; the A/B framing matches 1:1). Length is the
-model's output-token count from the dataset metadata, not a whitespace word
-count, which also settles the French-tokenization concern raised in the review.
+The linguistic feature set (readability REL/CLI/FKG, diversity TTR/MATTR,
+structure ASL/long-sentence-ratio) was designed by Maayeesha Farzana for her
+internship analysis; here it is recomputed on comparia-fr-arena using her exact
+formulas (see build_fr_arena.py) and read straight from fr_battles.parquet, so no
+cross-dataset merge is needed. CamemBERT pseudo-perplexity is not recomputed on
+this dataset (GPU-only; it was null on the earlier export). Length is the
+response's output-token count from the dataset metadata, not a whitespace word
+count, which also settles the French-tokenization concern.
 
-Method mirrors clean_and_analyze.py exactly (per-model Bradley-Terry dummies +
-standardized A-B style contrasts, sklearn logistic, 1000x bootstrap, Benjamini-
-Hochberg), so every coefficient here is directly comparable to the formatting
-coefficients there.
+Method mirrors analyze_core.py (per-model Bradley-Terry dummies + standardized
+A-B style contrasts, sklearn logistic, 1000x bootstrap, Benjamini-Hochberg), so
+every coefficient here is directly comparable to the formatting coefficients.
 
     python linguistic_analysis.py     # -> linguistic_results.json
 """
@@ -45,7 +45,7 @@ LINGUISTIC = READABILITY + DIVERSITY + STRUCTURE
 
 
 # --------------------------------------------------------------------------- #
-# Bradley-Terry (identical construction to clean_and_analyze.py)
+# Bradley-Terry (identical construction to analyze_core.py)
 # --------------------------------------------------------------------------- #
 def _design(battles, models, style_features):
     idx = {m: i for i, m in enumerate(models)}

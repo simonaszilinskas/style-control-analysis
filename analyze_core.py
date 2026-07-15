@@ -5,8 +5,8 @@ Core formatting analysis on the comparia-fr-arena battle table (§4.1-4.6).
 Standard vs formatting-style-controlled Bradley-Terry, rank changes with 1000x
 bootstrap + Benjamini-Hochberg, position bias, arena modes, and the single-
 feature ablation. Reads fr_battles.parquet (one row per decisive French battle,
-votes only). This replaces the votes+reactions clean_and_analyze.py pipeline;
-there are no reactions in comparia-fr-arena.
+votes only). This replaces the earlier votes+reactions pipeline; there are no
+reactions in comparia-fr-arena.
 
     python analyze_core.py     # -> core_results.json
 """
