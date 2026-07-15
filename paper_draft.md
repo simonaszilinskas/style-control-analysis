@@ -49,7 +49,7 @@ Ties and no-vote turns are dropped (decisive votes only, matching prior style-co
 
 ### 2.3 Feature extraction and data quality
 
-For each battle we concatenate the assistant messages of the conversation the voter saw and compute all features on that text. Formatting features use the markdown regexes below; length is the response's cumulative output-token count from the dataset metadata (not a whitespace word count, which is unreliable for French); linguistic features follow the exact formulas of a companion internship analysis. Battles whose visible response text is empty (for example when only a model's hidden reasoning was recorded, or content contained `<think>` leakage) are dropped, since their style features would be spuriously zero. Topic and turn count come directly from the dataset (§2.4), so no cross-dataset joins are needed. Every feature is present for essentially all battles (topic 100%, length 99.9%, linguistic 97.5%).
+For each battle we concatenate the assistant messages of the conversation the voter saw and compute all features on that text. Formatting features use the markdown regexes below; length is the response's cumulative output-token count from the dataset metadata (not a whitespace word count, which is unreliable for French); the linguistic features are the set designed by Maayeesha Farzana (PSL) in a companion internship analysis, recomputed here on the comparia-fr-arena text using her exact formulas. Battles whose visible response text is empty (for example when only a model's hidden reasoning was recorded, or content contained `<think>` leakage) are dropped, since their style features would be spuriously zero. Topic and turn count come directly from the dataset (§2.4), so no cross-dataset joins are needed. Every feature is present for essentially all battles (topic 100%, length 99.9%, linguistic 97.5%).
 
 ### 2.4 Native topic and reading-depth signals
 
@@ -75,7 +75,7 @@ We measure presentation in three families, all computed per response.
 
 **Length**, the response's cumulative output-token count from the dataset metadata.
 
-**Linguistic**, text properties beyond formatting: readability (Kandel-Moles REL, calibrated for French; Coleman-Liau; Flesch-Kincaid grade), lexical diversity (type-token ratio TTR and its length-robust moving-average variant MATTR, over a 50-token window), and sentence structure (mean sentence length and the fraction of long sentences).
+**Linguistic**, the feature set designed by Maayeesha Farzana, covering text properties beyond formatting: readability (Kandel-Moles REL, calibrated for French; Coleman-Liau; Flesch-Kincaid grade), lexical diversity (type-token ratio TTR and its length-robust moving-average variant MATTR, over a 50-token window), and sentence structure (mean sentence length and the fraction of long sentences).
 
 Our primary formatting analysis (§4.1–§4.4) uses the five markdown features only, so it is directly comparable to prior English-language style control. We hold length and the linguistic family back to §4.5 for a specific reason: **length confounds with completeness**, a genuine quality dimension. Users may prefer more thorough answers, so controlling for length risks removing legitimate quality signal rather than bias. §4.5 confronts that trade-off head-on by adding length and all linguistic features to the same model.
 
@@ -299,6 +299,8 @@ This release carries no per-message reaction data, so the user-reported "clear f
 **Topic controlled, task type not.** §4.7 controls for subject matter, and the formatting premium survives. What remains uncontrolled is task type (summarise vs translate vs write code), which the metadata does not cleanly encode; a coding task mechanically invites code blocks. Building a task-type signal and repeating §4.7 is the main remaining validity step.
 
 **Reading depth is a proxy.** §4.6 uses turn count as a stand-in for attentiveness; it also correlates with task type and difficulty, and which conversations become multi-turn is not random.
+
+**Fluency not tested here.** The companion analysis's CamemBERT pseudo-perplexity, a fluency proxy, requires a GPU and is not recomputed on this dataset. On the earlier export it added nothing once length and readability were controlled, but we cannot confirm that null holds here; recomputing it on comparia-fr-arena is a natural next step.
 
 **No independent replication.** This is a single corpus of votes from one platform. The results are internally robust (to topic, to reading depth, to per-model control), but generalisation would need arena data from another platform or population.
 
