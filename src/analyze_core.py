@@ -17,6 +17,8 @@ import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 
+from paths import BATTLES, RESULTS
+
 np.random.seed(42)
 SCALE, BASE, INIT = 400, 10, 1000
 MIN_BATTLES = 100
@@ -69,7 +71,7 @@ def ranks(r):
 def main():
     from scipy.stats import binomtest
     res = {}
-    b = pd.read_parquet("fr_battles.parquet")
+    b = pd.read_parquet(BATTLES)
     d = b[b["winner"].isin(["model_a", "model_b"])].dropna(
         subset=[f"{f}_{s}" for f in FORMATTING for s in ("a", "b")]).copy()
     counts = pd.concat([d["model_a_name"], d["model_b_name"]]).value_counts()
@@ -167,7 +169,7 @@ def main():
                        for m in models}
     print(f"models with significant rating change (BH): {res['n_sig_bh']}/{len(models)}")
 
-    with open("core_results.json", "w") as fh:
+    with open(RESULTS / "core_results.json", "w") as fh:
         json.dump(res, fh, indent=2)
     print("Saved core_results.json")
 

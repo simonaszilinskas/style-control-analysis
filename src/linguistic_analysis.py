@@ -31,6 +31,8 @@ import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 
+from paths import BATTLES, RESULTS
+
 np.random.seed(42)
 
 SCALE, BASE, INIT_RATING = 400, 10, 1000
@@ -121,7 +123,7 @@ def log_likelihood(y, X, lr):
 # --------------------------------------------------------------------------- #
 def main():
     results = {}
-    battles = pd.read_parquet("fr_battles.parquet")
+    battles = pd.read_parquet(BATTLES)
     n_before = len(battles)
     have_ling = battles["rel_a"].notna()
     print(f"Battles: {n_before:,}; with linguistic features: {have_ling.sum():,} "
@@ -212,7 +214,7 @@ def main():
     # (comparia-fr-arena carries no CamemBERT perplexity; that check lived on the
     # older votes+reactions export and is dropped here.)
 
-    with open("linguistic_results.json", "w") as fh:
+    with open(RESULTS / "linguistic_results.json", "w") as fh:
         json.dump(results, fh, indent=2, default=float)
     print("\nSaved linguistic_results.json")
 

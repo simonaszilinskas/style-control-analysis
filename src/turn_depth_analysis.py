@@ -31,6 +31,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 
 from linguistic_analysis import bh, FORMATTING, LINGUISTIC
+from paths import BATTLES, RESULTS
 
 np.random.seed(42)
 
@@ -91,7 +92,7 @@ def _fit_subset(d, models, feats, scaler):
 
 def _prep(feats, require_ling=False):
     # comparia-fr-arena battle table already carries conv_turns and every feature.
-    battles = pd.read_parquet("fr_battles.parquet")
+    battles = pd.read_parquet(BATTLES)
     d = battles[battles["winner"].isin(["model_a", "model_b"])].copy()
     d = d.dropna(subset=["conv_turns"])
     d = d[d["conv_turns"] >= 1]
@@ -176,7 +177,7 @@ def main():
     # Secondary: joint set on the linguistically-covered subset.
     results["joint"] = run(FORMATTING + ["length"] + LINGUISTIC,
                            "Joint (formatting + length + linguistic)", require_ling=True)
-    with open("turn_depth_results.json", "w") as fh:
+    with open(RESULTS / "turn_depth_results.json", "w") as fh:
         json.dump(results, fh, indent=2, default=float)
     print("\nSaved turn_depth_results.json")
 

@@ -26,13 +26,15 @@ import pyarrow.parquet as pq
 import textstat
 from huggingface_hub import HfFileSystem, get_token
 
+from paths import BATTLES, DATA
+
 HF_PATH = "datasets/ministere-culture/comparia-fr-arena/comparia-fr-arena.parquet"
 # A full local copy avoids streaming the 8.9 GB gated file; use it if present.
 LOCAL_PATHS = [
     "comparia-fr-arena.parquet",
     os.path.expanduser("~/Dev/comparia-theme-datasets/data/comparia-fr-arena/comparia-fr-arena.parquet"),
 ]
-OUT = "fr_battles.parquet"
+OUT = BATTLES
 COLS = ["comparison_id", "choice", "model_a", "model_b",
         "full_conversation_a", "full_conversation_b", "metadata"]
 MIN_WORDS = 30
@@ -121,7 +123,7 @@ def features(content):
     return out
 
 
-PARTS = "fr_parts"
+PARTS = DATA / "fr_parts"
 
 
 def _process_rows(pyrows):

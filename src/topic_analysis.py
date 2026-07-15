@@ -38,6 +38,7 @@ from sklearn.preprocessing import StandardScaler
 
 from linguistic_analysis import bh, FORMATTING
 from turn_depth_analysis import _contrasts
+from paths import BATTLES, RESULTS
 
 np.random.seed(42)
 
@@ -51,7 +52,7 @@ N_BOOT_Q2 = 1000
 
 def _load(vote_only=True, need_turns=False):
     # comparia-fr-arena battle table carries primary_topic (categories[0]) and conv_turns.
-    b = pd.read_parquet("fr_battles.parquet").rename(columns={"primary_topic": "topic"})
+    b = pd.read_parquet(BATTLES).rename(columns={"primary_topic": "topic"})
     d = b[b["winner"].isin(["model_a", "model_b"])].copy()
     d = d.dropna(subset=["topic"] + [f"{s}_a" for s in FORMATTING] + [f"{s}_b" for s in FORMATTING])
     return d
@@ -200,7 +201,7 @@ def q2_reading_depth_topic_controlled():
 def main():
     results = {"q1_topic_stratified": q1_topic_stratified(),
                "q2_reading_depth_topic_controlled": q2_reading_depth_topic_controlled()}
-    with open("topic_results.json", "w") as fh:
+    with open(RESULTS / "topic_results.json", "w") as fh:
         json.dump(results, fh, indent=2, default=float)
     print("\nSaved topic_results.json")
 

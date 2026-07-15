@@ -19,13 +19,14 @@ import numpy as np
 import pandas as pd
 
 from analyze_core import fit, MIN_BATTLES, FORMATTING
+from paths import BATTLES, RESULTS
 
 INTENSITY = ["bold", "lists", "headers"]
 
 
 def main():
     res = {}
-    b = pd.read_parquet("fr_battles.parquet")
+    b = pd.read_parquet(BATTLES)
     d = b[b["winner"].isin(["model_a", "model_b"])].dropna(
         subset=[f"{f}_{s}" for f in FORMATTING for s in ("a", "b")]).copy()
     counts = pd.concat([d["model_a_name"], d["model_b_name"]]).value_counts()
@@ -61,7 +62,7 @@ def main():
     fm = pd.concat([fd["model_a_name"], fd["model_b_name"]]).value_counts().head(10)
     res["top_flip_models"] = {m: int(c) for m, c in fm.items()}
 
-    with open("qualitative_results.json", "w") as fh:
+    with open(RESULTS / "qualitative_results.json", "w") as fh:
         json.dump(res, fh, indent=2)
     print("Saved qualitative_results.json")
 

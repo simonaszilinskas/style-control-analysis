@@ -360,7 +360,7 @@ For arena operators the message is concrete: "quality" leaderboards partly rank 
 
 ## Appendix A: Analysis Pipeline
 
-All results are reproducible from the single battle table `fr_battles.parquet`, built from `comparia-fr-arena` by `build_fr_arena.py`:
+All results are reproducible from the single battle table `data/fr_battles.parquet`, built from `comparia-fr-arena` by `src/build_fr_arena.py`; `run.py` executes the steps below in order (scripts live in `src/`, outputs in `results/`).
 
 | Script | Section | Output |
 |--------|---------|--------|

@@ -1,7 +1,11 @@
-# Large data files (available on HuggingFace: ministere-culture/comparia-*)
+# Large source data (available on HuggingFace: ministere-culture/comparia-fr-arena)
+comparia-fr-arena.parquet
 comparia_conversations.parquet
 comparia_reactions.parquet
 comparia_votes.parquet
+
+# Build checkpoints
+data/fr_parts/
 
 # Archive
 archive/
@@ -19,11 +23,3 @@ CLAUDE.md
 
 # Run logs
 *.log
-
-fr_parts/
-fast_run.log
-build_fr*.log
-core.log
-ling.log
-turn.log
-topic.log
