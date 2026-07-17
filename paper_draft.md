@@ -263,11 +263,13 @@ We label each battle's opening prompt with a coarse ten-class task taxonomy (tra
 
 A validated task taxonomy (an LLM classifier over all prompts, or embedding-based clustering) would let us control for task directly rather than stratify with a rough proxy; we leave that to future work.
 
-### 4.9 Robustness to Arena Mode: Random Pairs Only
+### 4.9 Robustness to Arena Mode and Temporal Dependence
 
 The data mix random pairings (72% of decisive battles) with user-selected "custom" pairs (19%) and specialist modes. Custom pairing is non-random: users choose models for reasons that may correlate with expected quality and style, a potential selection confound. As a check, we refit the headline coefficients on **random-pair battles only** (98,240 in the formatting model, 91,769 in the joint model, 116 models) and compare to the full sample.
 
 The two robust signals are stable: bold is +16.4% in the formatting-only model on random battles (vs +14.8% full) and +11.4% in the joint model (vs +10.4%), and MATTR is +16.5% (vs +17.7%). The collinear-bundle features we already flag as unstable do move, headers falls to +3.6% (from +9.2%) and length to +4.0% (from +6.5%), exactly the specification-sensitivity we describe elsewhere. So restricting to random pairings leaves the conclusions we actually draw (bold and MATTR) intact and only reshuffles the coefficients we already decline to over-read. A fully random-only primary specification would be cleaner and is a natural next version; on this evidence, arena-mode selection is not what drives the headline associations.
+
+We also probe the bootstrap's independence assumption. The release carries no user identifier (§5.5), so we cannot cluster by user, but we can **block-bootstrap by calendar week** (resampling the 89 weekly blocks with replacement, keeping each week's battles together) to absorb temporal dependence from a shifting model roster and user population. The block-bootstrap 95% intervals are only slightly wider than the i.i.d. ones and still exclude zero comfortably: bold +14.8% [+11.4, +19.0] (i.i.d. [+11.8, +18.0]), joint bold +10.4% [+7.7, +12.6], MATTR +17.7% [+15.2, +20.0] (i.i.d. [+15.5, +19.5]). Temporal clustering therefore widens the intervals only modestly and does not threaten the headline signals; user-level clustering remains untestable here.
 
 ### 4.10 MATTR Stress Tests
 
@@ -350,7 +352,7 @@ This release carries no per-message reaction data, so the user-reported "clear f
 
 **No independent replication.** This is a single corpus of votes from one platform. The results are internally robust (to topic, to conversation depth, to per-model control), but generalisation would need arena data from another platform or population.
 
-**Clustering and arena mode.** §4.9 shows the headline associations are stable on random pairs only, so mode selection is not the driver, though a fully random-only *primary* specification would be cleaner still. On clustering, our bootstrap resamples battles independently. Each battle is already a distinct conversation (we keep one vote per `comparison_id`), so within-conversation dependence is not double-counted. The remaining concern is that one user contributes many battles, but the comparia-fr-arena release carries no user, session, or visitor identifier (only conversation- and response-level ids, unlike the older export which had a session hash), so we cannot cluster by user or estimate how much it would widen the intervals. A user-level cluster bootstrap would require identifiers this release does not expose; a time-block bootstrap over the `timestamp` field is a feasible partial substitute for temporal dependence.
+**Clustering and arena mode.** §4.9 shows the headline associations are stable on random pairs only, so mode selection is not the driver, though a fully random-only *primary* specification would be cleaner still. On clustering, our bootstrap resamples battles independently. Each battle is already a distinct conversation (we keep one vote per `comparison_id`), so within-conversation dependence is not double-counted. The remaining concern is that one user contributes many battles, but the comparia-fr-arena release carries no user, session, or visitor identifier (only conversation- and response-level ids, unlike the older export which had a session hash), so we cannot cluster by user or estimate how much it would widen the intervals. A user-level cluster bootstrap would require identifiers this release does not expose; as a partial substitute, the weekly block bootstrap in §4.9 widens the headline intervals only modestly, so temporal dependence is not inflating the significance.
 
 **Platform-specific population.** Compar:IA users are predominantly French civil servants and technology-interested citizens; results may not generalise to other populations.
 
@@ -416,7 +418,7 @@ All results are reproducible from the single battle table `data/fr_battles.parqu
 | `turn_depth_analysis.py` | §4.6 | formatting × reading-depth interactions |
 | `topic_analysis.py` | §4.7 | within-topic fits + topic × style controls |
 | `extract_prompts.py` + `task_classify.py` + `task_analysis.py` | §4.8 | task proxy and within-task fits |
-| `robustness_random.py` | §4.9 | coefficients on random-pair battles only |
+| `robustness_random.py`; `time_block_bootstrap.py` | §4.9 | random-only coefficients; weekly block bootstrap |
 | `mattr_stress.py` + `mattr_alt.py` | §4.10 | MATTR length-independence, strata, and MTLD/content-word/no-proper-noun variants |
 | `endogeneity_analysis.py` | §5.3 | confounder-vs-mediator tests |
 | `qualitative_analysis.py` | §5.4 | winner-flip prevalence and asymmetry |
