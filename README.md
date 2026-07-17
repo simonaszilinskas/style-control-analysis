@@ -45,6 +45,8 @@ from any directory.
 | `turn_depth_analysis.py` | §4.6 | `results/turn_depth_results.json` |
 | `topic_analysis.py` | §4.7 | `results/topic_results.json` |
 | `extract_prompts.py` → `task_classify.py` → `task_analysis.py` | §4.8 | `results/task_results.json` (task proxy; needs the raw dataset, run separately from `run.py`) |
+| `robustness_random.py` | §4.9 | `results/robustness_random_results.json` |
+| `mattr_stress.py`; `mattr_alt.py` | §4.10 | `results/mattr_stress_results.json`, `mattr_alt_results.json` (`mattr_alt.py` needs the raw dataset) |
 | `endogeneity_analysis.py` | §5.3 | `results/endogeneity_results.json` |
 | `qualitative_analysis.py` | §5.4 | `results/qualitative_results.json` |
 | `generate_linguistic_figure.py` | §4.5 | `figures/fig9_linguistic.*` (Figure 1) |

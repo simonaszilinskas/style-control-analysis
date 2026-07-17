@@ -28,3 +28,5 @@ CLAUDE.md
 data/prompts.parquet
 data/prompt_parts/
 data/task_val_sample*.json
+
+data/mattr_alt_parts/

@@ -1,0 +1,12 @@
+{
+  "coverage": 0.9551731928259618,
+  "mattr_vs_mtld_spearman": 0.9478694069975744,
+  "mattr_vs_cwmattr_spearman": 0.7788744771950763,
+  "mattr_vs_nocap_spearman": 0.9247517423352799,
+  "joint_diversity_coef": {
+    "mattr": 17.729012307026082,
+    "cwmattr": 12.358696056660756,
+    "mtld": 13.629192458672534,
+    "nocapmattr": 13.866193515816395
+  }
+}

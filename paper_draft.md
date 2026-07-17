@@ -263,6 +263,22 @@ We label each battle's opening prompt with a coarse ten-class task taxonomy (tra
 
 A validated task taxonomy (an LLM classifier over all prompts, or embedding-based clustering) would let us control for task directly rather than stratify with a rough proxy; we leave that to future work.
 
+### 4.9 Robustness to Arena Mode: Random Pairs Only
+
+The data mix random pairings (72% of decisive battles) with user-selected "custom" pairs (19%) and specialist modes. Custom pairing is non-random: users choose models for reasons that may correlate with expected quality and style, a potential selection confound. As a check, we refit the headline coefficients on **random-pair battles only** (98,240 in the formatting model, 91,769 in the joint model, 116 models) and compare to the full sample.
+
+The two robust signals are stable: bold is +16.4% in the formatting-only model on random battles (vs +14.8% full) and +11.4% in the joint model (vs +10.4%), and MATTR is +16.5% (vs +17.7%). The collinear-bundle features we already flag as unstable do move, headers falls to +3.6% (from +9.2%) and length to +4.0% (from +6.5%), exactly the specification-sensitivity we describe elsewhere. So restricting to random pairings leaves the conclusions we actually draw (bold and MATTR) intact and only reshuffles the coefficients we already decline to over-read. A fully random-only primary specification would be cleaner and is a natural next version; on this evidence, arena-mode selection is not what drives the headline associations.
+
+### 4.10 MATTR Stress Tests
+
+Because MATTR is one of our two headline signals, we probe it harder, on two concerns: whether its length-independence is real in these data, and whether it holds for short answers.
+
+Responses here are long: the median is 736 output tokens (IQR 406–1,257), and only 4.5% of responses fall below the 50-word-token MATTR window (those are dropped, so MATTR is computed on the 95.5% that are long enough). Across the full length range MATTR is essentially uncorrelated with length (Spearman +0.04 overall, and within length quartiles |ρ| ≤ 0.08), so its independence from length is not an artefact of a particular length regime.
+
+Splitting battles by response length, the MATTR association is concentrated in longer answers, +17.3% per SD among above-median-length answers versus +4.9% among shorter ones, while length itself does the opposite (+4.7% long vs +45.6% short). This is coherent: when answers are short, getting longer wins big and vocabulary variety is barely measurable; when answers are already long, extra length adds little and lexical diversity carries the signal. MATTR stays positive in both strata.
+
+Finally, is the signal really lexical variety, or a proxy for named entities and technical terms? We recomputed three alternative diversity measures on the response text: MTLD (a window-free metric), content-word MATTR (French function words removed), and MATTR with capitalised tokens excluded (a rough proper-noun exclusion). MATTR tracks MTLD very closely (Spearman 0.95), so it is not an artefact of the 50-token window. More to the point, the joint diversity coefficient survives every substitution: **+17.7% with MATTR, +13.6% with MTLD, +12.4% with content-word MATTR, and +13.9% with proper-noun-excluded MATTR**. Stripping function words and proper nouns lowers the estimate but leaves it clearly positive, so the association is not merely named entities or padding. We still call this a stable diversity *correlate* rather than validated "richness" (topical specificity is not fully excluded, and we did not test HD-D), but it is robust to how diversity is measured.
+
 ---
 
 ## 5. Discussion
@@ -322,7 +338,7 @@ This release carries no per-message reaction data, so the user-reported "clear f
 
 **Collinear presentation features.** Length, bold, and lists move together, and the joint model cannot cleanly identify their individual contributions. Claims should be read at the level of "verbosity" and of the two features that stand apart (bold, MATTR), not of every individual coefficient.
 
-**MATTR interpretation.** MATTR reduces but does not eliminate length sensitivity, and its independence from length depends on window size and on responses being longer than the 50-token window; short answers are less well characterised. High MATTR can also reflect named entities, technical terms, or low repetition rather than genuine lexical richness. Before reading it as "richer language," future work should report the response-length distribution and short-answer handling, test content-word and proper-noun-excluded variants, and compare alternative diversity measures (MTLD, HD-D). We therefore describe MATTR as our most stable linguistic *correlate*, not as validated richness.
+**MATTR interpretation.** §4.10 stress-tests MATTR: responses are long (median 736 tokens; 4.5% below the window), MATTR is uncorrelated with length within every length bin, its association holds in short and long strata, and it survives substitution by MTLD, content-word MATTR, and proper-noun-excluded MATTR. So the signal is robust to how diversity is measured and is not merely named entities. What we still cannot fully rule out is that high diversity proxies topical specificity, and we did not test HD-D. We therefore describe MATTR as our most stable diversity *correlate*, not as validated "richness."
 
 **English-calibrated readability on French text.** Coleman-Liau and Flesch-Kincaid are English-calibrated; only REL is French-specific. We therefore do not interpret the readability coefficients individually.
 
@@ -400,5 +416,7 @@ All results are reproducible from the single battle table `data/fr_battles.parqu
 | `turn_depth_analysis.py` | §4.6 | formatting × reading-depth interactions |
 | `topic_analysis.py` | §4.7 | within-topic fits + topic × style controls |
 | `extract_prompts.py` + `task_classify.py` + `task_analysis.py` | §4.8 | task proxy and within-task fits |
+| `robustness_random.py` | §4.9 | coefficients on random-pair battles only |
+| `mattr_stress.py` + `mattr_alt.py` | §4.10 | MATTR length-independence, strata, and MTLD/content-word/no-proper-noun variants |
 | `endogeneity_analysis.py` | §5.3 | confounder-vs-mediator tests |
 | `qualitative_analysis.py` | §5.4 | winner-flip prevalence and asymmetry |
