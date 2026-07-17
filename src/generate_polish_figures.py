@@ -56,7 +56,8 @@ def fig_reading_depth():
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.6),
                                    gridspec_kw={"width_ratios": [1.1, 1]})
     for yi, (_, v, col) in zip(y, rows):
-        s, m = odds(v["single"]), odds(v["multi"])
+        # single-turn = e^gamma, multi-turn = e^(gamma+delta), both from the pooled model
+        s, m = odds(v["main"]), odds(v["main"] + v["interaction"])
         ax1.plot([s, m], [yi, yi], color=GREY, lw=1.5, zorder=1)
         ax1.scatter([s], [yi], color=col, s=48, zorder=3, marker="o")
         ax1.scatter([m], [yi], color=col, s=48, zorder=3, marker="D",
@@ -67,8 +68,8 @@ def fig_reading_depth():
     ax1.set_xlabel("win-odds change per SD (%)")
     ax1.set_title("Single-turn (circle) vs multi-turn (diamond)\n"
                   "formatting and length shrink, only diversity holds")
-    handles = [plt.Line2D([], [], marker="o", ls="", color="black", label="single-turn (quick read)"),
-               plt.Line2D([], [], marker="D", ls="", color="black", label="multi-turn (attentive read)")]
+    handles = [plt.Line2D([], [], marker="o", ls="", color="black", label="single-turn"),
+               plt.Line2D([], [], marker="D", ls="", color="black", label="multi-turn")]
     ax1.legend(handles=handles, loc="lower right", frameon=True)
 
     # Right panel: interaction coefficients with 95% CI (the multi-turn slope shift).
@@ -86,7 +87,7 @@ def fig_reading_depth():
     ax2.set_yticks(y2)
     ax2.set_yticklabels([r[0] for r in irows])
     ax2.set_xlabel("multi-turn interaction (log-odds per SD)")
-    ax2.set_title("Slope shift with reading depth\n(95% CI; grey = n.s. after BH)")
+    ax2.set_title("Interaction with conversation depth\n(95% CI; grey = n.s. after BH)")
 
     fig.tight_layout()
     for ext in ("png", "pdf"):
