@@ -235,7 +235,33 @@ The premium is present everywhere, not driven by a few formatting-heavy subjects
 
 **The reading-depth result survives topic controls.** Re-fitting the §4.6 formatting × multi-turn interaction model with topic × formatting interactions added, the multi-turn interactions are essentially unchanged: bold −0.214, headers −0.044, lists −0.031, code blocks −0.035 (all significant), emoji +0.017 (n.s.). The formatting-fades-with-engagement pattern is not a topic-mix artefact.
 
-Topic here is subject matter, not task type (summarise, translate, write code, give advice); a task-type control would be a useful further step but is not cleanly available in the metadata, so we leave it to future work.
+Topic here is subject matter, not task type (summarise, translate, write code, give advice), which §4.8 addresses separately.
+
+### 4.8 Task-Type Controls: Is the Formatting Premium a Proxy for Task Form?
+
+Subject matter (§4.7) is not the sharpest confound. Task *form* drives presentation more directly: a request to write code produces code blocks, a request for a list produces lists, a translation request produces neither. If the formatting premium simply reflected which tasks invite which markup, it should weaken within a task.
+
+We label each battle's opening prompt with a coarse ten-class task taxonomy (translation, code, summarization, math, list/table, writing, ideas, advice, explanation, other) using ordered keyword rules over the mostly-French prompt text. This is a deliberately imperfect proxy: validated against independent LLM labelling of 120 held-out prompts, the rules agree 56% of the time overall and 64% when they assign a specific (non-"other") label, with recall the main weakness (about a third of prompts fall to "other" because they state the task only implicitly). We therefore read this as an exploratory robustness check, not a definitive control, and analyse only the classes with at least 2,500 battles.
+
+**The bold premium holds within tasks.** Refitting the formatting Bradley-Terry model inside each task, bold is positive in eight of the nine task strata, and its 95% CI excludes zero in the five largest (explanation +21.6%, code +24.5%, summarization +29.1%, advice +27.7%, writing +16.1%); it is positive but not significant in the smaller ideas/math strata and negative only in translation (−13.1%, n.s.). So the bold association is not an artefact of task form: it is present whether the user asked for an explanation, code, a draft, or a summary.
+
+**Table 6. Bold and code-block association (odds change per SD) within each task.**
+
+| Task | Battles | Bold | Code blocks |
+|------|:------:|:----:|:-----------:|
+| explanation | 44,841 | +21.6% | −0.8% |
+| writing | 12,579 | +16.1% | −13.1% |
+| code | 9,746 | +24.5% | +15.2% |
+| ideas | 4,405 | +14.0% | +1.1% |
+| list/table | 2,955 | +2.6% | +12.9% |
+| summarization | 2,941 | +29.1% | −4.6% |
+| advice | 2,616 | +27.7% | −6.0% |
+| translation | 2,449 | −13.1% | +25.2% |
+| math | 1,472 | +12.5% | +9.9% |
+
+**Code blocks are task-specific, which is why they vanish in the pool.** Unlike bold, code blocks help only where code is plausibly involved: +15% in the code task (and positive in translation, list/table, math), but near-zero or negative in prose tasks (explanation, writing, summarization, advice). This is the expected pattern if code formatting is valued only when a coding answer is wanted, and it explains the null pooled code-block coefficient of §4.1: averaged over mostly-non-coding battles, a task-specific effect washes out. It also serves as a face-validity check on the noisy classifier, the one feature that should be task-specific is.
+
+A validated task taxonomy (an LLM classifier over all prompts, or embedding-based clustering) would let us control for task directly rather than stratify with a rough proxy; we leave that to future work.
 
 ---
 
@@ -269,7 +295,7 @@ Three tests shed light without fully resolving it.
 
 **Test 2: Tier-stratified style effects.** Splitting models into tiers by standard rating and fitting within-tier:
 
-**Table 6. Formatting effect by model-pair tier (odds change per SD).**
+**Table 7. Formatting effect by model-pair tier (odds change per SD).**
 
 | Feature | Bottom | Middle | Top |
 |---------|:------:|:------:|:---:|
@@ -300,7 +326,7 @@ This release carries no per-message reaction data, so the user-reported "clear f
 
 **English-calibrated readability on French text.** Coleman-Liau and Flesch-Kincaid are English-calibrated; only REL is French-specific. We therefore do not interpret the readability coefficients individually.
 
-**Topic controlled, task type not.** §4.7 controls for subject matter, and the formatting premium survives. What remains uncontrolled is task type (summarise vs translate vs write code), which the metadata does not cleanly encode; a coding task mechanically invites code blocks. Building a task-type signal and repeating §4.7 is the main remaining validity step.
+**Task type controlled only with a rough proxy.** §4.7 controls for subject matter and §4.8 for task type, and the bold premium survives both while code blocks turn out task-specific. But the task classifier is a coarse keyword rule (about 56% agreement with LLM labels, recall-limited), so §4.8 is a robustness check rather than a clean control. A validated task taxonomy (an LLM classifier over all prompts) is the main remaining validity step.
 
 **Conversation depth is endogenous.** §4.6 uses turn count as a stand-in for attentiveness, but it is a post-treatment variable: it also tracks task type, difficulty, and whether the first answer satisfied the user, and it is shaped by the very outputs being judged. The depth split is therefore heterogeneity, not evidence of a reading-attentiveness mechanism.
 
@@ -373,5 +399,6 @@ All results are reproducible from the single battle table `data/fr_battles.parqu
 | `leaderboard_shift.py` | §4.5 | standard vs formatting vs joint ranking shift |
 | `turn_depth_analysis.py` | §4.6 | formatting × reading-depth interactions |
 | `topic_analysis.py` | §4.7 | within-topic fits + topic × style controls |
+| `extract_prompts.py` + `task_classify.py` + `task_analysis.py` | §4.8 | task proxy and within-task fits |
 | `endogeneity_analysis.py` | §5.3 | confounder-vs-mediator tests |
 | `qualitative_analysis.py` | §5.4 | winner-flip prevalence and asymmetry |

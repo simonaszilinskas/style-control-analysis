@@ -44,6 +44,7 @@ from any directory.
 | `leaderboard_shift.py` | §4.5 | `results/leaderboard_shift_results.json` |
 | `turn_depth_analysis.py` | §4.6 | `results/turn_depth_results.json` |
 | `topic_analysis.py` | §4.7 | `results/topic_results.json` |
+| `extract_prompts.py` → `task_classify.py` → `task_analysis.py` | §4.8 | `results/task_results.json` (task proxy; needs the raw dataset, run separately from `run.py`) |
 | `endogeneity_analysis.py` | §5.3 | `results/endogeneity_results.json` |
 | `qualitative_analysis.py` | §5.4 | `results/qualitative_results.json` |
 | `generate_linguistic_figure.py` | §4.5 | `figures/fig9_linguistic.*` (Figure 1) |

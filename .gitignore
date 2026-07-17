@@ -23,3 +23,8 @@ CLAUDE.md
 
 # Run logs
 *.log
+
+# Raw user prompts (gated dataset content) — keep out of the public repo
+data/prompts.parquet
+data/prompt_parts/
+data/task_val_sample*.json
