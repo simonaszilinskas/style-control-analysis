@@ -33,13 +33,13 @@ Our central question: **which presentation features are independently associated
 
 ### 2.1 The Compar:IA Platform
 
-Compar:IA is an LLM evaluation arena operated by the French government's Direction interministérielle du numérique (DINUM). Users submit prompts and receive responses from two anonymous models side-by-side, may continue the conversation over several turns, and then vote for a winner or declare a tie. Models are identified only after voting.
+Compar:IA is an LLM evaluation arena operated by the French Government's Ministry of Culture and Direction interministérielle du numérique (DINUM). Users submit prompts and receive responses from two anonymous models side-by-side, may continue the conversation over several turns, and then vote for a winner or declare a tie. Models are identified only after voting.
 
 The platform offers several arena modes; in our data the decisive votes come from **random** (72%, random model pairs), **custom** (19%, user-selected pairs), **big-vs-small** (8%, deliberately pairing large and small models), and **small-models** (2%).
 
 ### 2.2 Dataset
 
-We use **`ministere-culture/comparia-fr-arena`** (Ministère de la Culture, 2024), the consolidated Compar:IA release published on HuggingFace under Open Licence 2.0 (Etalab) and CC-BY-4.0 (gated access; roughly 675K paired responses and 208K human preferences across 115+ models before our French/decisive filtering). It is organised by turn: one row per conversation turn, with the vote (`choice`) recorded on the single turn at which the user decided. (Because the release is gated and unversioned on the card, a future version of this paper should pin the exact revision hash and access date.) From its 641,277 turns we keep the rows carrying a decisive French vote, take the full conversation the voter had seen at that point, and treat each as one battle.
+We use **`ministere-culture/comparia-fr-arena`** (Ministère de la Culture, 2024), the consolidated Compar:IA release published on HuggingFace under Open Licence 2.0 (Etalab) and CC-BY-4.0 (gated access; roughly 675K paired responses and 208K human preferences across 115+ models before our French/decisive filtering). It is organised by turn: one row per conversation turn, with the vote (`choice`) recorded on the single turn at which the user decided. From its 641,277 turns we keep the rows carrying a decisive French vote, take the full conversation the voter had seen at that point, and treat each as one battle.
 
 | | Raw turns | Decisive French battles | Models (≥100 battles) |
 |---|---:|---:|---:|
