@@ -1,5 +1,5 @@
 """
-Figures for the reading-depth (§4.6) and topic-control (§4.7) sections.
+Figures for the conversation-length (§4.6) and topic-control (§4.7) sections.
 Reads turn_depth_results.json and topic_results.json. Matches the house style of
 generate_figures.py / generate_linguistic_figure.py.
 
@@ -131,7 +131,7 @@ def fig_topic_controls():
     ax1.set_title("Bold formatting is positive in every topic\n(within-topic fit, 95% CI)")
     ax1.legend(loc="lower right", frameon=True)
 
-    # Right: reading-depth interaction, uncontrolled (§4.6) vs topic-controlled (§4.7).
+    # Right: conversation-length interaction, uncontrolled (§4.6) vs topic-controlled (§4.7).
     feats = ["bold", "lists", "headers", "code_blocks", "emoji"]
     y2 = np.arange(len(feats))[::-1]
     for yi, f in zip(y2, feats):

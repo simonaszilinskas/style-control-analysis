@@ -1,23 +1,24 @@
 # What Wins a Vote? Formatting, Length, and Lexical Diversity in the French Compar:IA LLM Arena
 
-Style-control analysis of how presentation (markdown formatting, length, readability, lexical diversity, sentence structure) biases human preference votes in **Compar:IA**, a French government-backed LLM arena. Built on the consolidated `comparia-fr-arena` release (about 138,000 decisive French battles, 116 models).
+Style-control analysis of how presentation (markdown formatting, length, readability, lexical diversity, sentence structure) is associated with human preference votes in **Compar:IA**, a French government-backed LLM arena. Built on the consolidated `comparia-fr-arena` release (about 138,000 decisive French battles, 116 models).
 
 ## Research Question
 
-Which presentation features independently change which models rank highest, and which apparent effects are really model skill?
+Which presentation features retain an association with votes after joint adjustment, and how sensitive are model rankings to that adjustment?
 
 ## Key Findings
 
 - **Presentation is mostly one collinear "verbosity" dimension.** Length, bold, and lists rise together and trade coefficient weight; their individual attributions are unstable across specifications.
-- **Two signals stand apart and survive full control:** **bold formatting** (~+10% win odds/SD in the joint model) and **length-independent lexical diversity** (MATTR, ~+18%, richer vocabulary wins even at equal length).
-- **Much apparent linguistic effect is model skill:** coefficients roughly halve when per-model strengths are added (confounder vs mediator).
-- **Presentation acts through reading depth.** Proxying attention by conversation length, the pull of formatting *and* length fades sharply once readers engage over several turns (bold +38%→+6% odds/SD), while MATTR is unchanged. Only vocabulary richness survives an attentive read.
-- **The premium is not a subject-matter artefact.** Bold is positive within every topic, and the reading-depth effect survives topic × formatting controls.
-- **Leaderboard impact:** controlling for the full presentation bundle moves 33 of 116 models by ≥10 ranks (r = 0.95); heavy formatters fall ~30 places, concise strong models rise.
+- **Two signals stand apart and survive full control:** **bold formatting** (~+10% win odds/SD in the joint model) and **length-independent lexical diversity** (MATTR, ~+18%). Both are conditional correlates, not causal effects.
+- **Much apparent linguistic association is between models:** several coefficients shrink substantially when per-model fixed effects are added. This does not identify presentation as either bias or a quality signal.
+- **Exploratory heterogeneity varies with completed conversation length.** Formatting and length associations are smaller in the eventual multi-turn stratum (bold +35%→+8% odds/SD), while MATTR is unchanged. Because the current fields include post-vote turns, this cannot be interpreted as pre-vote depth or attention.
+- **The bold association is not solely a subject-matter artefact.** It is positive within every large topic and remains after topic × formatting controls; this is still observational rather than causal.
+- **Leaderboard impact:** controlling for the full presentation bundle moves 37 of 116 models by ≥10 ranks (r = 0.94). In exact-name external comparisons, formatting-only control has the highest correlation with all four LMArena rankings tested, but its gains over raw Compar:IA are not statistically decisive; full joint control usually correlates less strongly.
+- **Important timing limitation:** the current builder uses completed `full_conversation_*` fields. Post-vote turns enter the measured text in 11.2% of battles, and 40.5% of the nominal multi-turn stratum was single-turn at the retained vote. The paper now flags the depth analysis as uninterpretable and the primary estimates as requiring a vote-truncated rerun.
 
 ## Data
 
-A single dataset: **`ministere-culture/comparia-fr-arena`** (Ministère de la Culture), the consolidated Compar:IA release. It is turn-level (641K turns); we keep decisive French votes, take the full conversation the voter saw, and compute all features on it. Topic (`categories`) and reading depth (turn count) are native to the export. Votes only, no reactions; no CamemBERT perplexity (GPU-only).
+A single dataset: **`ministere-culture/comparia-fr-arena`** (Ministère de la Culture), revision `8cd6488` of the consolidated Compar:IA release. It is turn-level (641K rows); we retain the last decisive French reaction per conversation. The current pipeline computes features on the completed conversation, including later turns in 11.2% of cases; this must be changed to vote-truncated prefixes before publication. No CamemBERT perplexity is computed (GPU-only).
 
 ## Quickstart
 
@@ -47,6 +48,8 @@ from any directory.
 | `extract_prompts.py` → `task_classify.py` → `task_analysis.py` | §4.8 | `results/task_results.json` (task proxy; needs the raw dataset, run separately from `run.py`) |
 | `robustness_random.py`; `time_block_bootstrap.py` | §4.9 | `results/robustness_random_results.json`, `time_block_results.json` (block bootstrap needs `data/timestamps.parquet`) |
 | `mattr_stress.py`; `mattr_alt.py` | §4.10 | `results/mattr_stress_results.json`, `mattr_alt_results.json` (`mattr_alt.py` needs the raw dataset) |
+| `external_leaderboard_analysis.py` | §4.11 | `results/external_leaderboard_results.json` (downloads pinned public LMArena snapshots) |
+| `audit_vote_timing.py` | §2.4, §4.6 | `results/vote_timing_audit_results.json` |
 | `endogeneity_analysis.py` | §5.3 | `results/endogeneity_results.json` |
 | `qualitative_analysis.py` | §5.4 | `results/qualitative_results.json` |
 | `generate_linguistic_figure.py` | §4.5 | `figures/fig9_linguistic.*` (Figure 1) |

@@ -20,7 +20,9 @@ count, which also settles the French-tokenization concern.
 
 Method mirrors analyze_core.py (per-model Bradley-Terry dummies + standardized
 A-B style contrasts, sklearn logistic, 1000x bootstrap, Benjamini-Hochberg), so
-every coefficient here is directly comparable to the formatting coefficients.
+every coefficient here is directly comparable to this repository's formatting
+coefficients (but not numerically identical in scaling to LMArena's relative-
+difference style features).
 
     python linguistic_analysis.py     # -> linguistic_results.json
 """
@@ -93,8 +95,9 @@ def fit_bt(battles, models, style_features):
 
 def fit_pooled(battles, models, style_features):
     """Reduced-form logit: style contrasts + intercept, NO per-model dummies.
-    The gap between this and fit_bt is the part of a style effect that was really
-    model strength (the confounder-vs-mediator question, seen feature by feature)."""
+    The gap between this and fit_bt describes between-model composition: how a
+    pooled association changes after adding model effects. It does not identify
+    a causal mediator or confounder."""
     _, Xs, y = _design(battles, models, style_features)
     X = np.column_stack([np.ones(len(Xs)), Xs])
     lr = LogisticRegression(fit_intercept=False, penalty=None, max_iter=5000)
@@ -170,7 +173,7 @@ def main():
     for name, s in lls.items():
         print(f"  {name:20s} loglik={s['loglik']:.1f}  acc={s['acc']:.4f}  k={s['k']}")
 
-    # Reduced-form vs BT for the joint set (confounder-vs-mediator, per feature).
+    # Reduced-form vs BT for the joint set (between-model composition).
     pooled = fit_pooled(sub, models, allf)
     results["pooled_vs_bt"] = {f: {"pooled": pooled[f], "bt": fits["joint"][f]} for f in allf}
     print("\nReduced-form (no model strengths) vs BT, joint set:")

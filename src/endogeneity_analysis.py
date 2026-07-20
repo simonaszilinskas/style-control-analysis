@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """
-Endogeneity: is formatting a confounder or a mediator? (§5.3)
+Endogeneity and between-model composition (§5.3)
 
 Three formatting-intensity tests on the comparia-fr-arena battle table, none of
 which need model metadata beyond the battles themselves:
 
-  1. quality-formatting correlation: does model formatting intensity track the
+  1. rating-formatting correlation: does model formatting intensity track the
      standard BT rating, and does that association shrink under style control?
-  2. tier-stratified style effects: is the formatting premium larger among
-     weaker models (confounder) than stronger ones (mediator)?
+  2. tier-stratified style associations: do they differ between lower-rated and
+     higher-rated model pairs? This is descriptive heterogeneity, not causal
+     identification of a confounder or mediator.
   3. rating change vs formatting intensity across models.
 
     python endogeneity_analysis.py     # -> endogeneity_results.json

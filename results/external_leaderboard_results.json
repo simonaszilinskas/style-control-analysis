@@ -1,0 +1,294 @@
+{
+  "comparia_common_support": {
+    "battles": 127893,
+    "models": 116
+  },
+  "matching": "exact model identifiers only",
+  "lmarena_revision": "afed939e10281b660a4369206ca505b2bf5e0208",
+  "lmarena_publish_date": "2026-07-16",
+  "n_bootstrap": 10000,
+  "comparisons": {
+    "lmarena_raw_overall": {
+      "n_exact_matches": 49,
+      "spearman": {
+        "raw": 0.7908163265306121,
+        "formatting_controlled": 0.7995918367346939,
+        "joint_controlled": 0.7306122448979591
+      },
+      "delta_vs_raw": {
+        "formatting_controlled": {
+          "point": 0.008775510204081849,
+          "bootstrap_95_ci": [
+            -0.03415004359395117,
+            0.05866264134677885
+          ]
+        },
+        "joint_controlled": {
+          "point": -0.060204081632653006,
+          "bootstrap_95_ci": [
+            -0.12778282748385678,
+            0.0030699882679251634
+          ]
+        }
+      },
+      "matched_models": [
+        "deepseek-r1",
+        "deepseek-r1-0528",
+        "deepseek-v3-0324",
+        "deepseek-v4-flash",
+        "deepseek-v4-pro",
+        "gemini-2.5-flash",
+        "gemini-3.1-flash-lite-preview",
+        "gemini-3.1-pro-preview",
+        "gemma-2-9b-it",
+        "gemma-3n-e4b-it",
+        "glm-4.5",
+        "glm-4.6",
+        "glm-4.7",
+        "glm-5",
+        "glm-5.1",
+        "gpt-4o-2024-08-06",
+        "gpt-4o-mini-2024-07-18",
+        "gpt-5.1",
+        "gpt-5.2",
+        "gpt-5.4",
+        "gpt-5.5",
+        "gpt-oss-120b",
+        "gpt-oss-20b",
+        "granite-4.1-8b",
+        "jamba-1.5-large",
+        "kimi-k2.6",
+        "llama-3.1-nemotron-70b-instruct",
+        "minimax-m2",
+        "minimax-m2.5",
+        "minimax-m2.7",
+        "mistral-large-2411",
+        "mistral-medium-2508",
+        "mistral-small-24b-instruct-2501",
+        "mistral-small-2506",
+        "mixtral-8x22b-instruct-v0.1",
+        "mixtral-8x7b-instruct-v0.1",
+        "o3-mini",
+        "olmo-3-32b-think",
+        "phi-4",
+        "qwen2.5-coder-32b-instruct",
+        "qwen3-30b-a3b",
+        "qwen3-32b",
+        "qwen3-max-2025-09-23",
+        "qwen3.5-35b-a3b",
+        "qwen3.5-397b-a17b",
+        "qwen3.6-plus",
+        "qwq-32b",
+        "trinity-large-preview",
+        "trinity-large-thinking"
+      ]
+    },
+    "lmarena_raw_french": {
+      "n_exact_matches": 40,
+      "spearman": {
+        "raw": 0.7778611632270169,
+        "formatting_controlled": 0.7984990619136962,
+        "joint_controlled": 0.7210131332082553
+      },
+      "delta_vs_raw": {
+        "formatting_controlled": {
+          "point": 0.020637898686679312,
+          "bootstrap_95_ci": [
+            -0.05076189867000678,
+            0.10503767596213402
+          ]
+        },
+        "joint_controlled": {
+          "point": -0.0568480300187616,
+          "bootstrap_95_ci": [
+            -0.14856410666119813,
+            0.039470067366047
+          ]
+        }
+      },
+      "matched_models": [
+        "deepseek-r1",
+        "deepseek-r1-0528",
+        "deepseek-v3-0324",
+        "deepseek-v4-flash",
+        "deepseek-v4-pro",
+        "gemini-2.5-flash",
+        "gemini-3.1-flash-lite-preview",
+        "gemini-3.1-pro-preview",
+        "gemma-2-9b-it",
+        "gemma-3n-e4b-it",
+        "glm-4.5",
+        "glm-4.6",
+        "glm-4.7",
+        "glm-5",
+        "glm-5.1",
+        "gpt-4o-2024-08-06",
+        "gpt-4o-mini-2024-07-18",
+        "gpt-5.1",
+        "gpt-5.2",
+        "gpt-5.4",
+        "gpt-5.5",
+        "gpt-oss-120b",
+        "kimi-k2.6",
+        "minimax-m2.5",
+        "minimax-m2.7",
+        "mistral-large-2411",
+        "mistral-medium-2508",
+        "mistral-small-24b-instruct-2501",
+        "mistral-small-2506",
+        "mixtral-8x22b-instruct-v0.1",
+        "mixtral-8x7b-instruct-v0.1",
+        "o3-mini",
+        "phi-4",
+        "qwen3-30b-a3b",
+        "qwen3.5-35b-a3b",
+        "qwen3.5-397b-a17b",
+        "qwen3.6-plus",
+        "qwq-32b",
+        "trinity-large-preview",
+        "trinity-large-thinking"
+      ]
+    },
+    "lmarena_style_controlled_overall": {
+      "n_exact_matches": 49,
+      "spearman": {
+        "raw": 0.7674489795918368,
+        "formatting_controlled": 0.8056122448979591,
+        "joint_controlled": 0.7518367346938775
+      },
+      "delta_vs_raw": {
+        "formatting_controlled": {
+          "point": 0.03816326530612235,
+          "bootstrap_95_ci": [
+            -0.009611109642790145,
+            0.09777902717437596
+          ]
+        },
+        "joint_controlled": {
+          "point": -0.015612244897959315,
+          "bootstrap_95_ci": [
+            -0.08765734538776208,
+            0.05826071257291479
+          ]
+        }
+      },
+      "matched_models": [
+        "deepseek-r1",
+        "deepseek-r1-0528",
+        "deepseek-v3-0324",
+        "deepseek-v4-flash",
+        "deepseek-v4-pro",
+        "gemini-2.5-flash",
+        "gemini-3.1-flash-lite-preview",
+        "gemini-3.1-pro-preview",
+        "gemma-2-9b-it",
+        "gemma-3n-e4b-it",
+        "glm-4.5",
+        "glm-4.6",
+        "glm-4.7",
+        "glm-5",
+        "glm-5.1",
+        "gpt-4o-2024-08-06",
+        "gpt-4o-mini-2024-07-18",
+        "gpt-5.1",
+        "gpt-5.2",
+        "gpt-5.4",
+        "gpt-5.5",
+        "gpt-oss-120b",
+        "gpt-oss-20b",
+        "granite-4.1-8b",
+        "jamba-1.5-large",
+        "kimi-k2.6",
+        "llama-3.1-nemotron-70b-instruct",
+        "minimax-m2",
+        "minimax-m2.5",
+        "minimax-m2.7",
+        "mistral-large-2411",
+        "mistral-medium-2508",
+        "mistral-small-24b-instruct-2501",
+        "mistral-small-2506",
+        "mixtral-8x22b-instruct-v0.1",
+        "mixtral-8x7b-instruct-v0.1",
+        "o3-mini",
+        "olmo-3-32b-think",
+        "phi-4",
+        "qwen2.5-coder-32b-instruct",
+        "qwen3-30b-a3b",
+        "qwen3-32b",
+        "qwen3-max-2025-09-23",
+        "qwen3.5-35b-a3b",
+        "qwen3.5-397b-a17b",
+        "qwen3.6-plus",
+        "qwq-32b",
+        "trinity-large-preview",
+        "trinity-large-thinking"
+      ]
+    },
+    "lmarena_style_controlled_french": {
+      "n_exact_matches": 40,
+      "spearman": {
+        "raw": 0.7009380863039401,
+        "formatting_controlled": 0.7696060037523454,
+        "joint_controlled": 0.7150093808630394
+      },
+      "delta_vs_raw": {
+        "formatting_controlled": {
+          "point": 0.06866791744840539,
+          "bootstrap_95_ci": [
+            -0.011848898375451828,
+            0.17658771896007838
+          ]
+        },
+        "joint_controlled": {
+          "point": 0.01407129455909939,
+          "bootstrap_95_ci": [
+            -0.10061869466107834,
+            0.139824801347554
+          ]
+        }
+      },
+      "matched_models": [
+        "deepseek-r1",
+        "deepseek-r1-0528",
+        "deepseek-v3-0324",
+        "deepseek-v4-flash",
+        "deepseek-v4-pro",
+        "gemini-2.5-flash",
+        "gemini-3.1-flash-lite-preview",
+        "gemini-3.1-pro-preview",
+        "gemma-2-9b-it",
+        "gemma-3n-e4b-it",
+        "glm-4.5",
+        "glm-4.6",
+        "glm-4.7",
+        "glm-5",
+        "glm-5.1",
+        "gpt-4o-2024-08-06",
+        "gpt-4o-mini-2024-07-18",
+        "gpt-5.1",
+        "gpt-5.2",
+        "gpt-5.4",
+        "gpt-5.5",
+        "gpt-oss-120b",
+        "kimi-k2.6",
+        "minimax-m2.5",
+        "minimax-m2.7",
+        "mistral-large-2411",
+        "mistral-medium-2508",
+        "mistral-small-24b-instruct-2501",
+        "mistral-small-2506",
+        "mixtral-8x22b-instruct-v0.1",
+        "mixtral-8x7b-instruct-v0.1",
+        "o3-mini",
+        "phi-4",
+        "qwen3-30b-a3b",
+        "qwen3.5-35b-a3b",
+        "qwen3.5-397b-a17b",
+        "qwen3.6-plus",
+        "qwq-32b",
+        "trinity-large-preview",
+        "trinity-large-thinking"
+      ]
+    }
+  }
+}

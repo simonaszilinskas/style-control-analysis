@@ -4,8 +4,13 @@ Build the compar:IA battle table from comparia-fr-arena (the consolidated releas
 
 comparia-fr-arena is turn-level: one row per turn, and `choice` (a_better /
 b_better) is populated on the single turn where the user voted. We keep those
-decisive French votes, take the full conversation the voter saw at that point,
-concatenate its assistant messages, and compute the full feature set on it.
+decisive French votes, retain the last decisive reaction per comparison, and
+compute features on the release's completed `full_conversation_*` fields.
+
+IMPORTANT: those fields can include turns after the retained reaction. The
+current paper reports the resulting 11.2% look-ahead rate and treats all results
+as requiring a vote-truncated rerun. Do not describe `conv_turns` as turns before
+the vote; see `audit_vote_timing.py`.
 
 One row per comparison (battle):
   conversation_pair_id, model_a_name, model_b_name, winner (model_a/model_b),

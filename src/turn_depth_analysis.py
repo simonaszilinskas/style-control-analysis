@@ -1,23 +1,18 @@
 #!/usr/bin/env python3
 """
-Compar:IA Style Control, Reading-Depth Extension
+Compar:IA Style Control, Completed-Conversation-Length Extension
 
-Does presentation bias depend on how attentively the answer is read? A single
-one-shot vote invites a quick, surface judgement; a multi-turn conversation
-signals commitment and (plausibly) a more careful read. If presentation
-features win mostly through a glance at the shape of the text, their pull should
-weaken once the reader engages over several turns.
-
-We proxy reading depth by conversation length: single-turn battles (the user
-asked once, then voted) vs multi-turn battles (>= 2 user turns before voting).
-Turn counts come from the votes export (`conv_turns`, which matches the count of
-user messages 99% of the time); they are only cleanly defined for vote-derived
-battles, so this analysis is vote-only.
+This exploratory analysis tests whether presentation associations differ
+between completed conversations with one user turn and those with two or more.
+The current battle table derives `conv_turns` from completed conversation
+fields, not the prefix visible at the retained vote. A separate timing audit
+shows that this creates post-vote look-ahead, so the interaction must not be
+interpreted as reading depth, attentiveness, or causal moderation.
 
 The test is a single pooled Bradley-Terry model with per-model strengths, the
 standardized A-B style contrasts, and each contrast interacted with a multi-turn
 indicator. The interaction coefficient is the object of interest: negative means
-the feature moves a vote less when the conversation ran long. Standardization is
+the feature-vote association is smaller in the eventual multi-turn stratum. Standardization is
 done once on the full vote sample so the main effect and the interaction share a
 scale. We bootstrap 1000x (resampling battles) and apply Benjamini-Hochberg.
 

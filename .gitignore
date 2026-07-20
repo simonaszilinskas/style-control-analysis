@@ -30,3 +30,6 @@ data/prompt_parts/
 data/task_val_sample*.json
 
 data/mattr_alt_parts/
+
+# Public external leaderboard snapshots (downloaded from pinned revisions)
+data/external/

@@ -19,11 +19,11 @@ Two questions:
       headers. If they are stable across topics, the premium is not just "some
       subjects invite formatting."
 
-  Q2. Is the reading-depth result (section 4.9) robust to topic? Re-fit the
+  Q2. Is the completed-conversation-length interaction robust to topic? Re-fit the
       formatting x multi-turn interaction model with topic x formatting
       interactions added, so every topic gets its own formatting slope. If the
-      multi-turn interactions stay negative and significant, the reading-depth
-      shrinkage is not just multi-turn battles being a different topic mix.
+      multi-turn interactions stay negative and significant, the completed-
+      conversation-length difference is not just a different topic mix.
 
     python topic_analysis.py   # -> topic_results.json
 """
@@ -112,7 +112,7 @@ def q1_topic_stratified():
 
 
 # --------------------------------------------------------------------------- #
-# Q2: reading-depth interaction, now with topic x formatting interactions
+# Q2: completed-conversation-length interaction, with topic x formatting interactions
 # --------------------------------------------------------------------------- #
 def _primary_topic_dummies(d):
     counts = d["topic"].value_counts()
@@ -155,7 +155,7 @@ def q2_reading_depth_topic_controlled():
     models = sorted(counts[counts >= MIN_BATTLES].index)
     d = d[d["model_a_name"].isin(models) & d["model_b_name"].isin(models)].copy()
     topic_series, topic_levels, ref = _primary_topic_dummies(d)
-    print(f"\n=== Q2: reading-depth interaction with topic x formatting controls ===")
+    print(f"\n=== Q2: conversation-length interaction with topic x formatting controls ===")
     print(f"battles: {len(d):,}  single: {(d.multiturn==0).sum():,}  "
           f"multi: {(d.multiturn==1).sum():,}  models: {len(models)}  "
           f"topic dummies: {len(topic_levels)} (ref={ref})")
