@@ -13,7 +13,8 @@ Which presentation features retain an association with votes after joint adjustm
 - **Much apparent linguistic association is between models:** several coefficients shrink substantially when per-model fixed effects are added. This does not identify presentation as either bias or a quality signal.
 - **Exploratory heterogeneity varies with completed conversation length.** Formatting and length associations are smaller in the eventual multi-turn stratum (bold +35%→+8% odds/SD), while MATTR is unchanged. Because the current fields include post-vote turns, this cannot be interpreted as pre-vote depth or attention.
 - **The bold association is not solely a subject-matter artefact.** It is positive within every large topic and remains after topic × formatting controls; this is still observational rather than causal.
-- **Leaderboard impact:** controlling for the full presentation bundle moves 37 of 116 models by ≥10 ranks (r = 0.94). In exact-name external comparisons, formatting-only control has the highest correlation with all four LMArena rankings tested, but its gains over raw Compar:IA are not statistically decisive; full joint control usually correlates less strongly.
+- **External agreement depends on the target.** Formatting-only control has the highest correlation with all four LMArena preference rankings, while raw Compar:IA ranks highest against seven of eight modern capability measures. On the two largest capability overlaps, ECI is raw 0.741 / formatting 0.719 / joint 0.663 and GPQA Diamond is 0.759 / 0.736 / 0.669. Most narrow-control differences remain within bootstrap uncertainty.
+- **Leaderboard impact:** controlling for the full presentation bundle moves 37 of 116 models by ≥10 ranks (r = 0.94), but the external comparisons show that more adjustment is not monotonically better.
 - **Important timing limitation:** the current builder uses completed `full_conversation_*` fields. Post-vote turns enter the measured text in 11.2% of battles, and 40.5% of the nominal multi-turn stratum was single-turn at the retained vote. The paper now flags the depth analysis as uninterpretable and the primary estimates as requiring a vote-truncated rerun.
 
 ## Data
@@ -48,7 +49,7 @@ from any directory.
 | `extract_prompts.py` → `task_classify.py` → `task_analysis.py` | §4.8 | `results/task_results.json` (task proxy; needs the raw dataset, run separately from `run.py`) |
 | `robustness_random.py`; `time_block_bootstrap.py` | §4.9 | `results/robustness_random_results.json`, `time_block_results.json` (block bootstrap needs `data/timestamps.parquet`) |
 | `mattr_stress.py`; `mattr_alt.py` | §4.10 | `results/mattr_stress_results.json`, `mattr_alt_results.json` (`mattr_alt.py` needs the raw dataset) |
-| `external_leaderboard_analysis.py` | §4.11 | `results/external_leaderboard_results.json` (downloads pinned public LMArena snapshots) |
+| `external_leaderboard_analysis.py` | §4.11 | `results/external_leaderboard_results.json` (pinned LMArena snapshots plus a content-hashed Epoch benchmark archive) |
 | `audit_vote_timing.py` | §2.4, §4.6 | `results/vote_timing_audit_results.json` |
 | `endogeneity_analysis.py` | §5.3 | `results/endogeneity_results.json` |
 | `qualitative_analysis.py` | §5.4 | `results/qualitative_results.json` |
