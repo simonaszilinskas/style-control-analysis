@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
 """
-Compar:IA Style Control, Completed-Conversation-Length Extension
+Compar:IA Style Control, Vote-Time Conversation-Depth Extension
 
 This exploratory analysis tests whether presentation associations differ
-between completed conversations with one user turn and those with two or more.
-The current battle table derives `conv_turns` from completed conversation
-fields, not the prefix visible at the retained vote. A separate timing audit
-shows that this creates post-vote look-ahead, so the interaction must not be
-interpreted as reading depth, attentiveness, or causal moderation.
+between conversation prefixes with one visible user turn and those with two or
+more at the retained vote. The battle builder truncates both response text and
+turn count at that vote. The interaction remains observational: pre-vote depth
+is endogenous and is not itself a direct measure of attentiveness.
 
 The test is a single pooled Bradley-Terry model with per-model strengths, the
 standardized A-B style contrasts, and each contrast interacted with a multi-turn
 indicator. The interaction coefficient is the object of interest: negative means
-the feature-vote association is smaller in the eventual multi-turn stratum. Standardization is
+the feature-vote association is smaller in the visible multi-turn stratum. Standardization is
 done once on the full vote sample so the main effect and the interaction share a
 scale. We bootstrap 1000x (resampling battles) and apply Benjamini-Hochberg.
 

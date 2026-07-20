@@ -4,11 +4,13 @@ Compare Compar:IA rankings with preference leaderboards and capability benchmark
 
 The external files are public and fixed by a Hugging Face revision or content
 hash. Only exact identifiers and audited same-build aliases are matched: no
-fuzzy model-family substitutions. We report Spearman rank correlations for Compar:IA's raw,
-formatting-controlled, and full joint-controlled rankings against LMArena's
-raw and style-controlled Text Arena rankings, both overall and for French.  We
-also compare against the Epoch AI Benchmarking Hub's modern composite and
-specialist capability evaluations, using an audited model-version alias table.
+fuzzy model-family substitutions. We report Spearman rank correlations for
+Compar:IA's raw, formatting-controlled, and full joint-controlled rankings
+against LMArena's raw and style-controlled Text Arena rankings, both overall
+and for French. We also compare against the Epoch AI Benchmarking Hub when its
+archive matches the audited hash. If that live archive changes, preference
+results are still saved and capability results are marked unavailable rather
+than silently switching snapshots.
 
     python src/external_leaderboard_analysis.py
         -> results/external_leaderboard_results.json
@@ -194,46 +196,53 @@ def main():
             print(f"{key}: n={len(common)}  "
                   + "  ".join(f"{name}={value:.3f}" for name, value in rho.items()))
 
-    epoch = load_epoch_archive()
     epoch_comparisons = {}
-    for key, (filename, score_column) in EPOCH_BENCHMARKS.items():
-        frame = pd.read_csv(epoch.open(filename))
-        frame = frame.dropna(subset=["Model version", score_column]).copy()
-        frame["normalized_id"] = frame["Model version"].map(normalized_model_id)
-        # Keep duplicate rows only when they report the same score. Differing
-        # scores can encode an unlabelled reasoning budget, scaffold, or edit
-        # format; averaging those would invent a model configuration.
-        grouped = frame.groupby("normalized_id")[score_column]
-        summary = grouped.agg(["count", "mean", "min", "max"])
-        ambiguous_ids = set(summary[
-            (summary["count"] > 1)
-            & ((summary["max"] - summary["min"]).abs() > 1e-12)
-        ].index)
-        by_id = summary.loc[~summary.index.isin(ambiguous_ids), "mean"]
-        matched = {}
-        matched_source_ids = {}
-        for model in models:
-            source_id = EPOCH_MODEL_ALIASES.get(model, model)
-            normalized = normalized_model_id(source_id)
-            if normalized in by_id.index:
-                matched[model] = float(by_id[normalized])
-                matched_source_ids[model] = source_id
-        common = sorted(matched)
-        rho, delta = compare_scores(ratings, matched, common, rng)
-        epoch_comparisons[key] = {
-            "source_type": "capability_benchmark",
-            "source_file": filename,
-            "score_column": score_column,
-            "n_version_matches": len(common),
-            "spearman": rho,
-            "delta_vs_raw": delta,
-            "matched_models": common,
-            "matched_source_ids": matched_source_ids,
-            "external_scores": matched,
-            "excluded_ambiguous_source_ids": sorted(ambiguous_ids),
-        }
-        print(f"{key}: n={len(common)}  "
-              + "  ".join(f"{name}={value:.3f}" for name, value in rho.items()))
+    epoch_error = None
+    try:
+        epoch = load_epoch_archive()
+    except RuntimeError as error:
+        epoch = None
+        epoch_error = str(error)
+        print(f"Epoch capability comparison unavailable: {epoch_error}")
+    if epoch is not None:
+        for key, (filename, score_column) in EPOCH_BENCHMARKS.items():
+            frame = pd.read_csv(epoch.open(filename))
+            frame = frame.dropna(subset=["Model version", score_column]).copy()
+            frame["normalized_id"] = frame["Model version"].map(normalized_model_id)
+            # Keep duplicate rows only when they report the same score. Differing
+            # scores can encode an unlabelled reasoning budget, scaffold, or edit
+            # format; averaging those would invent a model configuration.
+            grouped = frame.groupby("normalized_id")[score_column]
+            summary = grouped.agg(["count", "mean", "min", "max"])
+            ambiguous_ids = set(summary[
+                (summary["count"] > 1)
+                & ((summary["max"] - summary["min"]).abs() > 1e-12)
+            ].index)
+            by_id = summary.loc[~summary.index.isin(ambiguous_ids), "mean"]
+            matched = {}
+            matched_source_ids = {}
+            for model in models:
+                source_id = EPOCH_MODEL_ALIASES.get(model, model)
+                normalized = normalized_model_id(source_id)
+                if normalized in by_id.index:
+                    matched[model] = float(by_id[normalized])
+                    matched_source_ids[model] = source_id
+            common = sorted(matched)
+            rho, delta = compare_scores(ratings, matched, common, rng)
+            epoch_comparisons[key] = {
+                "source_type": "capability_benchmark",
+                "source_file": filename,
+                "score_column": score_column,
+                "n_version_matches": len(common),
+                "spearman": rho,
+                "delta_vs_raw": delta,
+                "matched_models": common,
+                "matched_source_ids": matched_source_ids,
+                "external_scores": matched,
+                "excluded_ambiguous_source_ids": sorted(ambiguous_ids),
+            }
+            print(f"{key}: n={len(common)}  "
+                  + "  ".join(f"{name}={value:.3f}" for name, value in rho.items()))
 
     output = {
         "comparia_common_support": {
@@ -250,6 +259,8 @@ def main():
             "snapshot_date": EPOCH_SNAPSHOT_DATE,
             "sha256": EPOCH_SHA256,
             "matching": "exact normalized version IDs plus audited aliases",
+            "status": "available" if epoch is not None else "unavailable",
+            "error": epoch_error,
         },
         "capability_benchmarks": epoch_comparisons,
     }

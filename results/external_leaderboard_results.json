@@ -1,6 +1,6 @@
 {
   "comparia_common_support": {
-    "battles": 127893,
+    "battles": 127010,
     "models": 116
   },
   "matching": "exact model identifiers only",
@@ -12,23 +12,23 @@
       "source_type": "human_preference_leaderboard",
       "n_exact_matches": 49,
       "spearman": {
-        "raw": 0.7908163265306121,
-        "formatting_controlled": 0.7995918367346939,
-        "joint_controlled": 0.7306122448979591
+        "raw": 0.7917346938775508,
+        "formatting_controlled": 0.8001020408163264,
+        "joint_controlled": 0.7138775510204082
       },
       "delta_vs_raw": {
         "formatting_controlled": {
-          "point": 0.008775510204081849,
+          "point": 0.00836734693877561,
           "bootstrap_95_ci": [
-            -0.03415004359395117,
-            0.05866264134677885
+            -0.04445665242575785,
+            0.06641556525458828
           ]
         },
         "joint_controlled": {
-          "point": -0.060204081632653006,
+          "point": -0.07785714285714262,
           "bootstrap_95_ci": [
-            -0.12778282748385678,
-            0.0030699882679251634
+            -0.15613620324377114,
+            -0.009817444115975472
           ]
         }
       },
@@ -139,23 +139,23 @@
       "source_type": "human_preference_leaderboard",
       "n_exact_matches": 40,
       "spearman": {
-        "raw": 0.7778611632270169,
-        "formatting_controlled": 0.7984990619136962,
-        "joint_controlled": 0.7210131332082553
+        "raw": 0.7791744840525331,
+        "formatting_controlled": 0.7949343339587243,
+        "joint_controlled": 0.7009380863039401
       },
       "delta_vs_raw": {
         "formatting_controlled": {
-          "point": 0.020637898686679312,
+          "point": 0.01575984990619117,
           "bootstrap_95_ci": [
-            -0.05076189867000678,
-            0.10503767596213402
+            -0.06602321008226,
+            0.10905280808661622
           ]
         },
         "joint_controlled": {
-          "point": -0.0568480300187616,
+          "point": -0.07823639774859303,
           "bootstrap_95_ci": [
-            -0.14856410666119813,
-            0.039470067366047
+            -0.17747614056266883,
+            0.023151525828765795
           ]
         }
       },
@@ -248,23 +248,23 @@
       "source_type": "human_preference_leaderboard",
       "n_exact_matches": 49,
       "spearman": {
-        "raw": 0.7674489795918368,
-        "formatting_controlled": 0.8056122448979591,
-        "joint_controlled": 0.7518367346938775
+        "raw": 0.7680612244897959,
+        "formatting_controlled": 0.8082653061224488,
+        "joint_controlled": 0.7393877551020407
       },
       "delta_vs_raw": {
         "formatting_controlled": {
-          "point": 0.03816326530612235,
+          "point": 0.04020408163265299,
           "bootstrap_95_ci": [
-            -0.009611109642790145,
-            0.09777902717437596
+            -0.020328422000321363,
+            0.11215404852312671
           ]
         },
         "joint_controlled": {
-          "point": -0.015612244897959315,
+          "point": -0.02867346938775517,
           "bootstrap_95_ci": [
-            -0.08765734538776208,
-            0.05826071257291479
+            -0.10981176966772853,
+            0.05131815591788338
           ]
         }
       },
@@ -376,22 +376,22 @@
       "n_exact_matches": 40,
       "spearman": {
         "raw": 0.7009380863039401,
-        "formatting_controlled": 0.7696060037523454,
-        "joint_controlled": 0.7150093808630394
+        "formatting_controlled": 0.7709193245778612,
+        "joint_controlled": 0.7000000000000001
       },
       "delta_vs_raw": {
         "formatting_controlled": {
-          "point": 0.06866791744840539,
+          "point": 0.06998123827392111,
           "bootstrap_95_ci": [
-            -0.011848898375451828,
-            0.17658771896007838
+            -0.024072709614323104,
+            0.18936515148830615
           ]
         },
         "joint_controlled": {
-          "point": 0.01407129455909939,
+          "point": -0.0009380863039399889,
           "bootstrap_95_ci": [
-            -0.10061869466107834,
-            0.139824801347554
+            -0.12517852393543477,
+            0.13358544220454732
           ]
         }
       },
@@ -485,715 +485,9 @@
     "url": "https://epoch.ai/data/benchmark_data.zip",
     "snapshot_date": "2026-07-19",
     "sha256": "9b19aff50418b2c61bffbb93656db4d5dda7dd9250a22f0c27816bd5a24ac1ae",
-    "matching": "exact normalized version IDs plus audited aliases"
+    "matching": "exact normalized version IDs plus audited aliases",
+    "status": "unavailable",
+    "error": "Epoch snapshot changed; audit the new data and update the snapshot date and SHA-256 before proceeding."
   },
-  "capability_benchmarks": {
-    "epoch_capabilities_index": {
-      "source_type": "capability_benchmark",
-      "source_file": "epoch_capabilities_index.csv",
-      "score_column": "ECI Score",
-      "n_version_matches": 37,
-      "spearman": {
-        "raw": 0.7406353722143194,
-        "formatting_controlled": 0.7190611664295874,
-        "joint_controlled": 0.6626363205310573
-      },
-      "delta_vs_raw": {
-        "formatting_controlled": {
-          "point": -0.021574205784732015,
-          "bootstrap_95_ci": [
-            -0.08800173652358638,
-            0.042821585662401684
-          ]
-        },
-        "joint_controlled": {
-          "point": -0.07799905168326215,
-          "bootstrap_95_ci": [
-            -0.18205966739404814,
-            -0.002380081108655272
-          ]
-        }
-      },
-      "matched_models": [
-        "claude-3-5-sonnet-v2",
-        "claude-3-7-sonnet",
-        "deepseek-r1",
-        "deepseek-r1-0528",
-        "deepseek-v3-0324",
-        "gemini-2.0-flash",
-        "gemini-2.5-flash",
-        "gemini-3-flash-preview",
-        "gemini-3-pro-preview",
-        "gemini-3.1-pro-preview",
-        "gemma-2-9b-it",
-        "gemma-3-27b",
-        "glm-4.6",
-        "glm-4.7",
-        "glm-5",
-        "glm-5.1",
-        "gpt-4o-2024-08-06",
-        "gpt-4o-mini-2024-07-18",
-        "gpt-oss-120b",
-        "kimi-k2-thinking",
-        "kimi-k2.5",
-        "kimi-k2.6",
-        "llama-3.1-405b",
-        "llama-3.1-70b",
-        "llama-3.1-8b",
-        "llama-3.3-70b",
-        "magistral-small-2506",
-        "minimax-m2.5",
-        "minimax-m2.7",
-        "mistral-large-2411",
-        "mistral-small-3.1-24b",
-        "mixtral-8x22b-instruct-v0.1",
-        "mixtral-8x7b-instruct-v0.1",
-        "phi-4",
-        "qwen3-max-2025-09-23",
-        "qwen3.6-plus",
-        "qwen3.7-max"
-      ],
-      "matched_source_ids": {
-        "claude-3-5-sonnet-v2": "claude-3-5-sonnet-20241022",
-        "claude-3-7-sonnet": "claude-3-7-sonnet-20250219",
-        "deepseek-r1": "deepseek-r1",
-        "deepseek-r1-0528": "deepseek-r1-0528",
-        "deepseek-v3-0324": "deepseek-v3-0324",
-        "gemini-2.0-flash": "gemini-2.0-flash-001",
-        "gemini-2.5-flash": "gemini-2.5-flash",
-        "gemini-3-flash-preview": "gemini-3-flash-preview",
-        "gemini-3-pro-preview": "gemini-3-pro-preview",
-        "gemini-3.1-pro-preview": "gemini-3.1-pro-preview",
-        "gemma-2-9b-it": "gemma-2-9b-it",
-        "gemma-3-27b": "gemma-3-27b-it",
-        "glm-4.6": "glm-4.6",
-        "glm-4.7": "glm-4.7",
-        "glm-5": "glm-5",
-        "glm-5.1": "glm-5.1",
-        "gpt-4o-2024-08-06": "gpt-4o-2024-08-06",
-        "gpt-4o-mini-2024-07-18": "gpt-4o-mini-2024-07-18",
-        "gpt-oss-120b": "gpt-oss-120b",
-        "kimi-k2-thinking": "kimi-k2-thinking",
-        "kimi-k2.5": "kimi-k2.5",
-        "kimi-k2.6": "kimi-k2.6",
-        "llama-3.1-405b": "Llama-3.1-405B-Instruct",
-        "llama-3.1-70b": "Llama-3.1-70B-Instruct",
-        "llama-3.1-8b": "Llama-3.1-8B-Instruct",
-        "llama-3.3-70b": "Llama-3.3-70B-Instruct",
-        "magistral-small-2506": "magistral-small-2506",
-        "minimax-m2.5": "minimax-m2.5",
-        "minimax-m2.7": "minimax-m2.7",
-        "mistral-large-2411": "mistral-large-2411",
-        "mistral-small-3.1-24b": "mistral-small-2503",
-        "mixtral-8x22b-instruct-v0.1": "mixtral-8x22b-instruct-v0.1",
-        "mixtral-8x7b-instruct-v0.1": "mixtral-8x7b-instruct-v0.1",
-        "phi-4": "phi-4",
-        "qwen3-max-2025-09-23": "qwen3-max-2025-09-23",
-        "qwen3.6-plus": "qwen3.6-plus",
-        "qwen3.7-max": "qwen3.7-max"
-      },
-      "external_scores": {
-        "claude-3-5-sonnet-v2": 134.28,
-        "claude-3-7-sonnet": 141.7,
-        "deepseek-r1": 139.67,
-        "deepseek-r1-0528": 142.0,
-        "deepseek-v3-0324": 137.04,
-        "gemini-2.0-flash": 135.79,
-        "gemini-2.5-flash": 140.26,
-        "gemini-3-flash-preview": 150.62,
-        "gemini-3-pro-preview": 153.24,
-        "gemini-3.1-pro-preview": 154.84,
-        "gemma-2-9b-it": 119.58,
-        "gemma-3-27b": 131.08,
-        "glm-4.6": 140.95,
-        "glm-4.7": 143.73,
-        "glm-5": 146.39,
-        "glm-5.1": 150.39,
-        "gpt-4o-2024-08-06": 129.16,
-        "gpt-4o-mini-2024-07-18": 126.94,
-        "gpt-oss-120b": 140.57,
-        "kimi-k2-thinking": 146.01,
-        "kimi-k2.5": 148.24,
-        "kimi-k2.6": 151.02,
-        "llama-3.1-405b": 128.99,
-        "llama-3.1-70b": 125.53,
-        "llama-3.1-8b": 115.45,
-        "llama-3.3-70b": 127.5,
-        "magistral-small-2506": 133.07,
-        "minimax-m2.5": 147.07,
-        "minimax-m2.7": 145.61,
-        "mistral-large-2411": 128.81,
-        "mistral-small-3.1-24b": 127.75,
-        "mixtral-8x22b-instruct-v0.1": 121.28,
-        "mixtral-8x7b-instruct-v0.1": 118.13,
-        "phi-4": 131.05,
-        "qwen3-max-2025-09-23": 143.95,
-        "qwen3.6-plus": 149.13,
-        "qwen3.7-max": 153.05
-      },
-      "excluded_ambiguous_source_ids": []
-    },
-    "gpqa_diamond": {
-      "source_type": "capability_benchmark",
-      "source_file": "gpqa_diamond.csv",
-      "score_column": "mean_score",
-      "n_version_matches": 32,
-      "spearman": {
-        "raw": 0.7591642228739002,
-        "formatting_controlled": 0.7364369501466275,
-        "joint_controlled": 0.6689882697947214
-      },
-      "delta_vs_raw": {
-        "formatting_controlled": {
-          "point": -0.022727272727272707,
-          "bootstrap_95_ci": [
-            -0.08394775384665461,
-            0.03015301759388791
-          ]
-        },
-        "joint_controlled": {
-          "point": -0.0901759530791788,
-          "bootstrap_95_ci": [
-            -0.2210364253086551,
-            0.010684501463325502
-          ]
-        }
-      },
-      "matched_models": [
-        "claude-3-5-sonnet-v2",
-        "claude-3-7-sonnet",
-        "deepseek-r1",
-        "deepseek-r1-0528",
-        "deepseek-r1-distill-llama-70b",
-        "deepseek-v3-0324",
-        "gemini-2.0-flash",
-        "gemini-3-flash-preview",
-        "gemini-3-pro-preview",
-        "gemini-3.1-pro-preview",
-        "gemma-2-9b-it",
-        "gemma-3-27b",
-        "glm-4.7",
-        "glm-5",
-        "glm-5.1",
-        "gpt-4o-2024-08-06",
-        "gpt-4o-mini-2024-07-18",
-        "kimi-k2.6",
-        "llama-3.1-405b",
-        "llama-3.1-70b",
-        "llama-3.1-8b",
-        "llama-3.3-70b",
-        "magistral-small-2506",
-        "mistral-large-2411",
-        "mistral-small-24b-instruct-2501",
-        "mistral-small-3.1-24b",
-        "mixtral-8x7b-instruct-v0.1",
-        "phi-4",
-        "qwen2.5-32b-instruct",
-        "qwen3-max-2025-09-23",
-        "qwen3.6-plus",
-        "qwen3.7-max"
-      ],
-      "matched_source_ids": {
-        "claude-3-5-sonnet-v2": "claude-3-5-sonnet-20241022",
-        "claude-3-7-sonnet": "claude-3-7-sonnet-20250219",
-        "deepseek-r1": "deepseek-r1",
-        "deepseek-r1-0528": "deepseek-r1-0528",
-        "deepseek-r1-distill-llama-70b": "deepseek-r1-distill-llama-70b",
-        "deepseek-v3-0324": "deepseek-v3-0324",
-        "gemini-2.0-flash": "gemini-2.0-flash-001",
-        "gemini-3-flash-preview": "gemini-3-flash-preview",
-        "gemini-3-pro-preview": "gemini-3-pro-preview",
-        "gemini-3.1-pro-preview": "gemini-3.1-pro-preview",
-        "gemma-2-9b-it": "gemma-2-9b-it",
-        "gemma-3-27b": "gemma-3-27b-it",
-        "glm-4.7": "glm-4.7",
-        "glm-5": "glm-5",
-        "glm-5.1": "glm-5.1",
-        "gpt-4o-2024-08-06": "gpt-4o-2024-08-06",
-        "gpt-4o-mini-2024-07-18": "gpt-4o-mini-2024-07-18",
-        "kimi-k2.6": "kimi-k2.6",
-        "llama-3.1-405b": "Llama-3.1-405B-Instruct",
-        "llama-3.1-70b": "Llama-3.1-70B-Instruct",
-        "llama-3.1-8b": "Llama-3.1-8B-Instruct",
-        "llama-3.3-70b": "Llama-3.3-70B-Instruct",
-        "magistral-small-2506": "magistral-small-2506",
-        "mistral-large-2411": "mistral-large-2411",
-        "mistral-small-24b-instruct-2501": "mistral-small-2501",
-        "mistral-small-3.1-24b": "mistral-small-2503",
-        "mixtral-8x7b-instruct-v0.1": "mixtral-8x7b-instruct-v0.1",
-        "phi-4": "phi-4",
-        "qwen2.5-32b-instruct": "qwen2.5-32b-instruct",
-        "qwen3-max-2025-09-23": "qwen3-max-2025-09-23",
-        "qwen3.6-plus": "qwen3.6-plus",
-        "qwen3.7-max": "qwen3.7-max"
-      },
-      "external_scores": {
-        "claude-3-5-sonnet-v2": 0.553030303030303,
-        "claude-3-7-sonnet": 0.6603535353535354,
-        "deepseek-r1": 0.6922348484848484,
-        "deepseek-r1-0528": 0.7632575757575758,
-        "deepseek-r1-distill-llama-70b": 0.5574494949494949,
-        "deepseek-v3-0324": 0.6761363636363636,
-        "gemini-2.0-flash": 0.6414141414141414,
-        "gemini-3-flash-preview": 0.8320707070707071,
-        "gemini-3-pro-preview": 0.9261363636363636,
-        "gemini-3.1-pro-preview": 0.941,
-        "gemma-2-9b-it": 0.2746212121212121,
-        "gemma-3-27b": 0.4886363636363636,
-        "glm-4.7": 0.8333333333333334,
-        "glm-5": 0.8781725888324873,
-        "glm-5.1": 0.8547979797979798,
-        "gpt-4o-2024-08-06": 0.4921085858585858,
-        "gpt-4o-mini-2024-07-18": 0.3772095959595959,
-        "kimi-k2.6": 0.9078282828282828,
-        "llama-3.1-405b": 0.5091540404040404,
-        "llama-3.1-70b": 0.4419191919191919,
-        "llama-3.1-8b": 0.2594696969696969,
-        "llama-3.3-70b": 0.4744318181818182,
-        "magistral-small-2506": 0.4842171717171717,
-        "mistral-large-2411": 0.5132575757575758,
-        "mistral-small-24b-instruct-2501": 0.4529671717171717,
-        "mistral-small-3.1-24b": 0.4747474747474747,
-        "mixtral-8x7b-instruct-v0.1": 0.3058712121212121,
-        "phi-4": 0.5606060606060606,
-        "qwen2.5-32b-instruct": 0.4608585858585858,
-        "qwen3-max-2025-09-23": 0.726010101010101,
-        "qwen3.6-plus": 0.8737373737373737,
-        "qwen3.7-max": 0.9160353535353536
-      },
-      "excluded_ambiguous_source_ids": []
-    },
-    "frontiermath": {
-      "source_type": "capability_benchmark",
-      "source_file": "frontiermath.csv",
-      "score_column": "mean_score",
-      "n_version_matches": 13,
-      "spearman": {
-        "raw": 0.6987626968085263,
-        "formatting_controlled": 0.6052275326688025,
-        "joint_controlled": 0.5337006424443076
-      },
-      "delta_vs_raw": {
-        "formatting_controlled": {
-          "point": -0.09353516413972385,
-          "bootstrap_95_ci": [
-            -0.3381188596301275,
-            0.0
-          ]
-        },
-        "joint_controlled": {
-          "point": -0.16506205436421872,
-          "bootstrap_95_ci": [
-            -0.5393370148110317,
-            0.04533507317714701
-          ]
-        }
-      },
-      "matched_models": [
-        "claude-3-5-sonnet-v2",
-        "claude-3-7-sonnet",
-        "gemini-2.0-flash",
-        "gemini-2.5-flash",
-        "gemini-3-flash-preview",
-        "gemini-3-pro-preview",
-        "gemini-3.1-pro-preview",
-        "glm-5",
-        "glm-5.1",
-        "gpt-4o-2024-08-06",
-        "kimi-k2.6",
-        "mistral-large-2411",
-        "qwen3.6-plus"
-      ],
-      "matched_source_ids": {
-        "claude-3-5-sonnet-v2": "claude-3-5-sonnet-20241022",
-        "claude-3-7-sonnet": "claude-3-7-sonnet-20250219",
-        "gemini-2.0-flash": "gemini-2.0-flash-001",
-        "gemini-2.5-flash": "gemini-2.5-flash",
-        "gemini-3-flash-preview": "gemini-3-flash-preview",
-        "gemini-3-pro-preview": "gemini-3-pro-preview",
-        "gemini-3.1-pro-preview": "gemini-3.1-pro-preview",
-        "glm-5": "glm-5",
-        "glm-5.1": "glm-5.1",
-        "gpt-4o-2024-08-06": "gpt-4o-2024-08-06",
-        "kimi-k2.6": "kimi-k2.6",
-        "mistral-large-2411": "mistral-large-2411",
-        "qwen3.6-plus": "qwen3.6-plus"
-      },
-      "external_scores": {
-        "claude-3-5-sonnet-v2": 0.0206896551724137,
-        "claude-3-7-sonnet": 0.0310344827586206,
-        "gemini-2.0-flash": 0.0172413793103448,
-        "gemini-2.5-flash": 0.0484429065743944,
-        "gemini-3-flash-preview": 0.356401384083045,
-        "gemini-3-pro-preview": 0.376,
-        "gemini-3.1-pro-preview": 0.369,
-        "glm-5": 0.1643356643356643,
-        "glm-5.1": 0.3344827586206896,
-        "gpt-4o-2024-08-06": 0.0034482758620689,
-        "kimi-k2.6": 0.3896551724137931,
-        "mistral-large-2411": 0.0034482758620689,
-        "qwen3.6-plus": 0.2620689655172414
-      },
-      "excluded_ambiguous_source_ids": []
-    },
-    "swe_bench_verified": {
-      "source_type": "capability_benchmark",
-      "source_file": "swe_bench_verified.csv",
-      "score_column": "mean_score",
-      "n_version_matches": 9,
-      "spearman": {
-        "raw": 0.5833333333333334,
-        "formatting_controlled": 0.3666666666666667,
-        "joint_controlled": 0.049999999999999996
-      },
-      "delta_vs_raw": {
-        "formatting_controlled": {
-          "point": -0.21666666666666667,
-          "bootstrap_95_ci": [
-            -0.782608695652174,
-            0.10526315789473684
-          ]
-        },
-        "joint_controlled": {
-          "point": -0.5333333333333333,
-          "bootstrap_95_ci": [
-            -1.3157894736842106,
-            0.0
-          ]
-        }
-      },
-      "matched_models": [
-        "claude-3-7-sonnet",
-        "gemini-3-flash-preview",
-        "gemini-3-pro-preview",
-        "glm-5",
-        "glm-5.1",
-        "kimi-k2.5",
-        "kimi-k2.6",
-        "qwen3.6-plus",
-        "qwen3.7-max"
-      ],
-      "matched_source_ids": {
-        "claude-3-7-sonnet": "claude-3-7-sonnet-20250219",
-        "gemini-3-flash-preview": "gemini-3-flash-preview",
-        "gemini-3-pro-preview": "gemini-3-pro-preview",
-        "glm-5": "glm-5",
-        "glm-5.1": "glm-5.1",
-        "kimi-k2.5": "kimi-k2.5",
-        "kimi-k2.6": "kimi-k2.6",
-        "qwen3.6-plus": "qwen3.6-plus",
-        "qwen3.7-max": "qwen3.7-max"
-      },
-      "external_scores": {
-        "claude-3-7-sonnet": 0.609504132231405,
-        "gemini-3-flash-preview": 0.7541322314049587,
-        "gemini-3-pro-preview": 0.7293388429752066,
-        "glm-5": 0.7207792207792207,
-        "glm-5.1": 0.7417,
-        "kimi-k2.5": 0.737603305785124,
-        "kimi-k2.6": 0.7665289256198347,
-        "qwen3.6-plus": 0.5785123966942148,
-        "qwen3.7-max": 0.7727272727272727
-      },
-      "excluded_ambiguous_source_ids": [
-        "claudeopus46",
-        "gpt5120251113high"
-      ]
-    },
-    "livebench": {
-      "source_type": "capability_benchmark",
-      "source_file": "live_bench_external.csv",
-      "score_column": "Global average",
-      "n_version_matches": 17,
-      "spearman": {
-        "raw": 0.4191176470588236,
-        "formatting_controlled": 0.30147058823529416,
-        "joint_controlled": 0.35539215686274517
-      },
-      "delta_vs_raw": {
-        "formatting_controlled": {
-          "point": -0.11764705882352944,
-          "bootstrap_95_ci": [
-            -0.4345867882808181,
-            0.10973254364089763
-          ]
-        },
-        "joint_controlled": {
-          "point": -0.06372549019607843,
-          "bootstrap_95_ci": [
-            -0.41490683229813663,
-            0.26237933168316824
-          ]
-        }
-      },
-      "matched_models": [
-        "c4ai-command-r-08-2024",
-        "claude-3-5-sonnet-v2",
-        "deepseek-r1",
-        "deepseek-r1-distill-llama-70b",
-        "deepseek-v3-0324",
-        "gemini-2.0-flash",
-        "gemma-2-9b-it",
-        "gemma-3-27b",
-        "gpt-4o-2024-08-06",
-        "gpt-4o-mini-2024-07-18",
-        "llama-3.3-70b",
-        "mistral-large-2411",
-        "mistral-small-24b-instruct-2501",
-        "mistral-small-3.1-24b",
-        "phi-4",
-        "qwen2.5-coder-32b-instruct",
-        "qwq-32b"
-      ],
-      "matched_source_ids": {
-        "c4ai-command-r-08-2024": "c4ai-command-r-08-2024",
-        "claude-3-5-sonnet-v2": "claude-3-5-sonnet-20241022",
-        "deepseek-r1": "deepseek-r1",
-        "deepseek-r1-distill-llama-70b": "deepseek-r1-distill-llama-70b",
-        "deepseek-v3-0324": "deepseek-v3-0324",
-        "gemini-2.0-flash": "gemini-2.0-flash-001",
-        "gemma-2-9b-it": "gemma-2-9b-it",
-        "gemma-3-27b": "gemma-3-27b-it",
-        "gpt-4o-2024-08-06": "gpt-4o-2024-08-06",
-        "gpt-4o-mini-2024-07-18": "gpt-4o-mini-2024-07-18",
-        "llama-3.3-70b": "Llama-3.3-70B-Instruct",
-        "mistral-large-2411": "mistral-large-2411",
-        "mistral-small-24b-instruct-2501": "mistral-small-2501",
-        "mistral-small-3.1-24b": "mistral-small-2503",
-        "phi-4": "phi-4",
-        "qwen2.5-coder-32b-instruct": "Qwen2.5-Coder-32B-Instruct",
-        "qwq-32b": "qwq-32b"
-      },
-      "external_scores": {
-        "c4ai-command-r-08-2024": 27.48,
-        "claude-3-5-sonnet-v2": 59.03,
-        "deepseek-r1": 71.57,
-        "deepseek-r1-distill-llama-70b": 54.5,
-        "deepseek-v3-0324": 66.86,
-        "gemini-2.0-flash": 61.47,
-        "gemma-2-9b-it": 28.66,
-        "gemma-3-27b": 49.99,
-        "gpt-4o-2024-08-06": 55.33,
-        "gpt-4o-mini-2024-07-18": 41.26,
-        "llama-3.3-70b": 50.16,
-        "mistral-large-2411": 48.43,
-        "mistral-small-24b-instruct-2501": 42.55,
-        "mistral-small-3.1-24b": 43.96,
-        "phi-4": 41.61,
-        "qwen2.5-coder-32b-instruct": 46.23,
-        "qwq-32b": 71.96
-      },
-      "excluded_ambiguous_source_ids": [
-        "claude37sonnet20250219",
-        "phi3mini4kinstruct"
-      ]
-    },
-    "arc_agi_2": {
-      "source_type": "capability_benchmark",
-      "source_file": "arc_agi_2_external.csv",
-      "score_column": "Score",
-      "n_version_matches": 10,
-      "spearman": {
-        "raw": 0.5371291452680612,
-        "formatting_controlled": 0.43217287550303773,
-        "joint_controlled": 0.3025210128521264
-      },
-      "delta_vs_raw": {
-        "formatting_controlled": {
-          "point": -0.10495626976502348,
-          "bootstrap_95_ci": [
-            -0.4304381889607845,
-            0.19108280254777066
-          ]
-        },
-        "joint_controlled": {
-          "point": -0.2346081324159348,
-          "bootstrap_95_ci": [
-            -0.7946349385474553,
-            0.16835621614192575
-          ]
-        }
-      },
-      "matched_models": [
-        "claude-3-7-sonnet",
-        "deepseek-r1",
-        "deepseek-r1-0528",
-        "gemini-2.0-flash",
-        "gemini-3-pro-preview",
-        "glm-5",
-        "gpt-4o-mini-2024-07-18",
-        "kimi-k2.5",
-        "magistral-small-2506",
-        "minimax-m2.5"
-      ],
-      "matched_source_ids": {
-        "claude-3-7-sonnet": "claude-3-7-sonnet-20250219",
-        "deepseek-r1": "deepseek-r1",
-        "deepseek-r1-0528": "deepseek-r1-0528",
-        "gemini-2.0-flash": "gemini-2.0-flash-001",
-        "gemini-3-pro-preview": "gemini-3-pro-preview",
-        "glm-5": "glm-5",
-        "gpt-4o-mini-2024-07-18": "gpt-4o-mini-2024-07-18",
-        "kimi-k2.5": "kimi-k2.5",
-        "magistral-small-2506": "magistral-small-2506",
-        "minimax-m2.5": "minimax-m2.5"
-      },
-      "external_scores": {
-        "claude-3-7-sonnet": 0.0,
-        "deepseek-r1": 0.013,
-        "deepseek-r1-0528": 0.0112,
-        "gemini-2.0-flash": 0.013,
-        "gemini-3-pro-preview": 0.3111,
-        "glm-5": 0.0486,
-        "gpt-4o-mini-2024-07-18": 0.0,
-        "kimi-k2.5": 0.1181,
-        "magistral-small-2506": 0.0,
-        "minimax-m2.5": 0.0486
-      },
-      "excluded_ambiguous_source_ids": [
-        "claudeopus46120k",
-        "gemini31propreview",
-        "gemini3deepthinkpreview",
-        "gemini3flashpreview"
-      ]
-    },
-    "scicode": {
-      "source_type": "capability_benchmark",
-      "source_file": "scicode_external.csv",
-      "score_column": "Score",
-      "n_version_matches": 12,
-      "spearman": {
-        "raw": 0.4755244755244756,
-        "formatting_controlled": 0.39860139860139865,
-        "joint_controlled": 0.3356643356643357
-      },
-      "delta_vs_raw": {
-        "formatting_controlled": {
-          "point": -0.07692307692307693,
-          "bootstrap_95_ci": [
-            -0.35638311688311686,
-            0.05839416058394159
-          ]
-        },
-        "joint_controlled": {
-          "point": -0.1398601398601399,
-          "bootstrap_95_ci": [
-            -0.4316546762589928,
-            0.007168458781361855
-          ]
-        }
-      },
-      "matched_models": [
-        "deepseek-r1",
-        "deepseek-v3-0324",
-        "gemini-3.1-pro-preview",
-        "gemma-3-27b",
-        "gemma-4-31b-it",
-        "glm-5.1",
-        "kimi-k2.6",
-        "llama-3.1-8b",
-        "minimax-m2.7",
-        "qwen3-32b",
-        "qwen3.6-plus",
-        "qwen3.7-max"
-      ],
-      "matched_source_ids": {
-        "deepseek-r1": "deepseek-r1",
-        "deepseek-v3-0324": "deepseek-v3-0324",
-        "gemini-3.1-pro-preview": "gemini-3.1-pro-preview",
-        "gemma-3-27b": "gemma-3-27b-it",
-        "gemma-4-31b-it": "gemma-4-31b-it",
-        "glm-5.1": "glm-5.1",
-        "kimi-k2.6": "kimi-k2.6",
-        "llama-3.1-8b": "Llama-3.1-8B-Instruct",
-        "minimax-m2.7": "minimax-m2.7",
-        "qwen3-32b": "qwen3-32b",
-        "qwen3.6-plus": "qwen3.6-plus",
-        "qwen3.7-max": "qwen3.7-max"
-      },
-      "external_scores": {
-        "deepseek-r1": 0.357142857142857,
-        "deepseek-v3-0324": 0.357638888888889,
-        "gemini-3.1-pro-preview": 0.58912037037037,
-        "gemma-3-27b": 0.211805555555556,
-        "gemma-4-31b-it": 0.434027777777778,
-        "glm-5.1": 0.4375,
-        "kimi-k2.6": 0.534722222222222,
-        "llama-3.1-8b": 0.131944444444444,
-        "minimax-m2.7": 0.469907407407407,
-        "qwen3-32b": 0.354166666666667,
-        "qwen3.6-plus": 0.407407407407407,
-        "qwen3.7-max": 0.488425925925926
-      },
-      "excluded_ambiguous_source_ids": [
-        "gpt55none"
-      ]
-    },
-    "aider_polyglot": {
-      "source_type": "capability_benchmark",
-      "source_file": "aider_polyglot_external.csv",
-      "score_column": "Percent correct",
-      "n_version_matches": 10,
-      "spearman": {
-        "raw": 0.38181818181818183,
-        "formatting_controlled": 0.34545454545454546,
-        "joint_controlled": 0.5393939393939393
-      },
-      "delta_vs_raw": {
-        "formatting_controlled": {
-          "point": -0.036363636363636376,
-          "bootstrap_95_ci": [
-            -0.339622641509434,
-            0.19875776397515532
-          ]
-        },
-        "joint_controlled": {
-          "point": 0.15757575757575748,
-          "bootstrap_95_ci": [
-            -0.1923076923076923,
-            0.55
-          ]
-        }
-      },
-      "matched_models": [
-        "claude-3-5-sonnet-v2",
-        "claude-3-7-sonnet",
-        "deepseek-r1",
-        "deepseek-r1-0528",
-        "deepseek-v3-0324",
-        "gemma-3-27b",
-        "gpt-4o-2024-08-06",
-        "gpt-4o-mini-2024-07-18",
-        "qwen3-32b",
-        "qwq-32b"
-      ],
-      "matched_source_ids": {
-        "claude-3-5-sonnet-v2": "claude-3-5-sonnet-20241022",
-        "claude-3-7-sonnet": "claude-3-7-sonnet-20250219",
-        "deepseek-r1": "deepseek-r1",
-        "deepseek-r1-0528": "deepseek-r1-0528",
-        "deepseek-v3-0324": "deepseek-v3-0324",
-        "gemma-3-27b": "gemma-3-27b-it",
-        "gpt-4o-2024-08-06": "gpt-4o-2024-08-06",
-        "gpt-4o-mini-2024-07-18": "gpt-4o-mini-2024-07-18",
-        "qwen3-32b": "qwen3-32b",
-        "qwq-32b": "qwq-32b"
-      },
-      "external_scores": {
-        "claude-3-5-sonnet-v2": 51.6,
-        "claude-3-7-sonnet": 60.4,
-        "deepseek-r1": 56.9,
-        "deepseek-r1-0528": 71.4,
-        "deepseek-v3-0324": 55.1,
-        "gemma-3-27b": 4.9,
-        "gpt-4o-2024-08-06": 23.1,
-        "gpt-4o-mini-2024-07-18": 3.6,
-        "qwen3-32b": 40.0,
-        "qwq-32b": 20.9
-      },
-      "excluded_ambiguous_source_ids": [
-        "qwen25coder32binstruct"
-      ]
-    }
-  }
+  "capability_benchmarks": {}
 }

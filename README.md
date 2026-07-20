@@ -9,23 +9,24 @@ Which presentation features retain an association with votes after joint adjustm
 ## Key Findings
 
 - **Presentation is mostly one collinear "verbosity" dimension.** Length, bold, and lists rise together and trade coefficient weight; their individual attributions are unstable across specifications.
-- **Two signals stand apart and survive full control:** **bold formatting** (~+10% win odds/SD in the joint model) and **length-independent lexical diversity** (MATTR, ~+18%). Both are conditional correlates, not causal effects.
+- **Two signals stand apart and survive full control:** **bold formatting** (+11.3% win odds/SD in the joint model) and **length-independent lexical diversity** (MATTR, +16.9%). Both are conditional correlates, not causal effects.
 - **Much apparent linguistic association is between models:** several coefficients shrink substantially when per-model fixed effects are added. This does not identify presentation as either bias or a quality signal.
-- **Exploratory heterogeneity varies with completed conversation length.** Formatting and length associations are smaller in the eventual multi-turn stratum (bold +35%→+8% odds/SD), while MATTR is unchanged. Because the current fields include post-vote turns, this cannot be interpreted as pre-vote depth or attention.
+- **Exploratory heterogeneity varies with depth visible at the vote.** The formatting-only bold association is smaller in genuine multi-turn conversations (+31.6%→+6.6% odds/SD), while MATTR is unchanged. Length's interaction is no longer significant. Vote-time depth remains endogenous and is not a direct measure of attention.
 - **The bold association is not solely a subject-matter artefact.** It is positive within every large topic and remains after topic × formatting controls; this is still observational rather than causal.
-- **External agreement depends on the target.** Formatting-only control has the highest correlation with all four LMArena preference rankings, while raw Compar:IA ranks highest against seven of eight modern capability measures. On the two largest capability overlaps, ECI is raw 0.741 / formatting 0.719 / joint 0.663 and GPQA Diamond is 0.759 / 0.736 / 0.669. Most narrow-control differences remain within bootstrap uncertainty.
-- **Leaderboard impact:** controlling for the full presentation bundle moves 37 of 116 models by ≥10 ranks (r = 0.94), but the external comparisons show that more adjustment is not monotonically better.
-- **Important timing limitation:** the current builder uses completed `full_conversation_*` fields. Post-vote turns enter the measured text in 11.2% of battles, and 40.5% of the nominal multi-turn stratum was single-turn at the retained vote. The paper now flags the depth analysis as uninterpretable and the primary estimates as requiring a vote-truncated rerun.
+- **External preference agreement:** formatting-only control has the highest correlation with all four pinned LMArena preference rankings. The capability comparison needs a refreshed, audited Epoch snapshot because its previously content-hashed download has changed.
+- **Leaderboard impact:** controlling for the full presentation bundle moves 34 of 116 models by ≥10 ranks (r = 0.932); more adjustment is not automatically better.
+- **Vote timing is now corrected and audited.** Source conversations continue after the retained vote in 11.2% of battles, but no later turn enters the measured text, cumulative token length, or depth stratum. The audit validates every retained vote and final-turn index against the raw release.
 
 ## Data
 
-A single dataset: **`ministere-culture/comparia-fr-arena`** (Ministère de la Culture), revision `8cd6488` of the consolidated Compar:IA release. It is turn-level (641K rows); we retain the last decisive French reaction per conversation. The current pipeline computes features on the completed conversation, including later turns in 11.2% of cases; this must be changed to vote-truncated prefixes before publication. No CamemBERT perplexity is computed (GPU-only).
+A single dataset: **`ministere-culture/comparia-fr-arena`** (Ministère de la Culture), revision `8cd6488` of the consolidated Compar:IA release. It is turn-level (641K rows); we retain the last decisive French reaction per conversation and truncate both response text and cumulative per-turn token totals at that vote. No CamemBERT perplexity is computed (GPU-only).
 
 ## Quickstart
 
 ```bash
 # One-time: build the single battle table from comparia-fr-arena (slow; reads a
-# local copy of the gated parquet if present, else streams it with a HF token).
+# local copy only when COMPARIA_FR_ARENA_PARQUET explicitly points to the exact
+# pinned revision; otherwise streams that revision with a HF token).
 python src/build_fr_arena.py           # -> data/fr_battles.parquet
 
 # Then run the whole analysis (results -> results/, figures -> figures/):
@@ -48,7 +49,7 @@ from any directory.
 | `topic_analysis.py` | §4.7 | `results/topic_results.json` |
 | `extract_prompts.py` → `task_classify.py` → `task_analysis.py` | §4.8 | `results/task_results.json` (task proxy; needs the raw dataset, run separately from `run.py`) |
 | `robustness_random.py`; `time_block_bootstrap.py` | §4.9 | `results/robustness_random_results.json`, `time_block_results.json` (block bootstrap needs `data/timestamps.parquet`) |
-| `mattr_stress.py`; `mattr_alt.py` | §4.10 | `results/mattr_stress_results.json`, `mattr_alt_results.json` (`mattr_alt.py` needs the raw dataset) |
+| `mattr_stress.py`; `mattr_alt.py` | §4.10 | `results/mattr_stress_results.json`, `data/mattr_alt.parquet` (`mattr_alt.py` needs the raw dataset) |
 | `external_leaderboard_analysis.py` | §4.11 | `results/external_leaderboard_results.json` (pinned LMArena snapshots plus a content-hashed Epoch benchmark archive) |
 | `audit_vote_timing.py` | §2.4, §4.6 | `results/vote_timing_audit_results.json` |
 | `endogeneity_analysis.py` | §5.3 | `results/endogeneity_results.json` |

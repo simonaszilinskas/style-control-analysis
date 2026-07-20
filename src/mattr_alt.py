@@ -22,11 +22,12 @@ import pyarrow.parquet as pq
 from huggingface_hub import HfFileSystem, get_token
 
 from paths import DATA
-from build_fr_arena import LOCAL_PATHS, HF_PATH, _assistant_text
+from build_fr_arena import (HF_PATH, HF_REVISION, LOCAL_PATHS, _assistant_text,
+                            _conversation_prefix)
 
 OUT = DATA / "mattr_alt.parquet"
-PARTS = DATA / "mattr_alt_parts"
-COLS = ["comparison_id", "choice", "full_conversation_a", "full_conversation_b", "metadata"]
+PARTS = DATA / f"mattr_alt_parts_vote_truncated_{HF_REVISION[:8]}"
+COLS = ["comparison_id", "choice", "turn", "full_conversation_a", "full_conversation_b", "metadata"]
 _WORD = re.compile(r"[\w']+")
 # small French + English stopword set (enough to strip function words for content-word MATTR)
 STOP = set("le la les un une des du de d au aux et ou mais donc or ni car que qui quoi dont ou "
@@ -96,10 +97,14 @@ def main():
                     md = r["metadata"] or {}
                     if "fr" not in (md.get("languages") or []):
                         continue
-                    ta, tb = _assistant_text(r["full_conversation_a"]), _assistant_text(r["full_conversation_b"])
+                    pa = _conversation_prefix(r["full_conversation_a"], r["turn"])
+                    pb = _conversation_prefix(r["full_conversation_b"], r["turn"])
+                    if pa is None or pb is None:
+                        continue
+                    ta, tb = _assistant_text(pa), _assistant_text(pb)
                     if not ta or not tb:
                         continue
-                    rec = {"conversation_pair_id": r["comparison_id"]}
+                    rec = {"conversation_pair_id": r["comparison_id"], "vote_turn": int(r["turn"])}
                     for side, txt in (("a", ta), ("b", tb)):
                         for k, v in _metrics(txt).items():
                             rec[f"{k}_{side}"] = v
@@ -117,7 +122,9 @@ def main():
 
     parts = [pd.read_parquet(os.path.join(PARTS, f)) for f in sorted(os.listdir(PARTS)) if f.endswith(".parquet")]
     df = pd.concat([p for p in parts if len(p)], ignore_index=True)
-    df = df.drop_duplicates(subset="conversation_pair_id", keep="last").reset_index(drop=True)
+    df = (df.sort_values(["conversation_pair_id", "vote_turn"])
+          .drop_duplicates(subset="conversation_pair_id", keep="last")
+          .drop(columns="vote_turn").reset_index(drop=True))
     for c in df.select_dtypes("float64").columns:
         df[c] = df[c].astype("float32")
     df.to_parquet(OUT, index=False, compression="zstd")

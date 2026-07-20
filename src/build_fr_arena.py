@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 """
-Build the compar:IA battle table from comparia-fr-arena (the consolidated release).
+Build a vote-truncated compar:IA battle table from comparia-fr-arena.
 
 comparia-fr-arena is turn-level: one row per turn, and `choice` (a_better /
 b_better) is populated on the single turn where the user voted. We keep those
 decisive French votes, retain the last decisive reaction per comparison, and
-compute features on the release's completed `full_conversation_*` fields.
-
-IMPORTANT: those fields can include turns after the retained reaction. The
-current paper reports the resulting 11.2% look-ahead rate and treats all results
-as requiring a vote-truncated rerun. Do not describe `conv_turns` as turns before
-the vote; see `audit_vote_timing.py`.
+truncate the release's completed `full_conversation_*` fields at that reaction,
+and compute features only on text visible when the vote was cast.  The release's
+`tokens_*` fields are per-turn counts, so cumulative prefix length is reconstructed
+by summing them through the retained vote.  Do not use `total_tokens_*`: those
+describe the completed conversation and can include later turns.
 
 One row per comparison (battle):
   conversation_pair_id, model_a_name, model_b_name, winner (model_a/model_b),
-  source='vote', mode, conv_turns (user-message count), primary_topic,
+  source='vote', mode, vote_turn, conv_turns (visible user-message count),
+  final_turn, post_vote_turns, primary_topic,
   {formatting}_a/_b, {linguistic}_a/_b, length_a/_b (cumulative output tokens).
 
 Needs a HF token (CLI login or HF_TOKEN) for the gated dataset.
@@ -33,14 +33,15 @@ from huggingface_hub import HfFileSystem, get_token
 
 from paths import BATTLES, DATA
 
-HF_PATH = "datasets/ministere-culture/comparia-fr-arena/comparia-fr-arena.parquet"
-# A full local copy avoids streaming the 8.9 GB gated file; use it if present.
-LOCAL_PATHS = [
-    "comparia-fr-arena.parquet",
-    os.path.expanduser("~/Dev/comparia-theme-datasets/data/comparia-fr-arena/comparia-fr-arena.parquet"),
-]
+HF_REVISION = "8cd6488c5d0c3b8dfcb9339d11ae9624c84359be"
+HF_PATH = ("datasets/ministere-culture/comparia-fr-arena@"
+           f"{HF_REVISION}/comparia-fr-arena.parquet")
+# A local file cannot expose its Hugging Face revision reliably.  Use one only
+# when the caller explicitly confirms it is the pinned revision above.
+LOCAL_ENV = "COMPARIA_FR_ARENA_PARQUET"
+LOCAL_PATHS = [os.environ[LOCAL_ENV]] if os.environ.get(LOCAL_ENV) else []
 OUT = BATTLES
-COLS = ["comparison_id", "choice", "model_a", "model_b",
+COLS = ["comparison_id", "choice", "turn", "model_a", "model_b",
         "full_conversation_a", "full_conversation_b", "metadata"]
 MIN_WORDS = 30
 
@@ -83,6 +84,30 @@ def _assistant_text(msgs):
             if "<think>" not in c and "</think>" not in c:
                 parts.append(c)
     return "\n".join(parts)
+
+
+def _conversation_prefix(msgs, vote_turn):
+    """Return messages visible at a zero-based vote turn.
+
+    Each arena turn ends with one assistant response.  The completed conversation
+    is repeated on every source row, so a vote on turn ``t`` must stop immediately
+    after assistant response ``t + 1``.  Returning ``None`` instead of a partial
+    prefix makes malformed rows fail closed.
+    """
+    if msgs is None or vote_turn is None or int(vote_turn) < 0:
+        return None
+    target = int(vote_turn) + 1
+    prefix = []
+    assistants = 0
+    for msg in msgs:
+        if not isinstance(msg, dict):
+            continue
+        prefix.append(msg)
+        if msg.get("role") == "assistant":
+            assistants += 1
+            if assistants == target:
+                return prefix
+    return None
 
 
 def _user_turns(msgs):
@@ -128,36 +153,85 @@ def features(content):
     return out
 
 
-PARTS = DATA / "fr_parts"
+PARTS = DATA / f"fr_parts_vote_truncated_{HF_REVISION[:8]}"
+TOKEN_PARTS = DATA / f"fr_token_parts_vote_truncated_{HF_REVISION[:8]}"
+
+BATTLE_COLUMNS = [
+    "conversation_pair_id", "vote_turn", "model_a_name", "model_b_name",
+    "winner", "source", "mode", "conv_turns", "primary_topic",
+] + [f"{k}_{side}" for k in FEATS for side in ("a", "b")]
+TOKEN_COLUMNS = ["conversation_pair_id", "turn", "tokens_a", "tokens_b"]
 
 
 def _process_rows(pyrows):
-    out = []
+    battles, tokens = [], []
     for r in pyrows:
-        if r["choice"] not in ("a_better", "b_better"):
-            continue
         md = r["metadata"] or {}
         if "fr" not in (md.get("languages") or []):
             continue
-        ta = _assistant_text(r["full_conversation_a"])
-        tb = _assistant_text(r["full_conversation_b"])
+        tokens.append({
+            "conversation_pair_id": r["comparison_id"],
+            "turn": r["turn"],
+            "tokens_a": md.get("tokens_a"),
+            "tokens_b": md.get("tokens_b"),
+        })
+        if r["choice"] not in ("a_better", "b_better"):
+            continue
+        pa = _conversation_prefix(r["full_conversation_a"], r["turn"])
+        pb = _conversation_prefix(r["full_conversation_b"], r["turn"])
+        if pa is None or pb is None:
+            continue
+        ta, tb = _assistant_text(pa), _assistant_text(pb)
         if not ta or not tb:
+            continue
+        visible_turns_a, visible_turns_b = _user_turns(pa), _user_turns(pb)
+        expected_turns = int(r["turn"]) + 1
+        if visible_turns_a != expected_turns or visible_turns_b != expected_turns:
             continue
         cats = md.get("categories")
         rec = {
             "conversation_pair_id": r["comparison_id"],
+            "vote_turn": int(r["turn"]),
             "model_a_name": r["model_a"], "model_b_name": r["model_b"],
             "winner": "model_a" if r["choice"] == "a_better" else "model_b",
             "source": "vote", "mode": md.get("mode"),
-            "conv_turns": _user_turns(r["full_conversation_a"]),
+            "conv_turns": visible_turns_a,
             "primary_topic": cats[0] if cats is not None and len(cats) > 0 else None,
-            "length_a": float(md["total_tokens_a"]) if md.get("total_tokens_a") else np.nan,
-            "length_b": float(md["total_tokens_b"]) if md.get("total_tokens_b") else np.nan,
         }
         fa, fb = features(ta), features(tb)
         for k in FEATS:
             rec[f"{k}_a"], rec[f"{k}_b"] = fa[k], fb[k]
-        out.append(rec)
+        battles.append(rec)
+    return battles, tokens
+
+
+def _attach_prefix_lengths(battles, tokens):
+    """Attach exact cumulative output-token totals through each retained vote."""
+    keys = ["conversation_pair_id", "turn"]
+    if tokens.duplicated(keys).any():
+        examples = tokens.loc[tokens.duplicated(keys, keep=False), keys].head().to_dict("records")
+        raise ValueError(f"duplicate source turns found: {examples}")
+
+    tokens = tokens.sort_values(keys).copy()
+    group = tokens["conversation_pair_id"]
+    for side in ("a", "b"):
+        current = pd.to_numeric(tokens[f"tokens_{side}"], errors="coerce")
+        missing_so_far = current.isna().groupby(group).cumsum()
+        cumulative = current.fillna(0).groupby(group).cumsum().astype(float)
+        tokens[f"length_{side}"] = cumulative.mask(missing_so_far > 0)
+
+    final_turn = (tokens.groupby("conversation_pair_id", as_index=False)["turn"]
+                  .max().rename(columns={"turn": "final_turn"}))
+    lengths = tokens[keys + ["length_a", "length_b"]]
+    out = battles.merge(
+        lengths,
+        left_on=["conversation_pair_id", "vote_turn"],
+        right_on=keys,
+        how="left",
+        validate="one_to_one",
+    ).drop(columns="turn")
+    out = out.merge(final_turn, on="conversation_pair_id", how="left", validate="one_to_one")
+    out["post_vote_turns"] = out["final_turn"] - out["vote_turn"]
     return out
 
 
@@ -165,11 +239,13 @@ def _open():
     for p in LOCAL_PATHS:
         if os.path.exists(p):
             return pq.ParquetFile(p)
+        raise FileNotFoundError(f"{LOCAL_ENV} does not exist: {p}")
     return pq.ParquetFile(HfFileSystem(token=get_token()).open(HF_PATH, "rb"))
 
 
 def main():
     os.makedirs(PARTS, exist_ok=True)
+    os.makedirs(TOKEN_PARTS, exist_ok=True)
     pf = _open()
     n_rg = pf.num_row_groups
     t0 = time.time()
@@ -178,14 +254,19 @@ def main():
     # is fragile and disk is too small to download the whole file).
     for rg in range(n_rg):
         part = os.path.join(PARTS, f"part_{rg:03d}.parquet")
-        if os.path.exists(part):
+        token_part = os.path.join(TOKEN_PARTS, f"part_{rg:03d}.parquet")
+        if os.path.exists(part) and os.path.exists(token_part):
             continue
         for attempt in range(8):
             try:
                 pyrows = pf.read_row_group(rg, columns=COLS).to_pylist()
-                rows = _process_rows(pyrows)
-                pd.DataFrame(rows).to_parquet(part, index=False, compression="zstd")
-                print(f"  rg {rg+1}/{n_rg} kept={len(rows)} ({time.time()-t0:.0f}s)", flush=True)
+                rows, token_rows = _process_rows(pyrows)
+                pd.DataFrame(rows, columns=BATTLE_COLUMNS).to_parquet(
+                    part, index=False, compression="zstd")
+                pd.DataFrame(token_rows, columns=TOKEN_COLUMNS).to_parquet(
+                    token_part, index=False, compression="zstd")
+                print(f"  rg {rg+1}/{n_rg} kept={len(rows)} votes, "
+                      f"{len(token_rows)} turns ({time.time()-t0:.0f}s)", flush=True)
                 break
             except Exception as e:
                 wait = 5 * (attempt + 1)
@@ -199,11 +280,21 @@ def main():
     parts = [pd.read_parquet(os.path.join(PARTS, f)) for f in sorted(os.listdir(PARTS))
              if f.endswith(".parquet")]
     df = pd.concat([p for p in parts if len(p)], ignore_index=True)
+    token_parts = [pd.read_parquet(os.path.join(TOKEN_PARTS, f))
+                   for f in sorted(os.listdir(TOKEN_PARTS)) if f.endswith(".parquet")]
+    token_df = pd.concat([p for p in token_parts if len(p)], ignore_index=True)
     # A few comparisons carry more than one decisive vote (voted at different
     # turns); keep one battle per comparison (the last, i.e. most recent vote).
     n0 = len(df)
-    df = df.drop_duplicates(subset="conversation_pair_id", keep="last").reset_index(drop=True)
+    df = (df.sort_values(["conversation_pair_id", "vote_turn"])
+          .drop_duplicates(subset="conversation_pair_id", keep="last")
+          .reset_index(drop=True))
     print(f"  deduplicated {n0-len(df)} repeated comparison ids")
+    df = _attach_prefix_lengths(df, token_df)
+    if not (df["conv_turns"] == df["vote_turn"] + 1).all():
+        raise AssertionError("visible turn count does not match retained vote turn")
+    if (df["post_vote_turns"] < 0).any():
+        raise AssertionError("retained vote occurs after the source's final turn")
     for c in df.select_dtypes("float64").columns:
         df[c] = df[c].astype("float32")
     df.to_parquet(OUT, index=False, compression="zstd")
