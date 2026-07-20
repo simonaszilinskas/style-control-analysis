@@ -6,6 +6,8 @@ comparia_votes.parquet
 
 # Build checkpoints
 data/fr_parts/
+data/fr_parts_vote_truncated_*/
+data/fr_token_parts_vote_truncated_*/
 
 # Archive
 archive/
@@ -30,6 +32,7 @@ data/prompt_parts/
 data/task_val_sample*.json
 
 data/mattr_alt_parts/
+data/mattr_alt_parts_vote_truncated_*/
 
 # Public external leaderboard snapshots (downloaded from pinned revisions)
 data/external/

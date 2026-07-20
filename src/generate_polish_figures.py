@@ -66,8 +66,8 @@ def fig_reading_depth():
     ax1.set_yticks(y)
     ax1.set_yticklabels(labels)
     ax1.set_xlabel("win-odds change per SD (%)")
-    ax1.set_title("Single-turn (circle) vs multi-turn (diamond)\n"
-                  "formatting and length shrink, only diversity holds")
+    ax1.set_title("Depth visible at the vote\n"
+                  "single-turn (circle) vs multi-turn (diamond)")
     handles = [plt.Line2D([], [], marker="o", ls="", color="black", label="single-turn"),
                plt.Line2D([], [], marker="D", ls="", color="black", label="multi-turn")]
     ax1.legend(handles=handles, loc="lower right", frameon=True)
@@ -87,7 +87,8 @@ def fig_reading_depth():
     ax2.set_yticks(y2)
     ax2.set_yticklabels([r[0] for r in irows])
     ax2.set_xlabel("multi-turn interaction (log-odds per SD)")
-    ax2.set_title("Interaction with conversation depth\n(95% CI; grey = n.s. after BH)")
+    ax2.set_title("Interaction with vote-time conversation depth\n"
+                  "(95% CI; grey = n.s. after BH)")
 
     fig.tight_layout()
     for ext in ("png", "pdf"):
@@ -144,7 +145,8 @@ def fig_topic_controls():
     ax2.set_yticks(y2)
     ax2.set_yticklabels(feats)
     ax2.set_xlabel("multi-turn interaction (log-odds per SD)")
-    ax2.set_title("Reading-depth effect survives topic control\n(circle = §4.6, diamond = + topic x style)")
+    ax2.set_title("Vote-time depth association survives topic control\n"
+                  "(circle = §4.6, diamond = + topic x style)")
     handles = [plt.Line2D([], [], marker="o", ls="", color=GREY, label="no topic control (§4.6)"),
                plt.Line2D([], [], marker="D", ls="", color=FMT, label="topic-controlled (§4.7)")]
     ax2.legend(handles=handles, loc="lower left", frameon=True)

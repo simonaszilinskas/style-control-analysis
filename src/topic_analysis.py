@@ -19,11 +19,11 @@ Two questions:
       headers. If they are stable across topics, the premium is not just "some
       subjects invite formatting."
 
-  Q2. Is the completed-conversation-length interaction robust to topic? Re-fit the
+  Q2. Is the vote-time conversation-depth interaction robust to topic? Re-fit the
       formatting x multi-turn interaction model with topic x formatting
       interactions added, so every topic gets its own formatting slope. If the
-      multi-turn interactions stay negative and significant, the completed-
-      conversation-length difference is not just a different topic mix.
+      multi-turn interactions stay negative and significant, the vote-time
+      depth difference is not just a different topic mix.
 
     python topic_analysis.py   # -> topic_results.json
 """
@@ -112,7 +112,7 @@ def q1_topic_stratified():
 
 
 # --------------------------------------------------------------------------- #
-# Q2: completed-conversation-length interaction, with topic x formatting interactions
+# Q2: vote-time conversation-depth interaction, with topic x formatting interactions
 # --------------------------------------------------------------------------- #
 def _primary_topic_dummies(d):
     counts = d["topic"].value_counts()
