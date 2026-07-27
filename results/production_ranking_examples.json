@@ -1,0 +1,48 @@
+{
+  "source": "https://comparia.beta.gouv.fr/ranking",
+  "observed_at": "2026-07-27",
+  "scope_note": "Illustrative live production ranks. The displayed reaction counter includes ties, whereas the paper retains decisive French battles only. This snapshot is also distinct from the pinned research release analysed in the paper.",
+  "live_page": {
+    "approximate_reactions_including_ties": 242000,
+    "counter_includes_ties": true,
+    "ranked_models": 112,
+    "style_control_default": true
+  },
+  "models": [
+    {
+      "model": "GPT-5.3",
+      "raw_rank": 47,
+      "style_controlled_rank": 1,
+      "epoch_capabilities_index_matched": false,
+      "epoch_capabilities_index_score": null
+    },
+    {
+      "model": "Mistral Medium 2508",
+      "raw_rank": 2,
+      "style_controlled_rank": 28,
+      "epoch_capabilities_index_matched": false,
+      "epoch_capabilities_index_score": null
+    },
+    {
+      "model": "Gemini 3.1 Flash Lite",
+      "raw_rank": 4,
+      "style_controlled_rank": 4,
+      "epoch_capabilities_index_matched": false,
+      "epoch_capabilities_index_score": null
+    },
+    {
+      "model": "Gemini 2.5 Flash",
+      "raw_rank": 5,
+      "style_controlled_rank": 12,
+      "epoch_capabilities_index_matched": true,
+      "epoch_capabilities_index_score": 140.33
+    },
+    {
+      "model": "Gemini 3.1 Pro",
+      "raw_rank": 15,
+      "style_controlled_rank": 27,
+      "epoch_capabilities_index_matched": true,
+      "epoch_capabilities_index_score": 154.9
+    }
+  ]
+}
