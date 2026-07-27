@@ -1,6 +1,6 @@
 # What Wins a Vote? Formatting, Length, and Lexical Diversity in the French Compar:IA LLM Arena
 
-Style-control analysis of how presentation (markdown formatting, length, readability, lexical diversity, sentence structure) is associated with human preference votes in **Compar:IA**, a French government-backed LLM arena. Built on the consolidated `comparia-fr-arena` release (about 138,000 decisive French battles, 116 models).
+Style-control analysis of how presentation (markdown formatting, length, readability, lexical diversity, sentence structure) is associated with human preference votes in **Compar:IA**, a French government-backed LLM arena. The retained dataset contains 137,214 decisive French battles across 116 models, built from the consolidated `comparia-fr-arena` release.
 
 ## Research Question
 
@@ -9,11 +9,11 @@ Which presentation features retain an association with votes after joint adjustm
 ## Key Findings
 
 - **Presentation is mostly one collinear "verbosity" dimension.** Length, bold, and lists rise together and trade coefficient weight; their individual attributions are unstable across specifications.
-- **Two signals stand apart and survive full control:** **bold formatting** (+11.3% win odds/SD in the joint model) and **length-independent lexical diversity** (MATTR, +16.9%). Both are conditional correlates, not causal effects.
+- **Two signals stand apart and survive full joint control:** **bold formatting** (+11.3% win odds per standard deviation in the joint model) and **length-independent lexical diversity** (MATTR, +16.9%). Both are conditional correlates, not causal effects.
 - **Much apparent linguistic association is between models:** several coefficients shrink substantially when per-model fixed effects are added. This does not identify presentation as either bias or a quality signal.
 - **Exploratory heterogeneity varies with depth visible at the vote.** The formatting-only bold association is smaller in genuine multi-turn conversations (+31.6%→+6.6% odds/SD), while MATTR is unchanged. Length's interaction is no longer significant. Vote-time depth remains endogenous and is not a direct measure of attention.
 - **The bold association is not solely a subject-matter artefact.** It is positive within every large topic and remains after topic × formatting controls; this is still observational rather than causal.
-- **External preference agreement:** formatting-only control has the highest correlation with all four pinned LMArena preference rankings. The capability comparison needs a refreshed, audited Epoch snapshot because its previously content-hashed download has changed.
+- **Production shifts are striking, but external validation is inconclusive.** In the live 27 July 2026 leaderboard, style control moves GPT-5.3 from rank 47 to 1 and Mistral Medium 2508 from 2 to 28, which supplies useful face-validity evidence. The independent capability comparison has lower formatting-controlled point correlations on all seven eligible benchmarks, with every difference including zero. It also omits GPT-5.3, Mistral Medium 2508, and Gemini 3.1 Flash Lite, so it cannot validate the largest live shifts. Four LMArena preference comparisons move slightly in the other direction and are similarly uncertain.
 - **Leaderboard impact:** controlling for the full presentation bundle moves 34 of 116 models by ≥10 ranks (r = 0.932); more adjustment is not automatically better.
 - **Vote timing is now corrected and audited.** Source conversations continue after the retained vote in 11.2% of battles, but no later turn enters the measured text, cumulative token length, or depth stratum. The audit validates every retained vote and final-turn index against the raw release.
 
@@ -50,7 +50,9 @@ from any directory.
 | `extract_prompts.py` → `task_classify.py` → `task_analysis.py` | §4.8 | `results/task_results.json` (task proxy; needs the raw dataset, run separately from `run.py`) |
 | `robustness_random.py`; `time_block_bootstrap.py` | §4.9 | `results/robustness_random_results.json`, `time_block_results.json` (block bootstrap needs `data/timestamps.parquet`) |
 | `mattr_stress.py`; `mattr_alt.py` | §4.10 | `results/mattr_stress_results.json`, `data/mattr_alt.parquet` (`mattr_alt.py` needs the raw dataset) |
-| `external_leaderboard_analysis.py` | §4.11 | `results/external_leaderboard_results.json` (pinned LMArena snapshots plus a content-hashed Epoch benchmark archive) |
+| `external_leaderboard_analysis.py` | §4.11 | `results/external_leaderboard_results.json` (pinned capability and LMArena snapshots, model-match audits, correlations, and paired intervals) |
+| `generate_external_figure.py` | §4.11 | `figures/fig12_external_alignment.*` |
+| Live leaderboard audit | §4.11 | `results/production_ranking_examples.json` (dated production examples, kept distinct from the research release) |
 | `audit_vote_timing.py` | §2.4, §4.6 | `results/vote_timing_audit_results.json` |
 | `endogeneity_analysis.py` | §5.3 | `results/endogeneity_results.json` |
 | `qualitative_analysis.py` | §5.4 | `results/qualitative_results.json` |
