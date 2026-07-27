@@ -403,6 +403,12 @@ The production leaderboard shows why style control can be practically important:
 
 ---
 
+## Acknowledgements
+
+We gratefully acknowledge the students who participated in the hackathon held at Université Paris Dauphine-PSL in early June 2026, led by coauthor Christophe Benavent. Their explorations of the Compar:IA dataset, with a particular focus on response style, produced insightful findings and brought valuable nuance to the questions examined in this paper. Their work helped broaden our understanding of how presentation and substance interact in human preference judgements.
+
+---
+
 ## References
 
 *The reading-comprehension references support broad distinctions in text processing; they do not validate this paper's specific mapping from formatting, length, and lexical measures to levels of reading.*
