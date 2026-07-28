@@ -80,11 +80,14 @@ We use a Bradley-Terry (BT) model, a standard method for turning pairwise wins a
 
 **Standard model.** For each decisive battle, the outcome is 1 when model A wins and 0 when model B wins. Model A receives +1 and model B receives −1 in the corresponding model columns. We fit logistic regression without regularisation. Only differences between model coefficients matter, so the 1000-point rating origin is arbitrary:
 
-$$\text{Rating}_i = 1000 + \frac{400 \cdot \beta_i}{\ln(10)}$$
+$$\text{Rating}_i = 1000 + \frac{400 \cdot \beta_i}{\ln(10)}$$ 
+(Zheng et al., 2023)
 
 **Style-controlled model.** We add the difference between responses A and B for each presentation feature. These differences are standardised, so a coefficient represents the association with a one-standard-deviation difference:
 
 $$P(\text{A wins}) = \sigma\left(\sum_i \beta_i \cdot \mathbb{1}_i + \sum_f \gamma_f \cdot \Delta f\right)$$
+(Dubois et al., 2024)
+
 
 Here, $\beta_i$ represents the remaining preference for model $i$ after measured presentation is included; it should not be read as pure skill. The $\gamma_f$ terms describe the remaining association between each measured feature and the vote. Including a coefficient for every model means that these feature associations are estimated after accounting for stable differences between models. In the joint model (§4.5), we cap extreme feature differences at the 1st and 99th percentiles before standardising so that a few unusual battles do not dominate the estimates.
 
