@@ -372,6 +372,14 @@ def prepare_epoch_benchmark(frame, models, score_column):
 
 def main():
     validate_aliases()
+    out_path = RESULTS / "external_leaderboard_results.json"
+    previous_output = None
+    if out_path.exists():
+        try:
+            previous_output = json.loads(out_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            previous_output = None
+
     battles = pd.read_parquet(BATTLES)
     joint_features = FORMATTING + ["length"] + LINGUISTIC
     required = [
@@ -430,6 +438,7 @@ def main():
     capability_benchmarks = {}
     epoch_error = None
     epoch_inventory = []
+    reused_audited_result_cache = False
     try:
         epoch = load_epoch_archive()
     except RuntimeError as error:
@@ -487,6 +496,61 @@ def main():
                 )
             else:
                 print(f"{key}: n={len(common)}  ineligible ({statistics['reason']})")
+    elif (
+        previous_output
+        and previous_output.get("epoch_snapshot", {}).get("status")
+        in {"available", "reused_cached_scores"}
+        and previous_output.get("epoch_snapshot", {}).get("sha256") == EPOCH_SHA256
+        and previous_output.get("matching", {}).get("aliases") == EPOCH_MODEL_ALIASES
+        and previous_output.get("capability_benchmarks")
+    ):
+        # The Epoch URL is mutable. A prior successful run records the
+        # hash-verified snapshot's scores and complete match audit in the
+        # generated result. Reuse that audited evidence when the live URL has
+        # changed, but always recompute correlations against the current
+        # Compar:IA ratings. If neither source is available, capability results
+        # remain absent rather than silently accepting new bytes.
+        reused_audited_result_cache = True
+        epoch_inventory = previous_output["epoch_snapshot"].get(
+            "archive_manifest", []
+        )
+        for benchmark_index, (key, cached) in enumerate(
+            previous_output["capability_benchmarks"].items()
+        ):
+            score_dict = {
+                model: float(score)
+                for model, score in cached["external_scores"].items()
+                if model in models
+            }
+            common = sorted(score_dict)
+            groups = {}
+            for item in cached.get("match_audit", []):
+                organizations = item.get("organizations", [])
+                model = item.get("comparia_model_id")
+                if (
+                    item.get("status") == "matched"
+                    and model in common
+                    and len(organizations) == 1
+                ):
+                    groups[model] = organizations[0]
+            rng = np.random.default_rng(SEED + 100 + benchmark_index)
+            statistics = compare_scores(
+                ratings, score_dict, common, rng, groups=groups or None
+            )
+            record = {
+                field: value
+                for field, value in cached.items()
+                if field not in {
+                    "eligible", "reason", "spearman", "kendall_tau_b",
+                    "delta_vs_raw", "leave_one_group_out",
+                    "leave_one_provider_out",
+                }
+            }
+            record["matched_models"] = common
+            record["n_version_matches"] = len(common)
+            record.update(statistics)
+            capability_benchmarks[key] = record
+        print("Reused audited Epoch scores from the hash-verified result cache")
 
     output = {
         "interpretation": (
@@ -521,13 +585,26 @@ def main():
             "url": EPOCH_URL,
             "snapshot_date": EPOCH_SNAPSHOT_DATE,
             "sha256": EPOCH_SHA256,
-            "status": "available" if epoch is not None else "unavailable",
-            "error": epoch_error,
+            "status": (
+                "available"
+                if epoch is not None
+                else "reused_cached_scores"
+                if reused_audited_result_cache
+                else "unavailable"
+            ),
+            "error": (
+                None
+                if epoch is not None or reused_audited_result_cache
+                else epoch_error
+            ),
+            "live_download_error": (
+                epoch_error if reused_audited_result_cache else None
+            ),
+            "reused_audited_result_cache": reused_audited_result_cache,
             "archive_manifest": epoch_inventory,
         },
         "capability_benchmarks": capability_benchmarks,
     }
-    out_path = RESULTS / "external_leaderboard_results.json"
     out_path.write_text(json.dumps(output, indent=2), encoding="utf-8")
     print(f"Saved {out_path}")
 

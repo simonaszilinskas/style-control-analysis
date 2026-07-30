@@ -14,25 +14,23 @@ categories; we use the first as its primary topic.
 
 Two questions:
 
-  Q1. Is the formatting premium a topic artefact? Fit the headline formatting
+  Q1. How do formatting associations vary by topic? Fit the headline formatting
       Bradley-Terry model *within* each major topic and compare bold/lists/
-      headers. If they are stable across topics, the premium is not just "some
-      subjects invite formatting."
+      headers. Similar estimates are a descriptive sensitivity check, not proof
+      that topic-related confounding is absent.
 
   Q2. Is the vote-time conversation-depth interaction robust to topic? Re-fit the
       formatting x multi-turn interaction model with topic x formatting
-      interactions added, so every topic gets its own formatting slope. If the
-      multi-turn interactions stay negative and significant, the vote-time
-      depth difference is not just a different topic mix.
+      interactions added, so every topic gets its own formatting slope. Compare
+      the resulting multi-turn interactions with the primary specification;
+      this does not eliminate unmeasured confounding.
 
     python topic_analysis.py   # -> topic_results.json
 """
 
 import json
-import os
 import numpy as np
 import pandas as pd
-import pyarrow.parquet as pq
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 
@@ -50,7 +48,7 @@ N_BOOT_Q1 = 400
 N_BOOT_Q2 = 1000
 
 
-def _load(vote_only=True, need_turns=False):
+def _load():
     # comparia-fr-arena battle table carries primary_topic (categories[0]) and conv_turns.
     b = pd.read_parquet(BATTLES).rename(columns={"primary_topic": "topic"})
     d = b[b["winner"].isin(["model_a", "model_b"])].copy()
@@ -73,13 +71,13 @@ def _fit_formatting(d, models, scaler):
 
 
 # --------------------------------------------------------------------------- #
-# Q1: formatting effect within each topic
+# Q1: formatting association within each topic
 # --------------------------------------------------------------------------- #
 def q1_topic_stratified():
-    d = _load(vote_only=False, need_turns=False)
+    d = _load()
     scaler = StandardScaler().fit(_contrasts(d, FORMATTING))  # shared scale across topics
     topics = [t for t, c in d["topic"].value_counts().items() if c >= MIN_TOPIC_STRATUM]
-    print(f"\n=== Q1: formatting effect within each topic ({len(topics)} topics) ===")
+    print(f"\n=== Q1: formatting association within each topic ({len(topics)} topics) ===")
 
     out = {}
     # pooled reference (all topics, same model set logic) for comparison
@@ -148,14 +146,14 @@ def _fit_q2(d, models, topic_levels, topic_series, scaler):
 
 
 def q2_reading_depth_topic_controlled():
-    d = _load(vote_only=True, need_turns=True)
+    d = _load()
     d = d.dropna(subset=["conv_turns"])
     d["multiturn"] = (d["conv_turns"] >= 2).astype(int)
     counts = pd.concat([d["model_a_name"], d["model_b_name"]]).value_counts()
     models = sorted(counts[counts >= MIN_BATTLES].index)
     d = d[d["model_a_name"].isin(models) & d["model_b_name"].isin(models)].copy()
     topic_series, topic_levels, ref = _primary_topic_dummies(d)
-    print(f"\n=== Q2: conversation-length interaction with topic x formatting controls ===")
+    print("\n=== Q2: conversation-length interaction with topic x formatting controls ===")
     print(f"battles: {len(d):,}  single: {(d.multiturn==0).sum():,}  "
           f"multi: {(d.multiturn==1).sum():,}  models: {len(models)}  "
           f"topic dummies: {len(topic_levels)} (ref={ref})")

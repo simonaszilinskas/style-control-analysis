@@ -47,7 +47,11 @@ def fit(d, models, feats):
     lr = LogisticRegression(fit_intercept=False, penalty=None, max_iter=5000)
     lr.fit(np.hstack([Xm, Xs]), y)
     n = len(models)
-    ratings = dict(zip(models, INIT + SCALE * lr.coef_[0][:n] / np.log(BASE)))
+    # The all-model contrast design is identified only up to an additive
+    # constant.  Recenter explicitly so the published rating convention is
+    # deterministic and has mean INIT without changing any pairwise difference.
+    model_coefs = lr.coef_[0][:n] - lr.coef_[0][:n].mean()
+    ratings = dict(zip(models, INIT + SCALE * model_coefs / np.log(BASE)))
     coefs = dict(zip(feats, lr.coef_[0][n:]))
     return ratings, coefs
 

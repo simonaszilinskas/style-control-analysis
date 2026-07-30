@@ -1,30 +1,30 @@
 {
   "quality_formatting": {
-    "pearson_r": 0.6051172602917261,
-    "pearson_p": 6.266236525920199e-13,
-    "spearman_rho": 0.6643447507015724,
-    "pearson_r_controlled": 0.4607741087421285
+    "pearson_r": 0.6049502602750831,
+    "pearson_p": 6.382819310586658e-13,
+    "spearman_rho": 0.6655441510014224,
+    "pearson_r_controlled": 0.4626989085866726
   },
-  "rating_change_vs_formatting_r": -0.9772007670275096,
-  "rating_change_vs_formatting_p": 1.4411934089120943e-78,
+  "rating_change_vs_formatting_r": -0.9780986635696909,
+  "rating_change_vs_formatting_p": 1.4960340072132283e-79,
   "tiers": {
     "bottom": {
-      "n_battles": 32412,
-      "bold": 21.292487406432503,
-      "lists": 13.9766720759132,
-      "headers": 10.675279187272203
+      "n_battles": 32439,
+      "bold": 20.254706068690776,
+      "lists": 13.789673358506693,
+      "headers": 10.547046138239446
     },
     "middle": {
-      "n_battles": 14214,
-      "bold": 12.476604886648946,
-      "lists": 7.91717083376422,
-      "headers": 1.853807068561042
+      "n_battles": 13691,
+      "bold": 12.210568636604236,
+      "lists": 8.762416719657207,
+      "headers": 0.9692338646555276
     },
     "top": {
-      "n_battles": 15698,
-      "bold": 12.308218139679061,
-      "lists": -5.22589379599776,
-      "headers": 15.138096055679839
+      "n_battles": 15928,
+      "bold": 13.467401783118692,
+      "lists": -5.395417745149079,
+      "headers": 13.734544589574682
     }
   }
 }

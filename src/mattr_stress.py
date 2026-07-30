@@ -31,7 +31,6 @@ def main():
                          "mattr": mattr}).dropna()
 
     res = {}
-    q = length.quantile([0.05, 0.25, 0.5, 0.75, 0.95]).round(1).to_dict()
     res["length_tokens"] = {"median": float(length.median()), "q25": float(length.quantile(.25)),
                             "q75": float(length.quantile(.75)), "p5": float(length.quantile(.05)),
                             "p95": float(length.quantile(.95))}
@@ -58,15 +57,25 @@ def main():
     dec["maxlen"] = dec[["length_a", "length_b"]].max(axis=1)
     med = dec["maxlen"].median()
     res["mattr_by_stratum"] = {}
-    o = lambda c: float((np.exp(c) - 1) * 100)
+    def odds_pct(coef):
+        return float((np.exp(coef) - 1) * 100)
+
     for label, sub in [("short", dec[dec["maxlen"] <= med]), ("long", dec[dec["maxlen"] > med])]:
         counts = pd.concat([sub["model_a_name"], sub["model_b_name"]]).value_counts()
         models = sorted(counts[counts >= MIN_BATTLES].index)
         s = sub[sub["model_a_name"].isin(models) & sub["model_b_name"].isin(models)]
         _, coef, _, _, _ = fit_bt(s, models, CORE)
-        res["mattr_by_stratum"][label] = {"n": int(len(s)), "mattr": o(coef["mattr"]),
-                                          "bold": o(coef["bold"]), "length": o(coef["length"])}
-        print(f"joint {label} answers (n={len(s):,}): MATTR {o(coef['mattr']):+.1f}%  length {o(coef['length']):+.1f}%")
+        res["mattr_by_stratum"][label] = {
+            "n": int(len(s)),
+            "mattr": odds_pct(coef["mattr"]),
+            "bold": odds_pct(coef["bold"]),
+            "length": odds_pct(coef["length"]),
+        }
+        print(
+            f"joint {label} answers (n={len(s):,}): "
+            f"MATTR {odds_pct(coef['mattr']):+.1f}%  "
+            f"length {odds_pct(coef['length']):+.1f}%"
+        )
 
     with open(RESULTS / "mattr_stress_results.json", "w") as fh:
         json.dump(res, fh, indent=2)

@@ -88,7 +88,12 @@ def fit_bt(battles, models, style_features):
     lr = LogisticRegression(fit_intercept=False, penalty=None, max_iter=5000)
     lr.fit(X, y)
     n = len(models)
-    ratings = dict(zip(models, INIT_RATING + SCALE * lr.coef_[0][:n] / np.log(BASE)))
+    # Ratings are identified only up to a common offset.  Enforce the published
+    # mean-1000 convention explicitly; pairwise predictions are unchanged.
+    model_coefs = lr.coef_[0][:n] - lr.coef_[0][:n].mean()
+    ratings = dict(
+        zip(models, INIT_RATING + SCALE * model_coefs / np.log(BASE))
+    )
     coefs = dict(zip(style_features, lr.coef_[0][n:]))
     return ratings, coefs, y, lr, X
 

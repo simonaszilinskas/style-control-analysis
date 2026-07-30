@@ -8,7 +8,6 @@ generate_figures.py.
 """
 
 import json
-from pathlib import Path
 
 import numpy as np
 import matplotlib
@@ -70,7 +69,7 @@ ax2.axhline(0, color="black", lw=0.6, ls=":")
 ax2.set_xticks(x)
 ax2.set_xticklabels(["formatting", "+length", "joint"], rotation=10)
 ax2.set_ylabel("coefficient (log-odds per SD)")
-ax2.set_title("Formatting effects shrink as length\nand linguistics are added")
+ax2.set_title("Formatting associations shrink as length\nand linguistics are added")
 ax2.legend(loc="upper right", ncol=2)
 
 fig.tight_layout()

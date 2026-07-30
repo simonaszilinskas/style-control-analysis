@@ -8,7 +8,6 @@ generate_figures.py / generate_linguistic_figure.py.
 """
 
 import json
-from pathlib import Path
 
 import numpy as np
 import matplotlib
@@ -41,7 +40,7 @@ def odds(b):
 # --------------------------------------------------------------------------- #
 def fig_reading_depth():
     td = json.load(open(RESULTS / "turn_depth_results.json"))
-    prim = td["primary"]["features"]        # formatting, single/multi/interaction
+    prim = td["primary"]["features"]        # formatting, pooled slopes/interaction
     joint = td["joint"]["features"]         # has length + mattr too
 
     # Left panel: single-turn vs multi-turn odds%, dumbbell.
@@ -50,7 +49,7 @@ def fig_reading_depth():
             ("headers", prim["headers"], FMT), ("code_blocks", prim["code_blocks"], FMT),
             ("emoji", prim["emoji"], FMT),
             ("length", joint["length"], LEN), ("mattr", joint["mattr"], DIV)]
-    labels = [r[0] for r in rows]
+    labels = [row[0] for row in rows]
     y = np.arange(len(rows))[::-1]
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.6),
@@ -114,8 +113,20 @@ def fig_topic_controls():
     labels, pts, los, his = [], [], [], []
     for t, r in topics:
         c = r["coef"]["bold"]
-        labels.append(t.replace(" & Formal Science & Technology", " & Tech")
-                      .replace(" & Economics & Finance", "")[:26])
+        short_topic = (
+            t.replace("Natural Science & Formal Science & Technology", "Science & technology")
+            .replace("Health & Wellness & Medicine", "Health & medicine")
+            .replace("Personal Development & Career", "Personal development")
+            .replace("Entertainment & Travel & Hobby", "Entertainment & travel")
+            .replace("Business & Economics & Finance", "Business & finance")
+            .replace("Culture & Cultural Geography", "Culture & geography")
+            .replace("Society & Social Issues", "Society & social issues")
+            .replace("Daily Life & Home & Lifestyle", "Daily life & home")
+            .replace("Food & Drink & Cooking", "Food & cooking")
+            .replace("Politics & Government", "Politics & government")
+            .replace("Law & Justice", "Law & justice")
+        )
+        labels.append(short_topic)
         pts.append(c["odds_pct"])
         los.append(odds(c["ci"][0]))
         his.append(odds(c["ci"][1]))

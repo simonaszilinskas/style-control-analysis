@@ -6,9 +6,8 @@ Task type (write code / translate / summarize / ...) is distinct from subject
 matter (§4.7) and is a more direct driver of presentation: a list request
 produces lists, a coding request produces code blocks. We label each battle's
 opening prompt with a coarse task taxonomy using ordered keyword rules over the
-(mostly French) prompt text. First matching rule wins. The rules are validated
-against an independent LLM labelling of a sample (see task_validation_*.json,
-produced separately); accuracy is reported there.
+(mostly French) prompt text. First matching rule wins. The classifier is an
+exploratory proxy and is not treated as a validated task taxonomy.
 
     python src/task_classify.py    # data/prompts.parquet -> data/battle_tasks.parquet
 """
@@ -16,7 +15,7 @@ produced separately); accuracy is reported there.
 import re
 import pandas as pd
 
-from paths import DATA
+from paths import BATTLES, DATA
 
 # Ordered (label, regex). First match wins; order handles overlap
 # (e.g. "traduis ce code" -> translation before code; "ecris une fonction" -> code before writing).
@@ -49,7 +48,15 @@ def classify(prompt):
 def main():
     df = pd.read_parquet(DATA / "prompts.parquet")
     df["task"] = df["prompt"].map(classify)
-    out = df[["conversation_pair_id", "task"]]
+    battle_ids = pd.read_parquet(
+        BATTLES, columns=["conversation_pair_id"]
+    ).drop_duplicates()
+    out = battle_ids.merge(
+        df[["conversation_pair_id", "task"]],
+        on="conversation_pair_id",
+        how="left",
+        validate="one_to_one",
+    ).dropna(subset=["task"])
     out.to_parquet(DATA / "battle_tasks.parquet", index=False)
     print(f"{len(out):,} prompts classified")
     print(df["task"].value_counts())

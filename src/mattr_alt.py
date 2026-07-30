@@ -12,18 +12,18 @@ Streams comparia-fr-arena (local copy if present), same decisive-French filter a
 build_fr_arena.py, checkpointed per row group. -> data/mattr_alt.parquet
 """
 
+import argparse
 import os
 import re
 import time
 
 import numpy as np
 import pandas as pd
-import pyarrow.parquet as pq
-from huggingface_hub import HfFileSystem, get_token
 
+from checkpoints import prepare_checkpoint_dir, processor_sha256
 from paths import DATA
-from build_fr_arena import (HF_PATH, HF_REVISION, LOCAL_PATHS, _assistant_text,
-                            _conversation_prefix)
+from build_fr_arena import (HF_PATH, HF_REVISION, _assistant_text,
+                            _conversation_prefix, _open as _open_source)
 
 OUT = DATA / "mattr_alt.parquet"
 PARTS = DATA / f"mattr_alt_parts_vote_truncated_{HF_REVISION[:8]}"
@@ -60,7 +60,7 @@ def _mtld(toks, thr=0.72):
         if n > 0:
             factors += (1 - ttr) / (1 - thr)
         return len(seq) / factors if factors > 0 else float(len(seq))
-    return (_mtld_val := (_pass(toks) + _pass(toks[::-1])) / 2)
+    return (_pass(toks) + _pass(toks[::-1])) / 2
 
 
 def _metrics(text):
@@ -72,16 +72,29 @@ def _metrics(text):
     return {"mtld": _mtld(toks), "cwmattr": _mattr(content), "nocapmattr": _mattr(lower_noncap)}
 
 
-def _open():
-    for p in LOCAL_PATHS:
-        if os.path.exists(p):
-            return pq.ParquetFile(p)
-    return pq.ParquetFile(HfFileSystem(token=get_token()).open(HF_PATH, "rb"))
+def _checkpoint_manifest():
+    return {
+        "format_version": 1,
+        "kind": "alternative_lexical_diversity",
+        "source": {
+            "dataset": "ministere-culture/comparia-fr-arena",
+            "revision": HF_REVISION,
+            "path": HF_PATH,
+        },
+        "columns": COLS,
+        "processor_sha256": processor_sha256(
+            (_assistant_text, _conversation_prefix, _mattr, _mtld, _metrics)
+        ),
+    }
 
 
-def main():
-    os.makedirs(PARTS, exist_ok=True)
-    pf = _open()
+def main(reset_checkpoints=False):
+    prepare_checkpoint_dir(
+        PARTS,
+        _checkpoint_manifest(),
+        reset=reset_checkpoints,
+    )
+    pf = _open_source()
     n_rg = pf.num_row_groups
     t0 = time.time()
     for rg in range(n_rg):
@@ -116,7 +129,7 @@ def main():
                 wait = 5 * (attempt + 1)
                 print(f"  rg {rg+1} attempt {attempt+1} failed: {type(e).__name__}; retry in {wait}s", flush=True)
                 time.sleep(wait)
-                pf = _open()
+                pf = _open_source()
         else:
             raise RuntimeError(f"row group {rg} failed")
 
@@ -132,4 +145,11 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--reset-checkpoints",
+        action="store_true",
+        help="discard generated row-group checkpoints before rebuilding",
+    )
+    args = parser.parse_args()
+    main(reset_checkpoints=args.reset_checkpoints)

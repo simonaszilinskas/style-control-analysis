@@ -17,26 +17,29 @@ import json
 import numpy as np
 import pandas as pd
 
-from analyze_core import fit, bh, MIN_BATTLES, FORMATTING
+from analyze_core import fit, MIN_BATTLES, FORMATTING
 from paths import BATTLES, DATA, RESULTS
 
 MIN_TASK_MODEL = 50       # min battles per model within a task stratum
 MIN_TASK_STRATUM = 2500   # min battles for a task to get its own stratified fit
 N_BOOT = 400
+SEED = 42
 
 
 def _load():
     b = pd.read_parquet(BATTLES)
     tasks = pd.read_parquet(DATA / "battle_tasks.parquet")
     b = b.merge(tasks, on="conversation_pair_id", how="left")
+    task_coverage = float(b["task"].notna().mean())
     d = b[b["winner"].isin(["model_a", "model_b"])].copy()
     d = d.dropna(subset=["task"] + [f"{s}_a" for s in FORMATTING] + [f"{s}_b" for s in FORMATTING])
-    return d
+    return d, task_coverage
 
 
 def main():
-    d = _load()
-    print(f"battles with a task label: {d['task'].notna().mean()*100:.1f}%")
+    rng = np.random.default_rng(SEED)
+    d, task_coverage = _load()
+    print(f"battles with a task label: {task_coverage*100:.3f}%")
     strata = [t for t, c in d["task"].value_counts().items()
               if c >= MIN_TASK_STRATUM and t != "other"]
     print(f"tasks analysed: {strata}")
@@ -50,7 +53,8 @@ def main():
         point = fit(s, models, FORMATTING)[1]
         boot = {f: [] for f in FORMATTING}
         for _ in range(N_BOOT):
-            r = s.sample(n=len(s), replace=True)
+            indices = rng.integers(0, len(s), size=len(s))
+            r = s.iloc[indices]
             try:
                 c = fit(r, models, FORMATTING)[1]
                 for f in FORMATTING:
@@ -67,8 +71,17 @@ def main():
         cells = "  ".join(f"{f}={rec['coef'][f]['odds_pct']:+5.1f}%" for f in FORMATTING)
         print(f"  {label[:14]:14s} n={len(s):6d} m={len(models):3d}  {cells}")
 
+    output = {
+        "analysis": {
+            "bootstrap_resamples": N_BOOT,
+            "bootstrap_seed": SEED,
+            "intervals": "unadjusted percentile intervals; exploratory",
+            "task_label_coverage": task_coverage,
+        },
+        "strata": res,
+    }
     with open(RESULTS / "task_results.json", "w") as fh:
-        json.dump(res, fh, indent=2)
+        json.dump(output, fh, indent=2)
     print("Saved results/task_results.json")
 
 

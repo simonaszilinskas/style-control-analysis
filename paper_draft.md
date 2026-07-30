@@ -4,7 +4,7 @@
 
 ## Abstract
 
-LLM evaluation arenas rank models from pairwise human preferences, but votes may reflect presentation as well as substance. We study 137,214 decisive French-language votes across 116 models from the Compar:IA release published in July 2026. We reconstruct each response as it appeared when the vote was cast, then compare a raw ranking with rankings that account for formatting, length, readability, lexical diversity, and sentence structure. Presentation is associated with votes, but length, bold text, and lists usually occur together, so their individual contributions are difficult to separate. Two signals remain comparatively stable in the full model: **bold usage** (+11.3% win odds per standard deviation) and **length-independent lexical diversity** (+16.9%). The full adjustment moves 34 of 116 models by at least ten ranks. The production leaderboard supplies a striking face-validity example: in a 27 July 2026 snapshot, style control moved GPT-5.3 from rank 47 to 1 and Mistral Medium 2508 from 2 to 28. This does not by itself validate the adjusted ranking. Across seven independent capability benchmarks, formatting control has slightly lower point correlations than the raw ranking, but every difference includes zero in its 95% bootstrap interval and the external data omit several models behind the largest production shifts. Correlations with four LMArena preference rankings are slightly higher and similarly uncertain. Because the features are observed rather than experimentally varied, the results are associations rather than causal effects. Arena operators should publish raw and adjusted rankings side by side.
+LLM evaluation arenas rank models from pairwise human preferences, but votes may reflect presentation as well as substance. We retain 137,293 decisive French-language votes from the Compar:IA release published in July 2026; the primary analysis covers 137,113 battles across 116 models. We reconstruct each response as it appeared when the vote was cast, then compare a raw ranking with rankings that account for formatting, length, readability, lexical diversity, and sentence structure. Presentation is associated with votes, but length, bold text, and lists usually occur together, so their individual contributions are difficult to separate. Two signals remain comparatively stable in the full model: **bold usage** (+11.0% win odds per standard deviation) and **length-independent lexical diversity** (+16.8%). The full adjustment moves 36 of 116 models by at least ten ranks. A separate production snapshot illustrates that individual shifts can be large, while external comparisons remain inconclusive and do not establish that style-adjusted rankings better reflect independent capability measures. Because the features are observed rather than experimentally varied, the results are associations rather than causal effects. Arena operators should publish raw and adjusted rankings side by side.
 
 ---
 
@@ -38,17 +38,21 @@ We use **`ministere-culture/comparia-fr-arena`** (Compar:IA & Ministère de la C
 
 | | Raw turns | Decisive French battles | Models (≥100 battles) |
 |---|---:|---:|---:|
-| comparia-fr-arena | 641,277 | 137,214 | 116 |
+| comparia-fr-arena | 641,277 | 137,293 | 116 |
 
 Ties and no-vote turns are dropped (decisive votes only, matching prior style-control work). Winner distribution is balanced (model A wins 49.9%, see §4.4).
 
 ### 2.3 Feature extraction and data quality
 
-For each battle, we reconstruct only the text visible when the vote was cast. We concatenate the assistant messages up to that point and sum the release's per-turn token counts over the same period. We do not use token totals for the completed conversation. We then compute formatting and language features on this vote-time text. Battles with no visible response text at the vote are dropped. Topic comes from the release metadata, and conversation depth is the number of user turns visible at the vote. Coverage is high: topic is present for 100% of battles, length for 99.9%, and language features for 97.2%.
+For each battle, we reconstruct only the text visible when the vote was cast. We concatenate the assistant messages up to that point and sum the release's per-turn token counts over the same period. We do not use token totals for the completed conversation. We then compute formatting and language features on this vote-time text. Battles with no visible response text at the vote are dropped.
+
+The release can store hidden reasoning separately in `reasoning_content` or embed it in a paired `<think>...</think>` span before the final answer. We never analyse `reasoning_content`. For embedded spans, we remove each complete span and retain only text outside it; if a tag is unmatched, we retain only the unambiguous text before it. Relative to the earlier all-or-nothing tag filter, this rule newly retains 86 battles with visible final text and removes 7 ambiguous legacy cases, for a net increase of 79. A versioned aggregate audit (`results/reasoning_content_audit_results.json`) of the pinned release found no retained decisive French vote prefix whose last assistant message had empty final `content` but non-empty `reasoning_content`. We therefore find no evidence of that directly observable missing-final-answer failure mode in the renewed release. An untagged reasoning trace stored in `content` cannot be identified from these fields alone, so it cannot be ruled out.
+
+Topic comes from the release metadata, and conversation depth is the number of user turns visible at the vote. Coverage is high: topic is present for 100% of battles, length for 99.9%, and language features for 97.2%.
 
 ### 2.4 Native Topic Metadata and Vote-Timing Audit
 
-Each conversation has an LLM-assigned topic from about 18 subject classes, which we use in §4.7. It also records when each reaction occurred. Some source conversations continued after the retained vote: this happened in **15,349 of 137,214 battles (11.2%)**. Those later turns are excluded from the response text, token counts, and depth measures. At the time of voting, 15,544 battles were genuinely multi-turn. An independent audit against the raw release found that no post-vote turn entered any measured feature.
+Each conversation has an LLM-assigned topic from about 18 subject classes, which we use in §4.7. It also records when each reaction occurred. Some source conversations continued after the retained vote: this happened in **15,357 of 137,293 battles (11.2%)**. Those later turns are excluded from the response text, token counts, and depth measures. At the time of voting, 15,552 battles were genuinely multi-turn. An independent audit against the raw release found that no post-vote turn entered any measured feature.
 
 ---
 
@@ -78,7 +82,7 @@ Sections 4.1 to 4.4 first reproduce a narrow formatting analysis that is structu
 
 We use a Bradley-Terry (BT) model, a standard method for turning pairwise wins and losses into model ratings (Bradley & Terry, 1952). The basic model asks how strongly each model's identity predicts a win. The controlled model also compares the presentation of the two responses. It therefore estimates how the ranking changes after accounting for measured presentation differences.
 
-**Standard model.** For each decisive battle, the outcome is 1 when model A wins and 0 when model B wins. Model A receives +1 and model B receives −1 in the corresponding model columns. We fit logistic regression without regularisation. Only differences between model coefficients matter, so the 1000-point rating origin is arbitrary:
+**Standard model.** For each decisive battle, the outcome is 1 when model A wins and 0 when model B wins. Model A receives +1 and model B receives −1 in the corresponding model columns. We fit logistic regression without regularisation. The all-model contrast design is identified only up to an additive constant, so after fitting we recenter the model coefficients to sum to zero. This makes the mean rating 1000 without changing any pairwise prediction:
 
 $$\text{Rating}_i = 1000 + \frac{400 \cdot \beta_i}{\ln(10)}$$ 
 (Zheng et al., 2023)
@@ -89,15 +93,15 @@ $$P(\text{A wins}) = \sigma\left(\sum_i \beta_i \cdot \mathbb{1}_i + \sum_f \gam
 (Dubois et al., 2024)
 
 
-Here, $\beta_i$ represents the remaining preference for model $i$ after measured presentation is included; it should not be read as pure skill. The $\gamma_f$ terms describe the remaining association between each measured feature and the vote. Including a coefficient for every model means that these feature associations are estimated after accounting for stable differences between models. In the joint model (§4.5), we cap extreme feature differences at the 1st and 99th percentiles before standardising so that a few unusual battles do not dominate the estimates.
+Here, $\beta_i$ represents the remaining preference for model $i$ after measured presentation is included; it should not be read as pure skill. The $\gamma_f$ terms describe the remaining association between each measured feature and the vote. Including a coefficient for every model means that these feature associations are estimated after accounting for stable differences between models. The primary formatting-only analysis in §§4.1–4.4 uses standardised raw contrasts. The joint, conversation-depth, and topic-interaction models cap each feature contrast at its 1st and 99th percentiles before standardising so that a few unusual battles do not dominate those estimates. The exploratory task-stratified fits follow the raw-contrast formatting specification.
 
 ### 3.3 Bootstrap Inference
 
-We estimate uncertainty by repeating the full analysis on 1,000 bootstrap samples drawn with replacement (Efron, 1979). We use the resulting distributions to report 95% confidence intervals and two-sided p-values for both presentation coefficients and model ratings.
+Primary coefficient and model-rating intervals use 1,000 nonparametric bootstrap samples of battles drawn with replacement (Efron, 1979). The exploratory topic and task strata use 400 samples, the weekly block sensitivity analysis uses 500 samples, and external paired-correlation comparisons use 10,000. Battle-level resampling treats battles as independent and cannot account for repeated users or other latent clustering. Weekly resampling is a temporal sensitivity analysis, not a substitute for user-level clustering.
 
 ### 3.4 Multiple Comparison Correction
 
-Because we test several features and model-rating changes, we apply the Benjamini-Hochberg procedure at 0.05 to limit false discoveries (Benjamini & Hochberg, 1995). We correct feature tests and per-model rating-change tests separately. Rank changes are descriptive and are not tested separately.
+Because we test several features and model-rating changes, we apply the Benjamini-Hochberg procedure at 0.05 to limit false discoveries (Benjamini & Hochberg, 1995). We correct the five primary formatting features, the thirteen joint-model features, each conversation-depth interaction family, and per-model rating changes as separate families. Rank changes are descriptive and are not tested separately. Topic- and task-stratified intervals are unadjusted exploratory intervals and are described as such.
 
 ---
 
@@ -107,17 +111,17 @@ Because we test several features and model-rating changes, we apply the Benjamin
 
 Bold has the largest formatting association with votes. Table 1 reports each feature after accounting for model identity and the other formatting features.
 
-**Table 1. Style coefficients from the Bradley-Terry model (137,034 battles, 116 models). p-values are BH-adjusted across 5 tests.**
+**Table 1. Style coefficients from the Bradley-Terry model (137,113 battles, 116 models). p-values are BH-adjusted across 5 tests.**
 
 | Feature | % Odds Change | 95% CI | p (BH) | Significant? |
 |---------|--------------:|--------|--------|-------------|
-| **Bold** | **+19.2%** | [+16.3%, +22.6%] | 0.002 | Yes |
-| **Headers** | +9.3% | [+3.3%, +12.3%] | 0.002 | Yes |
+| **Bold** | **+19.0%** | [+16.0%, +22.4%] | 0.002 | Yes |
+| **Headers** | +9.1% | [+3.0%, +12.6%] | 0.002 | Yes |
 | **Lists** | +6.6% | [+4.5%, +9.0%] | 0.002 | Yes |
-| **Emoji** | +3.4% | [+1.3%, +5.5%] | 0.002 | Yes |
-| Code blocks | +0.9% | [−0.8%, +4.6%] | 0.526 | No |
+| **Emoji** | +3.5% | [+1.5%, +5.4%] | 0.002 | Yes |
+| Code blocks | +0.8% | [−0.8%, +4.5%] | 0.580 | No |
 
-**Interpretation.** A one-standard-deviation difference in bold usage is associated with 19.2% higher win odds, after adjusting for model identity and the other formatting features. Headers, lists, and emoji have smaller but significant associations; code blocks show no detectable pooled association. Bold is the strongest formatting correlate in this specification.
+**Interpretation.** A one-standard-deviation difference in bold usage is associated with 19.0% higher win odds, after adjusting for model identity and the other formatting features. Headers, lists, and emoji have smaller but significant associations; code blocks show no detectable pooled association. Bold is the strongest formatting correlate in this specification.
 
 ### 4.2 Ablation Study
 
@@ -127,31 +131,31 @@ The formatting features overlap. When each is tested alone, it receives credit f
 
 | Feature | Alone | Joint (Table 1) |
 |---------|------:|----------------:|
-| Bold | +27.3% | +19.2% |
-| Headers | +22.4% | +9.3% |
-| Lists | +16.9% | +6.6% |
-| Emoji | +8.9% | +3.4% |
-| Code blocks | +4.8% | +0.9% |
+| Bold | +27.0% | +19.0% |
+| Headers | +22.3% | +9.1% |
+| Lists | +16.8% | +6.6% |
+| Emoji | +8.8% | +3.5% |
+| Code blocks | +4.8% | +0.8% |
 
 Every coefficient shrinks when the other features are added, in some cases sharply. The data therefore cannot cleanly separate the associations of features that often appear together.
 
 ### 4.3 Ranking Impact
 
-The correlation between standard and formatting-controlled BT ratings is **r = 0.984**: rankings are stable overall, but specific models shift. Across all 116 models, **89 (77%)** show a statistically significant rating change after style control.
+The correlation between standard and formatting-controlled BT ratings is **r = 0.985**: rankings are stable overall, but specific models shift. Across all 116 models, **87 (75%)** show a statistically significant rating change after style control.
 
 **Table 3. Largest rank changes after formatting control. “Sig?” refers to the BH-adjusted test of the underlying rating change.**
 
 | Model | Std → Ctrl | ΔRank | Sig? |
 |-------|:----------:|------:|------|
-| mistral-small-2603 | 10 → 34 | **−24** | Yes |
+| mistral-small-2603 | 9 → 33 | **−24** | Yes |
 | qwen-3-8b | 80 → 102 | **−22** | Yes |
 | mistral-large-2512 | 3 → 24 | **−21** | Yes |
-| gpt-5.3 | 45 → 26 | **+19** | Yes |
 | gpt-oss-120b | 37 → 56 | **−19** | Yes |
+| gpt-5.3 | 45 → 27 | **+18** | Yes |
 | qwen3-30b-a3b | 78 → 95 | **−17** | Yes |
 | mistral-medium-2508 | 2 → 15 | **−13** | Yes |
 | o4-mini | 76 → 63 | **+13** | Yes |
-| qwen3-32b | 54 → 67 | **−13** | Yes |
+| qwen3-32b | 54 → 68 | **−14** | Yes |
 
 Heavy formatters (mistral-large-2512, mistral-small-2603, gpt-oss-120b) fall, while several more concise models rise. These shifts establish sensitivity to the adjustment; they do not by themselves show that the models which rise have greater reasoning depth or substantive quality.
 
@@ -161,27 +165,27 @@ Position bias is negligible and not significant: model A wins 49.94% of decisive
 
 ### 4.5 Length and Language Features
 
-Adding length and language features changes the picture: much of the formatting association is shared with answer length, while bold and MATTR remain distinct signals. This analysis uses **127,010 battles across 116 models** for which every feature is available and each model has at least 100 battles. It follows the estimation and uncertainty procedures in §3.
+Adding length and language features changes the picture: much of the formatting association is shared with answer length, while bold and MATTR remain distinct signals. The retained frame has 137,293 battles. The primary formatting analysis excludes 180 battles involving three models below the 100-battle threshold, leaving 137,113. For the joint analysis, missing readability removes 5,891 battles, missing TTR removes another 187, and missing MATTR removes another 3,950; applying the model threshold then removes 173, leaving **127,092 battles across 116 models**. Length and formatting are complete in the retained frame.
 
-**Some of the formatting association is also a length association.** Longer answers tend to contain more markdown, so adding length makes the formatting estimates smaller. Length itself is associated with +8.3% win odds [+5.9, +11.0]. This does not mean that length is merely a bias, since a longer answer may also be more complete.
+**Some of the formatting association is also a length association.** Longer answers tend to contain more markdown, so adding length makes the formatting estimates smaller. Length itself is associated with +8.3% win odds [+5.7, +10.6]. This does not mean that length is merely a bias, since a longer answer may also be more complete.
 
-**Bold remains associated with votes after all measured features are included.** Its estimate falls from +19.2% to **+11.3%** [+9.1, +13.8]. Headers are +7.0%, code blocks +2.3%, emoji +3.2%, and lists +1.7%. All remain significant after correction, although the list estimate is small and changes across specifications.
+**Bold remains associated with votes after all measured features are included.** On the joint model's common support, its formatting-only estimate is +20.4%; after length and language are added it is **+11.0%** [+8.8, +13.6]. This same-support comparison separates specification change from sample change. Headers are +6.8%, code blocks +2.4%, emoji +3.3%, and lists +1.7%. Lists are not significant after correction; the other four formatting estimates are. The small list estimate also changes across specifications.
 
-**MATTR is the most stable language measure.** A one-standard-deviation increase is associated with **+16.9%** win odds [+14.9, +19.0]. MATTR is nearly unrelated to total length in these data, so it captures something different from simply writing more. Raw TTR is −26.2%, but TTR mechanically falls as text gets longer and should not be interpreted as an independent diversity signal. Taken together, length, markdown density, and raw TTR overlap too much for their individual estimates to have a simple interpretation. MATTR stands apart from that group.
+**MATTR is the most stable language measure.** A one-standard-deviation increase is associated with **+16.8%** win odds [+14.9, +18.9]. MATTR is nearly unrelated to total length in these data, so it captures something different from simply writing more. Raw TTR is −26.3%, but TTR mechanically falls as text gets longer and should not be interpreted as an independent diversity signal. Taken together, length, markdown density, and raw TTR overlap too much for their individual estimates to have a simple interpretation. MATTR stands apart from that group.
 
-**Readability and sentence length add little.** REL (+0.9%) and Flesch-Kincaid (−2.8%) are not significant. Coleman-Liau is +4.2%, but the three readability measures overlap strongly, so we do not interpret one as uniquely important. Mean sentence length is not significant.
+**Readability and sentence length add little.** REL (−0.8%) and Flesch-Kincaid (−3.7%) are not significant. Coleman-Liau is +3.4%, but the three readability measures overlap strongly, so we do not interpret one as uniquely important. Mean sentence length is not significant.
 
 ![Figure 1. Left: joint style coefficients with 95% bootstrap CIs, coloured by feature family (grey = not significant after BH). Length dominates alone but is absorbed in the joint model; bold survives; MATTR is the most stable length-independent linguistic correlate. Right: formatting coefficients shrink as length and then the linguistic features are added.](figures/fig9_linguistic.png)
 
 **The added features provide a small predictive gain.** Battle-prediction accuracy rises from 0.634 with formatting alone to 0.637 after adding length and **0.642** in the full model. This gain does not show that presentation caused the votes.
 
-**The joint control reshuffles the leaderboard more than formatting alone.** On the common support, the standard ranking correlates with the formatting-only controlled ranking at r = 0.966 but with the *joint* controlled ranking at only **0.932** (Spearman 0.914); **34 of 116 models move by ≥10 ranks**. Heavy formatters fall (gpt-oss-120b −49, mistral-small-2603 −36, mistral-large-2512 −33, glm-4.5 −30), while concise strong models rise (gpt-5.3 +43, claude-3-5-sonnet-v2 +34, claude-3-7-sonnet +28, o4-mini +28).
+**The joint control reshuffles the leaderboard more than formatting alone.** On the common support, the standard ranking correlates with the formatting-only controlled ranking at r = 0.967 but with the *joint* controlled ranking at only **0.931** (Spearman 0.915); **36 of 116 models move by ≥10 ranks**. Heavy formatters fall (gpt-oss-120b −48, mistral-small-2603 −35, mistral-large-2512 −33, glm-4.5 −29), while concise strong models rise (gpt-5.3 +43, claude-3-5-sonnet-v2 +34, trinity-large-preview +29, claude-3-7-sonnet +28, o4-mini +28).
 
-**Much of the raw pattern comes from differences between models.** Without model controls, the estimates are larger: bold is +29.1%, mean sentence length +23.7%, and MATTR +32.2%. After accounting for which model produced each answer, they fall to +11.3%, +2.8%, and +16.9%. Models that usually present answers differently therefore explain a substantial part of the pooled pattern. The remaining association compares answers after stable model differences are accounted for, but it is still not causal.
+**Much of the raw pattern comes from differences between models.** Without model controls, the estimates are larger: bold is +29.1%, mean sentence length +23.7%, and MATTR +32.3%. After accounting for which model produced each answer, they fall to +11.0%, +2.3%, and +16.8%. Models that usually present answers differently therefore explain a substantial part of the pooled pattern. The remaining association compares answers after stable model differences are accounted for, but it is still not causal.
 
 ### 4.6 Exploratory Heterogeneity by Vote-Time Conversation Depth
 
-Formatting is less strongly associated with votes in multi-turn conversations, especially for bold. We compare battles with one user turn visible at the vote against those with two or more. Of 137,034 battles in this analysis, 88.7% are single-turn and 11.3% are genuinely multi-turn at the time of voting.
+Formatting is less strongly associated with votes in multi-turn conversations, especially for bold. We compare battles with one user turn visible at the vote against those with two or more. Of 137,113 battles in this analysis, 88.7% are single-turn and 11.3% are genuinely multi-turn at the time of voting.
 
 We estimate both groups in one model by allowing each presentation association to change for multi-turn battles. A negative interaction in Table 4 means that the association is smaller in multi-turn conversations. Bold, headers, and code blocks have significant negative interactions after correction; lists does not. Emoji has a small positive interaction.
 
@@ -189,90 +193,90 @@ We estimate both groups in one model by allowing each presentation association t
 
 | Feature | Single-turn | Multi-turn | Interaction δ | Sig? |
 |---------|:-----------:|:----------:|:-------------:|------|
-| **Bold** | **+30.5%** | **+7.5%** | −0.194 | Yes |
-| Headers | +11.2% | +6.9% | −0.040 | Yes |
-| Lists | +9.0% | +7.9% | −0.010 | No |
-| Code blocks | +5.1% | +0.8% | −0.042 | Yes |
+| **Bold** | **+30.1%** | **+7.4%** | −0.191 | Yes |
+| Headers | +11.1% | +6.8% | −0.040 | Yes |
+| Lists | +9.0% | +7.8% | −0.012 | No |
+| Code blocks | +5.0% | +0.8% | −0.041 | Yes |
 | Emoji | +2.4% | +6.0% | +0.035 | Yes |
 
-Bold changes the most, from +30.5% win odds in single-turn battles to +7.5% in multi-turn battles, a reduction of about 76%. This is a difference between observed groups, not evidence that longer conversations cause users to discount formatting. Users may continue for reasons related to the prompt, their goals, or the quality of earlier answers.
+Bold changes the most, from +30.1% win odds in single-turn battles to +7.4% in multi-turn battles, a reduction of about 75% in the pooled interaction model. This is a difference between observed groups, not evidence that longer conversations cause users to discount formatting. Users may continue for reasons related to the prompt, their goals, or the quality of earlier answers.
 
 ![Figure 2. Depth visible at the retained vote. Left: win-odds change per SD for each feature in single-turn (circle) vs multi-turn (diamond) battles. Right: the interaction with 95% bootstrap CIs; grey is not significant after BH.](figures/fig10_reading_depth.png)
 
-**Length and lexical diversity change much less.** Length moves from +11.2% to +8.1%, and MATTR from +16.2% to +14.1%; neither interaction is significant after correction. Section 4.7 shows that topic mix does not explain the formatting pattern. Conversation depth remains a descriptive grouping, not a measure of attention or a causal intervention.
+**Length and lexical diversity change much less.** In the pooled interaction model, length moves from +10.9% to +7.7%, and MATTR from +16.2% to +13.7%; neither interaction is significant after correction. Separate descriptive stratum fits are similar but are not used to derive the interaction test. Section 4.7 shows that allowing observed topic-specific slopes leaves the depth interactions similar; this does not rule out topic-related or unmeasured confounding. Conversation depth remains a descriptive grouping, not a measure of attention or a causal intervention.
 
 ### 4.7 Topic Controls: Is the Formatting Premium Just a Proxy for Subject Matter?
 
-Topic does not explain the bold association. Technical questions, for example, may invite both code and heavier formatting. Since both compared models answer the same prompt, topic alone cannot predict which side wins; the relevant question is whether the formatting association changes by topic. We therefore estimate the model separately within each subject that has at least 2,500 battles. Bold is positively associated with votes in **every** included subject and is significant in most:
+Allowing observed topic-specific slopes does not materially change the bold association. Technical questions, for example, may invite both code and heavier formatting. Since both compared models answer the same prompt, topic alone cannot predict which side wins; the relevant question is whether the formatting association changes by topic. We therefore estimate the model separately within each subject that has at least 2,500 battles. Bold is positively associated with votes in **every** included subject; most unadjusted 95% bootstrap intervals exclude zero:
 
-**Table 5. Bold effect (odds change per SD) within each topic.**
+**Table 5. Bold association (odds change per SD) within each topic.**
 
 | Topic | Bold |
 |-------|-----:|
-| Natural Science & Technology | +21.3% |
-| Politics & Government | +63.8% |
-| Health & Wellness & Medicine | +36.4% |
-| Arts | +35.6% |
-| Personal Development & Career | +36.3% |
+| Natural Science & Technology | +20.9% |
+| Politics & Government | +63.7% |
+| Health & Wellness & Medicine | +36.0% |
+| Arts | +34.8% |
+| Personal Development & Career | +35.3% |
 | Food & Drink & Cooking | +24.1% |
-| Law & Justice | +44.1% |
-| Environment | +22.8% |
+| Law & Justice | +43.9% |
+| Environment | +22.3% |
 | Entertainment & Travel & Hobby | +19.1% |
-| Education | +15.2% |
-| Business & Economics & Finance | +17.1% |
-| Culture & Cultural Geography | +19.6% |
-| Society & Social Issues | +24.1% |
+| Education | +15.0% |
+| Business & Economics & Finance | +16.9% |
+| Culture & Cultural Geography | +18.0% |
+| Society & Social Issues | +21.6% |
 | Daily Life & Home & Lifestyle | +22.7% |
 
 The size of the estimate varies, but smaller subject groups have wider intervals, so the ordering should not be over-interpreted.
 
 ![Figure 3. Topic controls. Left: the bold association (win-odds change per SD) estimated within each topic, with 95% bootstrap CIs; positive in every subject. Right: the vote-time multi-turn interactions of §4.6 (circle) versus the same model with topic × formatting interactions added (diamond); the two nearly coincide.](figures/fig11_topic_controls.png)
 
-**Topic also does not explain the multi-turn pattern.** After allowing formatting associations to vary by topic, the multi-turn interactions are almost unchanged: bold −0.192, headers −0.045, code blocks −0.034, and emoji +0.034 are significant; lists −0.004 is not. The analysis remains observational.
+**Topic adjustment leaves the multi-turn pattern similar.** After allowing formatting associations to vary by topic, the multi-turn interactions are almost unchanged: bold −0.191, headers −0.043, code blocks −0.033, and emoji +0.035 are significant; lists −0.006 is not. This does not rule out topic-related or unmeasured confounding, and the analysis remains observational.
 
 Topic here is subject matter, not task type (summarise, translate, write code, give advice), which §4.8 addresses separately.
 
 ### 4.8 Task-Type Controls: Is the Formatting Premium a Proxy for Task Form?
 
-Task type is more directly related to formatting than subject matter. A coding request invites code blocks, while a translation request may not. We assign each opening prompt to one of ten broad task types using French keyword rules. Against 120 independently labelled prompts, the rules agree 56% of the time overall and 64% when they assign a specific label rather than “other.” About one-third of prompts fall into “other.” This is therefore an exploratory check, not a precise task control.
+Task type is more directly related to formatting than subject matter. A coding request invites code blocks, while a translation request may not. We assign each opening prompt to one of ten broad task types using ordered French keyword rules. The classifier has not been validated on this release and about one-third of prompts fall into “other.” This is therefore an exploratory proxy, not a precise task control.
 
-**Bold remains positive in most task groups.** It is positive in eight of nine reported groups and significant for explanation (+27.3%), writing (+15.2%), code (+28.2%), ideas (+18.8%), summarization (+35.3%), and advice (+39.4%). It is positive but not significant for list/table and math, and negative but not significant for translation (−11.8%).
+**Bold remains positive in most task groups.** It is positive in eight of nine reported groups. The unadjusted 95% intervals exclude zero for explanation (+26.7%), writing (+15.1%), code (+28.1%), ideas (+19.1%), summarization (+34.7%), and advice (+38.9%). The intervals include zero for list/table, math, and translation (−11.8%). These many exploratory stratum-feature intervals are not multiplicity-adjusted.
 
 **Table 6. Bold and code-block association (odds change per SD) within each task.**
 
 | Task | Battles | Bold | Code blocks |
 |------|:------:|:----:|:-----------:|
-| explanation | 44,841 | +27.3% | −1.1% |
-| writing | 12,579 | +15.2% | −6.1% |
-| code | 9,745 | +28.2% | +13.4% |
-| ideas | 4,405 | +18.8% | +6.4% |
-| list/table | 2,955 | +7.9% | +16.8% |
-| summarization | 2,941 | +35.3% | −4.5% |
-| advice | 2,616 | +39.4% | −1.5% |
-| translation | 2,449 | −11.8% | +23.3% |
+| explanation | 44,870 | +26.7% | −1.0% |
+| writing | 12,587 | +15.1% | −6.1% |
+| code | 9,749 | +28.1% | +13.1% |
+| ideas | 4,408 | +19.1% | +6.4% |
+| list/table | 2,956 | +7.8% | +16.8% |
+| summarization | 2,943 | +34.7% | −4.5% |
+| advice | 2,618 | +38.9% | −1.5% |
+| translation | 2,451 | −11.8% | +23.2% |
 | math | 1,472 | +16.3% | +10.3% |
 
-**Code-block formatting depends on the task.** It is positive for code (+13.4%), translation, list/table, and math, but near zero or negative in prose tasks. Averaging across mostly non-coding battles therefore hides a task-specific pattern and helps explain the null pooled estimate in §4.1. A validated task taxonomy is still needed to confirm this result.
+**The estimated code-block association varies across exploratory task strata.** It is positive for code (+13.1%), translation, list/table, and math, but near zero or negative in prose tasks. Averaging across mostly non-coding battles may therefore obscure heterogeneity behind the null pooled estimate in §4.1. A validated task taxonomy is still needed to confirm this result.
 
 ### 4.9 Robustness to Arena Mode and Temporal Dependence
 
-The main results survive two checks for how battles were sampled. First, 72% of decisive battles use random model pairs, while 19% use pairs selected by the user. The random-pair analysis contains 98,237 battles for the formatting model and 91,000 for the full model. Bold is +20.4% in the formatting model and +12.7% in the full model; MATTR is +16.1%. These are close to the full-sample estimates of +19.2%, +11.3%, and +16.9%. Headers and length move more, to +5.2% each, reinforcing the conclusion that their individual estimates are less stable.
+The main results survive two checks for how battles were sampled. First, 72% of decisive battles use random model pairs, while 19% use pairs selected by the user. The random-pair analysis contains 98,306 battles for the formatting model and 91,070 for the full model. Bold is +20.2% in the formatting model and +12.4% in the full model; MATTR is +16.0%. These are close to the full-sample estimates of +19.0%, +11.0%, and +16.8%. Headers and length move more, to +5.1% and +5.0%, reinforcing the conclusion that their individual estimates are less stable.
 
-Second, we resample the data by calendar week to account for changes in the model roster and user population over time. The 95% intervals remain above zero: formatting-only bold +19.2% [+15.2, +23.7], full-model bold +11.3% [+8.9, +13.4], and MATTR +16.9% [+14.5, +19.0]. The release has no user identifier, so dependence among battles from the same user cannot be tested.
+Second, we resample the data by calendar week to account for changes in the model roster and user population over time. The 95% intervals remain above zero: formatting-only bold +19.0% [+15.2, +23.6], full-model bold +11.0% [+8.7, +13.3], and MATTR +16.8% [+14.4, +19.1]. The release has no user identifier, so dependence among battles from the same user cannot be tested.
 
 ### 4.10 MATTR Stress Tests
 
-The MATTR result is not explained by answer length, the 50-token window, function words, or proper names. Responses are long enough for this measure: the median is 691 output tokens (IQR 380–1,137), and only 4.9% fall below the window and are excluded. MATTR is nearly unrelated to length overall (Spearman +0.05) and within length quartiles (−0.04 to +0.11).
+The MATTR association persists under sensitivity checks for answer length, the 50-token window, function words, and proper names. Responses are long enough for this measure: the median is 691 output tokens (IQR 380–1,138), and only 4.9% fall below the window and are excluded. MATTR is nearly unrelated to length overall (Spearman +0.05) and within length quartiles (−0.04 to +0.11).
 
-The association is stronger for above-median-length answers (+16.7%) than for shorter answers (+4.6%), while length shows the opposite pattern (+6.5% for longer answers and +44.7% for shorter ones). When answers are short, adding content is strongly associated with winning. Among already long answers, additional length matters less and lexical diversity carries more of the signal. MATTR remains positive in both groups.
+The association is stronger for above-median-length answers (+16.5%) than for shorter answers (+4.5%), while length shows the opposite pattern (+6.3% for longer answers and +44.6% for shorter ones). Among short-answer battles, a larger length contrast is more strongly associated with winning. Among already long answers, additional length matters less and lexical diversity carries more of the measured signal. MATTR remains positive in both groups.
 
-We also checked whether the result depends on the chosen diversity measure or simply captures names and technical terms. The estimate remains positive with each alternative: **+16.9% for MATTR, +12.4% for MTLD, +11.7% after removing French function words, and +13.1% after excluding capitalised tokens as a rough proxy for proper names**. MATTR and MTLD are closely related in these data (Spearman 0.94). We therefore describe lexical diversity as a stable correlate, not proven vocabulary “richness,” because it may still capture topical specificity.
+We also checked whether the result depends on the chosen diversity measure or simply captures names and technical terms. In otherwise identical joint models on each metric's available-case support, the estimate remains positive: **+16.8% for MATTR, +12.7% for MTLD, +11.7% after removing French function words, and +13.3% after excluding capitalised tokens as a rough proxy for proper names** (McCarthy & Jarvis, 2010). MATTR and MTLD are closely related in these data (Spearman 0.94). We therefore describe lexical diversity as a stable correlate, not proven vocabulary “richness,” because it may still capture topical specificity.
 
 ### 4.11 Production Face Validity and External Benchmark Agreement
 
 The current production leaderboard provides an intuitive reason to take style sensitivity seriously. Compar:IA enables style control by default and describes it as removing the influence of response length and formatting (Compar:IA, 2026a). In the live snapshot observed on 27 July 2026, switching that control changes several prominent positions substantially.
 
-**Table 8A. Illustrative ranks on the live Compar:IA leaderboard, observed 27 July 2026. These are production ranks, not ranks reconstructed from the research release.**
+**Table 7A. Illustrative ranks on the live Compar:IA leaderboard, observed 27 July 2026. These are production ranks, not ranks reconstructed from the research release.**
 
 | Model | Raw live rank | Style-controlled live rank | Epoch Capabilities Index coverage |
 |---|---:|---:|---|
@@ -282,40 +286,40 @@ The current production leaderboard provides an intuitive reason to take style se
 | Gemini 2.5 Flash | 5 | 12 | 140.33 |
 | Gemini 3.1 Pro | 15 | 27 | 154.90 |
 
-The shift makes the controlled ranking look more plausible if one begins with the expectation that GPT-5.3 should lead and Mistral Medium should not. That is useful **face-validity evidence**, not an independent validation: the expectation itself comes from prior beliefs and other evaluations, and style control does not resolve every surprising ordering. Gemini 3.1 Flash Lite remains above Gemini 3.1 Pro, while Gemini 2.5 Flash also remains above it. The live page displayed a counter of roughly 242,000 reactions and 112 ranked models when observed. That counter includes ties, whereas this paper retains only decisive French battles; the paper also uses an earlier pinned research release. Its analytical sample is therefore smaller, at 137,214 battles across 116 models. The production and research ranks must not be compared as if they came from the same snapshot and filtering rule.
+The shift makes the controlled ranking look more plausible if one begins with the expectation that GPT-5.3 should lead and Mistral Medium should not. That is useful **face-validity evidence**, not an independent validation: the expectation itself comes from prior beliefs and other evaluations, and style control does not resolve every surprising ordering. Gemini 3.1 Flash Lite remains above Gemini 3.1 Pro, while Gemini 2.5 Flash also remains above it. The live page displayed a counter of roughly 242,000 reactions and 112 ranked models when observed. That counter includes ties, whereas this paper retains only decisive French battles; the paper also uses an earlier pinned research release. Its retained frame is therefore smaller, at 137,293 battles, and its analyses use 116 models meeting the minimum-battle threshold. The production and research ranks must not be compared as if they came from the same snapshot and filtering rule.
 
-The main external question is whether presentation control changes agreement with benchmarks that do not use arena preferences. We compare the raw, formatting-controlled, and full joint-controlled Compar:IA rankings on the same 127,010 battles and 116 models used in §4.5. For every external benchmark, all three correlations use exactly the same matched model versions. We match exact identifiers or a small set of manually audited aliases for the same model build; nearby releases, model families, reasoning levels, and tool configurations are not merged. We require at least ten matches, calculate Spearman rank correlations, and bootstrap the change from the raw ranking 10,000 times.
+The main external question is whether presentation control changes agreement with benchmarks that do not use arena preferences. We compare the raw, formatting-controlled, and full joint-controlled Compar:IA rankings on the same 127,092 battles and 116 models used in §4.5. For every external benchmark, all three correlations use exactly the same matched model versions. We match exact identifiers or a small set of manually audited aliases for the same model build; nearby releases, model families, reasoning levels, and tool configurations are not merged. We require at least ten matches, calculate Spearman rank correlations, and bootstrap the change from the raw ranking 10,000 times.
 
-We use the Epoch AI archive retrieved on 27 July 2026 (Epoch AI, 2026). The Epoch Capabilities Index is the primary broad comparison. GPQA Diamond, FrontierMath, LiveBench, ARC-AGI-2, SciCode, Aider Polyglot, and SWE-bench Verified provide domain-specific checks (Rein et al., 2023; Glazer et al., 2024; White et al., 2025; Chollet et al., 2025; Tian et al., 2024; Aider, 2026). These benchmarks measure different capabilities, so disagreement among them is expected and should not be collapsed into one claim about model quality (Ho et al., 2025).
+We use audited statistics derived from the Epoch AI archive retrieved on 27 July 2026 (Epoch AI, 2026). The source URL is mutable and now returns different bytes; the repository preserves the original SHA-256, archive manifest, matched scores, and exclusions, but not the original archive payload. The sensitivity analysis is therefore verifiable from retained derived scores and audits, but it cannot be independently re-downloaded end to end from the original payload. The Epoch Capabilities Index is the primary broad comparison. GPQA Diamond, FrontierMath, LiveBench, ARC-AGI-2, SciCode, Aider Polyglot, and SWE-bench Verified provide domain-specific checks (Rein et al., 2023; Glazer et al., 2024; White et al., 2025; Chollet et al., 2025; Tian et al., 2024; Aider, 2026; Jimenez et al., 2024). These benchmarks measure different capabilities, so disagreement among them is expected and should not be collapsed into one claim about model quality (Ho et al., 2025).
 
-**Table 8B. Spearman correlation with non-arena capability benchmarks. Bold marks the highest point correlation in each row, not a statistically superior ranking.**
+**Table 7B. Spearman correlation with non-arena capability benchmarks. Bold marks the highest point correlation in each row, not a statistically superior ranking.**
 
 | Capability benchmark | Matches | Raw | Formatting-controlled | Full joint-controlled | Formatting-controlled minus raw (95% CI) |
 |---|---:|---:|---:|---:|---:|
-| Epoch Capabilities Index | 38 | **0.717** | 0.703 | 0.634 | −0.014 [−0.079, +0.054] |
-| GPQA Diamond | 32 | **0.753** | 0.742 | 0.665 | −0.011 [−0.063, +0.037] |
+| Epoch Capabilities Index | 38 | **0.717** | 0.703 | 0.635 | −0.014 [−0.079, +0.054] |
+| GPQA Diamond | 32 | **0.753** | 0.741 | 0.664 | −0.011 [−0.063, +0.035] |
 | FrontierMath | 13 | **0.699** | 0.655 | 0.534 | −0.044 [−0.223, 0.000] |
 | LiveBench | 17 | **0.419** | 0.277 | 0.358 | −0.142 [−0.485, +0.097] |
 | ARC-AGI-2 | 10 | **0.537** | 0.488 | 0.303 | −0.049 [−0.367, +0.209] |
 | SciCode | 12 | **0.413** | 0.399 | 0.336 | −0.014 [−0.149, +0.073] |
 | Aider Polyglot | 10 | 0.382 | 0.345 | **0.539** | −0.036 [−0.314, +0.199] |
 
-Formatting control has a lower point correlation than the raw ranking on all seven eligible capability benchmarks. Every formatting-controlled minus raw interval includes zero, so the data do not establish a difference in either direction. Just as importantly, this aggregate test does not cover the production examples evenly: GPT-5.3, Mistral Medium 2508, and Gemini 3.1 Flash Lite are absent from the Epoch Capabilities Index match, while Gemini 2.5 Flash and Gemini 3.1 Pro are included. The benchmark therefore cannot test whether the largest live shifts move those omitted models toward capability. Full joint control is lower on six benchmarks and higher only on Aider Polyglot, where the matched sample is ten models and the difference is highly uncertain. Kendall correlations and leave-one-provider-out checks do not change the overall interpretation. SWE-bench Verified has only nine matching model versions and is excluded by the pre-specified overlap rule.
+Formatting control has a lower point correlation than the raw ranking on all seven eligible capability benchmarks. Every formatting-controlled minus raw interval includes zero, so the data do not establish a difference in either direction. Just as importantly, this aggregate test does not cover the production examples evenly: GPT-5.3, Mistral Medium 2508, and Gemini 3.1 Flash Lite are absent from the Epoch Capabilities Index match, while Gemini 2.5 Flash and Gemini 3.1 Pro are included. The benchmark therefore cannot test whether the largest live shifts move those omitted models toward capability. Full joint control is lower on six benchmarks and higher only on Aider Polyglot, where the matched sample is ten models and the difference is highly uncertain. Kendall correlations and leave-one-provider-out checks do not change the overall interpretation. SWE-bench Verified has only nine matching model versions and is excluded by the stated minimum-overlap rule.
 
 ![Figure 4. Change in Spearman correlation relative to raw Compar:IA for non-arena capability benchmarks. Points show formatting-controlled and full joint-controlled rankings; lines are paired 95% bootstrap intervals.](figures/fig12_external_alignment.png)
 
 LMArena is a secondary comparison because it is another human-preference arena rather than an independent capability benchmark. We pin its 16 July 2026 Text Arena revision and match exact public identifiers (Arena Team, 2026).
 
-**Table 8C. Spearman correlation with LMArena preference rankings. Bold marks the highest point correlation in each row.**
+**Table 7C. Spearman correlation with LMArena preference rankings. Bold marks the highest point correlation in each row.**
 
 | LMArena preference ranking | Matches | Raw | Formatting-controlled | Full joint-controlled |
 |---|---:|---:|---:|---:|
-| Raw, overall | 49 | 0.792 | **0.800** | 0.714 |
-| Style-controlled, overall | 49 | 0.768 | **0.808** | 0.739 |
-| Raw, French | 40 | 0.779 | **0.795** | 0.701 |
-| Style-controlled, French | 40 | 0.701 | **0.771** | 0.700 |
+| Raw, overall | 49 | 0.792 | **0.800** | 0.710 |
+| Style-controlled, overall | 49 | 0.768 | **0.808** | 0.735 |
+| Raw, French | 40 | 0.779 | **0.796** | 0.698 |
+| Style-controlled, French | 40 | 0.701 | **0.773** | 0.693 |
 
-Formatting control has a slightly higher point correlation in all four LMArena comparisons, from +0.008 against the raw overall ranking to +0.070 against the style-controlled French ranking. All four bootstrap intervals include zero. The capability and preference comparisons therefore point in different directions, but neither supplies decisive evidence. They show that presentation adjustment changes what the ranking tracks; they do not show which ranking is better.
+Formatting control has a slightly higher point correlation in all four LMArena comparisons, from +0.008 against the raw overall ranking to +0.072 against the style-controlled French ranking. All four formatting-controlled intervals include zero. Full joint control is lower in all four; its interval excludes zero only against the raw overall LMArena ranking (−0.082 [−0.162, −0.010]). The capability and preference comparisons therefore point in different directions, but neither supplies broad, decisive evidence. They show that presentation adjustment changes what the ranking tracks; they do not show which ranking is better.
 
 ---
 
@@ -323,7 +327,7 @@ Formatting control has a slightly higher point correlation in all four LMArena c
 
 ### 5.1 Presentation Is Associated with Votes, Mostly as One Dimension
 
-Longer and more heavily formatted answers tend to win more often, but length, bold, and lists usually appear together. The model cannot cleanly assign the shared association to one feature. The formatting-only estimate for bold is about +19% win odds, for example, but it falls to +11.3% when length and language are included.
+Longer and more heavily formatted answers tend to win more often, but length, bold, and lists usually appear together. The model cannot cleanly assign the shared association to one feature. On the joint model's common support, the formatting-only estimate for bold is +20.4% win odds, but it falls to +11.0% when length and language are included.
 
 Two signals are comparatively stable: **bold usage** and **length-independent lexical diversity** (MATTR). MATTR is nearly unrelated to length in these data, so it captures a pattern that formatting-only style control misses. We describe it as lexical diversity rather than vocabulary “richness,” because it may also reflect technical or topic-specific language. Readability adds little once length is included.
 
@@ -343,20 +347,20 @@ The comparisons in §4.11 add a second qualification. The large GPT-5.3 and Mist
 
 Two explanations fit the results. Presentation may sway users independently of content, in which case style control removes a bias. Alternatively, stronger models may produce clearer structure as part of a better answer, in which case style control removes useful quality signal. The data cannot determine how much each explanation contributes. Three descriptive checks show why.
 
-**Test 1: Preferred models format more.** A model's average use of bold, lists, and headers correlates with its raw rating at Pearson r = 0.61 (Spearman 0.66). After style control, the correlation is r = 0.46. This pattern is consistent with presentation carrying both quality and presentation-specific preference, but it cannot separate them because the rating comes from the same votes.
+**Test 1: Preferred models format more.** A model's average use of bold, lists, and headers correlates with its raw rating at Pearson r = 0.60 (Spearman 0.67). After style control, the correlation is r = 0.46. This pattern is consistent with presentation carrying both quality and presentation-specific preference, but it cannot separate them because the rating comes from the same votes.
 
 **Test 2: The association varies by rating tier.** We split models into tiers using their raw ratings and re-estimate the formatting associations within each tier:
 
-**Table 7. Formatting effect by model-pair tier (odds change per SD).**
+**Table 8. Formatting association by model-pair tier (odds change per SD).**
 
 | Feature | Bottom | Middle | Top |
 |---------|:------:|:------:|:---:|
-| Bold | +21.3% | +12.5% | +12.3% |
-| Lists | +14.0% | +7.9% | −5.2% |
-| Headers | +10.7% | +1.9% | +15.1% |
-| N battles | 32,412 | 14,214 | 15,698 |
+| Bold | +20.3% | +12.2% | +13.5% |
+| Lists | +13.8% | +8.8% | −5.4% |
+| Headers | +10.5% | +1.0% | +13.7% |
+| N battles | 32,439 | 13,691 | 15,928 |
 
-Bold has its largest association in the bottom tier (+21.3%, compared with +12.3% in the top tier). This could indicate a stronger presentation premium among lower-rated models, but the tiers are themselves defined by vote-based ratings, so the comparison is not causal.
+Bold has its largest association in the bottom tier (+20.3%, compared with +13.5% in the top tier). This could indicate a stronger presentation premium among lower-rated models, but the tiers are themselves defined by vote-based ratings, so the comparison is not causal.
 
 **Test 3: Models that format more move down more.** Rating change after style control correlates at r = −0.98 with average formatting. This confirms that the adjustment is operating as designed, but it does not tell us whether the removed signal was bias or quality.
 
@@ -364,7 +368,7 @@ Bold has its largest association in the bottom tier (+21.3%, compared with +12.3
 
 ### 5.4 Qualitative Analysis of Winner-Flipping Battles
 
-A "winner-flipping" battle is one in which the raw and formatting-controlled ratings imply different winners for the model pair. This occurs in **7,356 of 137,034 battles (5.4%)**. Among these battles, the actual vote winner uses more bold, lists, and headers in **51.7%** of cases, compared with **40.7%** for the loser. The models most often involved include heavy formatters that move down after control (mistral-large-2512, mistral-medium-2508) and models that frequently face them (llama-3.1-405b, claude-4-6-sonnet).
+A "winner-flipping" battle is one in which the raw and formatting-controlled ratings imply different winners for the model pair. This occurs in **7,273 of 137,113 battles (5.3%)**. Among these battles, the actual vote winner uses more bold, lists, and headers in **51.6%** of cases, compared with **40.9%** for the loser. The models most often involved include heavy formatters that move down after control (mistral-large-2512, mistral-medium-2508) and models that frequently face them (llama-3.1-405b, claude-4-6-sonnet).
 
 This release carries no per-message reaction data, so the user-reported "clear formatting" attribute and the hand-picked response excerpts of an earlier analysis are not available here.
 
@@ -378,7 +382,7 @@ This release carries no per-message reaction data, so the user-reported "clear f
 
 **English-calibrated readability on French text.** Coleman-Liau and Flesch-Kincaid are English-calibrated; only REL is French-specific. We therefore do not interpret the readability coefficients individually.
 
-**Task type is measured roughly.** The keyword classifier agrees with independent labels only about 56% of the time, largely because it misses implicit tasks. Section 4.8 is a robustness check, not a complete task control. A validated taxonomy over all prompts is the main remaining validity step.
+**Task type is measured roughly.** The keyword classifier is an unvalidated proxy on this release and will miss implicit tasks. Section 4.8 is a descriptive robustness check, not a complete task control. A validated taxonomy over all prompts is the main remaining validity step.
 
 **Conversation depth is selected by users.** The reconstruction removes every post-vote turn, but users still choose whether to continue based on earlier answers, task difficulty, and their goals. Section 4.6 compares observed groups; it is not a causal test of attention.
 
@@ -398,17 +402,29 @@ This release carries no per-message reaction data, so the user-reported "clear f
 
 ## 6. Conclusion
 
-In Compar:IA's French-language preference data, measured output characteristics are associated with pairwise votes beyond model identity, but not in the tidy, feature-by-feature way a formatting-only analysis suggests. Most presentation variables share substantial variance with response length, so their individual coefficients are specification-dependent. Two correlates stand apart in the joint model: bold usage and length-independent lexical diversity (MATTR), the latter associated with winning even at equal length. Readability adds little, and the pooled-versus-fixed-effect comparison shows that much apparent linguistic association is between models rather than within models. That decomposition does not identify whether presentation is bias, a quality signal, or both.
+In Compar:IA's French-language preference data, measured output characteristics are associated with pairwise votes beyond model identity, but not in the tidy, feature-by-feature way a formatting-only analysis suggests. Most presentation variables share substantial variance with response length, so their individual coefficients are specification-dependent. Two correlates stand apart in the joint model: bold usage and length-independent lexical diversity (MATTR), the latter associated with winning after conditioning on the measured length contrast and the other included features. Readability adds little, and the pooled-versus-fixed-effect comparison shows that much apparent linguistic association is between models rather than within models. That decomposition does not identify whether presentation is bias, a quality signal, or both.
 
 A vote-time depth split shows substantially smaller bold, header, and code-block associations in genuine multi-turn conversations, while length and MATTR are comparatively stable. The audit confirms that no post-vote text enters the analysis. Because depth remains endogenous, this is evidence of heterogeneity rather than a causal reading-depth mechanism.
 
-The production leaderboard shows why style control can be practically important: prominent models can move by dozens of places, and some movements make the ordering look more credible under prior expectations. The independent comparison is less reassuring. Formatting control has a lower point correlation than the raw ranking on all seven eligible non-arena capability benchmarks and a slightly higher point correlation on all four LMArena preference rankings; none of these differences is decisive, and the capability match omits several models behind the largest live shifts. The evidence therefore supports style sensitivity, not a claim that the adjusted ranking is generally more accurate. The defensible option is to publish the raw ranking alongside clearly labelled, pre-specified sensitivity analyses. Two extensions would most sharpen the evidence: a validated task-type classifier to replace the rough proxy of §4.8, and a controlled study that varies presentation while holding content fixed.
+The production leaderboard shows why style control can be practically important: prominent models can move by dozens of places, and some movements make the ordering look more credible under prior expectations. The independent comparison is less reassuring. Formatting control has a lower point correlation than the raw ranking on all seven eligible non-arena capability benchmarks and a slightly higher point correlation on all four LMArena preference rankings; none of these differences is decisive, and the capability match omits several models behind the largest live shifts. The evidence therefore supports style sensitivity, not a claim that the adjusted ranking is generally more accurate. The defensible option is to publish the raw ranking alongside clearly labelled, clearly specified sensitivity analyses. Two extensions would most sharpen the evidence: a validated task-type classifier to replace the rough proxy of §4.8, and a controlled study that varies presentation while holding content fixed.
 
 ---
 
 ## Acknowledgements
 
 We gratefully acknowledge the students who participated in the hackathon held at Université Paris Dauphine-PSL in early June 2026, led by coauthor Christophe Benavent. Their explorations of the Compar:IA dataset, with a particular focus on response style, produced insightful findings and brought valuable nuance to the questions examined in this paper. Their work helped broaden our understanding of how presentation and substance interact in human preference judgements.
+
+## Data and Code Availability
+
+The source dataset is available through the gated Hugging Face repository `ministere-culture/comparia-fr-arena` at the immutable revision reported in §2.2. The paper repository distributes the text-free derived tables, result files, figures, LaTeX source, a locked Python environment, tests, and a SHA-256 artifact manifest. Raw prompts and conversation text are not redistributed. The external Epoch source URL is mutable; the repository includes the audited source hash, archive manifest, model-match audit, and derived scores, but not the original archive payload. Before archival publication, the Code Availability statement should be updated with the DOI or immutable release URL for the exact repository state.
+
+## Ethics and Privacy
+
+This is a secondary analysis of an existing research release; no new user interaction or data collection was conducted. The gated source contains user-generated text. The distributed analysis tables retain derived measurements, model identifiers, outcomes, timestamps, topics, task proxies, and opaque comparison identifiers, but no prompt or response text. The source release's access conditions and licences continue to apply.
+
+## Funding and Competing Interests
+
+Funding and competing-interest declarations require confirmation from all authors before public release.
 
 ---
 
@@ -434,6 +450,7 @@ We gratefully acknowledge the students who participated in the hackathon held at
 - Chollet, F., Knoop, M., Kamradt, G., Landers, B., & Pinkard, H. (2025). ARC-AGI-2: A new challenge for frontier AI reasoning systems. *arXiv:2505.11831*. https://arxiv.org/abs/2505.11831
 - Tian, M., Gao, L., Zhang, S. D., Chen, X., Fan, C., Guo, X., Haas, R., et al. (2024). SciCode: A research coding benchmark curated by scientists. *NeurIPS 2024 Datasets and Benchmarks*. https://arxiv.org/abs/2407.13168
 - Aider. (2026). *Aider LLM leaderboards: Polyglot benchmark*. https://aider.chat/docs/leaderboards/
+- Jimenez, C. E., Yang, J., Wettig, A., Yao, S., Pei, K., Press, O., & Narasimhan, K. (2024). SWE-bench: Can language models resolve real-world GitHub issues? *Proceedings of ICLR 2024*. https://arxiv.org/abs/2310.06770
 - Compar:IA. (2026a). *Classement Compar:IA : méthodologie et limites*. https://comparia.beta.gouv.fr/ranking
 - Compar:IA & Ministère de la Culture. (2026b). *comparia-fr-arena: A French human-preference arena dataset*. https://huggingface.co/datasets/ministere-culture/comparia-fr-arena Revision `8cd6488c5d0c3b8dfcb9339d11ae9624c84359be`, accessed 8 July 2026. Open Licence 2.0 (Etalab) and CC-BY-4.0.
 
@@ -455,12 +472,13 @@ We gratefully acknowledge the students who participated in the hackathon held at
 - Coleman, M., & Liau, T. L. (1975). A computer readability formula designed for machine scoring. *Journal of Applied Psychology*, 60(2), 283–284.
 - Kincaid, J. P., Fishburne, R. P., Rogers, R. L., & Chissom, B. S. (1975). *Derivation of new readability formulas for Navy enlisted personnel*. Research Branch Report 8-75, Naval Air Station Memphis.
 - Covington, M. A., & McFall, J. D. (2010). Cutting the Gordian knot: The moving-average type–token ratio (MATTR). *Journal of Quantitative Linguistics*, 17(2), 94–100. https://doi.org/10.1080/09296171003643098
+- McCarthy, P. M., & Jarvis, S. (2010). MTLD, vocd-D, and HD-D: A validation study of sophisticated approaches to lexical diversity assessment. *Behavior Research Methods*, 42, 381–392. https://doi.org/10.3758/BRM.42.2.381
 
 ---
 
 ## Appendix A: Analysis Pipeline
 
-The core results are reproducible from the battle table `data/fr_battles.parquet`, built from `comparia-fr-arena` by `src/build_fr_arena.py`. `run.py` executes the core pipeline; scripts that require the raw release, auxiliary data, or an external leaderboard snapshot are run separately as indicated in the repository README (scripts live in `src/`, outputs in `results/`).
+The core results are reproducible from the battle table `data/fr_battles.parquet`, built from `comparia-fr-arena` by `src/build_fr_arena.py`. `run.py` exposes `core`, `extended`, and `full` profiles with explicit raw-data prerequisites; the repository README documents the exact commands (scripts live in `src/`, outputs in `results/`).
 
 | Script | Section | Output |
 |--------|---------|--------|
@@ -471,10 +489,35 @@ The core results are reproducible from the battle table `data/fr_battles.parquet
 | `topic_analysis.py` | §4.7 | within-topic fits + topic × style controls |
 | `extract_prompts.py` + `task_classify.py` + `task_analysis.py` | §4.8 | task proxy and within-task fits |
 | `robustness_random.py`; `time_block_bootstrap.py` | §4.9 | random-only coefficients; weekly block bootstrap |
-| `mattr_stress.py` + `mattr_alt.py` | §4.10 | MATTR length-independence, strata, and MTLD/content-word/no-proper-noun variants |
+| `mattr_stress.py` + `mattr_alt.py` + `analyze_mattr_alt.py` | §4.10 | MATTR length-independence, strata, and MTLD/content-word/no-proper-noun variants |
 | `external_leaderboard_analysis.py` | §4.11 | capability-benchmark and LMArena correlations, snapshot provenance, and model-match audits |
 | `generate_external_figure.py` | §4.11 | capability-benchmark correlation differences and intervals |
 | Live leaderboard audit | §4.11 | dated production examples in `results/production_ranking_examples.json`, kept distinct from the research release |
 | `audit_vote_timing.py` | §2.4, §4.6 | raw-vote, final-turn, visible-depth, and post-vote-gap validation |
+| `audit_reasoning_content.py` | §2.3 | hidden-reasoning serialization and parser-recovery audit |
 | `endogeneity_analysis.py` | §5.3 | between-model composition and tier heterogeneity |
 | `qualitative_analysis.py` | §5.4 | winner-flip prevalence and asymmetry |
+
+## Appendix B: Complete External-Alignment Intervals
+
+All entries are the change in Spearman correlation relative to the raw
+Compar:IA ranking, with paired 95% bootstrap intervals from 10,000 matched-model
+resamples. These tables report the uncertainty for both adjustments rather than
+only the formatting-controlled comparison shown in Table 7B.
+
+| Capability benchmark | Formatting-controlled − raw | Full joint-controlled − raw |
+|---|---:|---:|
+| Epoch Capabilities Index | −0.014 [−0.079, +0.054] | −0.081 [−0.199, +0.005] |
+| GPQA Diamond | −0.011 [−0.063, +0.035] | −0.088 [−0.223, +0.011] |
+| FrontierMath | −0.044 [−0.223, 0.000] | −0.165 [−0.527, +0.035] |
+| LiveBench | −0.142 [−0.485, +0.097] | −0.061 [−0.412, +0.272] |
+| ARC-AGI-2 | −0.049 [−0.367, +0.209] | −0.235 [−0.806, +0.182] |
+| SciCode | −0.014 [−0.149, +0.073] | −0.077 [−0.364, +0.022] |
+| Aider Polyglot | −0.036 [−0.314, +0.199] | +0.158 [−0.192, +0.549] |
+
+| LMArena preference ranking | Formatting-controlled − raw | Full joint-controlled − raw |
+|---|---:|---:|
+| Raw, overall | +0.008 [−0.045, +0.066] | −0.082 [−0.162, −0.010] |
+| Style-controlled, overall | +0.040 [−0.018, +0.115] | −0.033 [−0.120, +0.050] |
+| Raw, French | +0.017 [−0.064, +0.109] | −0.082 [−0.183, +0.022] |
+| Style-controlled, French | +0.072 [−0.027, +0.190] | −0.008 [−0.131, +0.130] |
