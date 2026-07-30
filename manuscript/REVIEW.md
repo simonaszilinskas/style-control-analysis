@@ -67,8 +67,7 @@ pull request has been created.
 3. Confirm authorization to use `contact@comparia.beta.gouv.fr` as the shared
    correspondence address.
 4. Approve a CRediT author-contribution statement.
-5. Supply or approve the funding and competing-interest declarations.
-6. After creating an immutable repository release or archive, replace the
+5. After creating an immutable repository release or archive, replace the
    pending Code Availability wording with its DOI or release URL.
 
 The Epoch capability sensitivity analysis is verifiable from the retained

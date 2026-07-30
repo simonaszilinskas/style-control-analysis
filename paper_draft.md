@@ -422,10 +422,6 @@ The source dataset is available through the gated Hugging Face repository `minis
 
 This is a secondary analysis of an existing research release; no new user interaction or data collection was conducted. The gated source contains user-generated text. The distributed analysis tables retain derived measurements, model identifiers, outcomes, timestamps, topics, task proxies, and opaque comparison identifiers, but no prompt or response text. The source release's access conditions and licences continue to apply.
 
-## Funding and Competing Interests
-
-Funding and competing-interest declarations require confirmation from all authors before public release.
-
 ---
 
 ## References

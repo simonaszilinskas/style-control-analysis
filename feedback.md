@@ -54,9 +54,9 @@ models, votes only).
   metric) is GPU-only and was null on the earlier export; readability is also
   null here, so it was not recomputed. Noted as a limitation.
 - **No independent replication.** Single corpus from one platform.
-- **Author declarations.** Affiliations, author consent, CRediT roles, funding,
-  competing interests, and authorization for the correspondence address must
-  be confirmed before deposit.
+- **Author declarations.** Affiliations, author consent, CRediT roles, and
+  authorization for the correspondence address must be confirmed before
+  deposit.
 
 ## Reproduce
 

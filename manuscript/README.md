@@ -15,5 +15,5 @@ Benavent. The shared correspondence address is
 `contact@comparia.beta.gouv.fr`.
 
 Before public deposit, the authors must confirm affiliations, contributions,
-funding, competing interests, author consent/order, and authorization to use
-the shared correspondence address. The exact checklist is in `REVIEW.md`.
+author consent/order, and authorization to use the shared correspondence
+address. The exact checklist is in `REVIEW.md`.
