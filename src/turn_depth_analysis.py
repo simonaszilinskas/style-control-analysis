@@ -11,9 +11,10 @@ is endogenous and is not itself a direct measure of attentiveness.
 The test is a single pooled Bradley-Terry model with per-model strengths, the
 standardized A-B style contrasts, and each contrast interacted with a multi-turn
 indicator. The interaction coefficient is the object of interest: negative means
-the feature-vote association is smaller in the visible multi-turn stratum. Standardization is
-done once on the full vote sample so the main effect and the interaction share a
-scale. We bootstrap 1000x (resampling battles) and apply Benjamini-Hochberg.
+the feature-vote association is smaller in the visible multi-turn stratum.
+Standardization is done once on the full vote sample so the main effect and the
+interaction share a scale. We bootstrap 1000x (resampling battles) and apply
+Benjamini-Hochberg.
 
     python turn_depth_analysis.py   # -> turn_depth_results.json
 """
@@ -84,7 +85,7 @@ def _fit_subset(d, models, feats, scaler):
     return dict(zip(feats, lr.coef_[0][n:]))
 
 
-def _prep(feats, require_ling=False):
+def _prep(feats):
     # comparia-fr-arena battle table already carries conv_turns and every feature.
     battles = pd.read_parquet(BATTLES)
     d = battles[battles["winner"].isin(["model_a", "model_b"])].copy()
@@ -99,8 +100,8 @@ def _prep(feats, require_ling=False):
     return d, models
 
 
-def run(feats, label, require_ling):
-    d, models = _prep(feats, require_ling)
+def run(feats, label):
+    d, models = _prep(feats)
     n_single = int((d["multiturn"] == 0).sum())
     n_multi = int((d["multiturn"] == 1).sum())
     print(f"\n=== {label} ===")
@@ -115,9 +116,15 @@ def run(feats, label, require_ling):
     c_single = _fit_subset(single, models, feats, scaler)
     c_multi = _fit_subset(multi, models, feats, scaler)
 
-    print(f"\n  {'feature':14s}{'single':>10s}{'multi':>10s}{'interaction':>14s}")
+    print(
+        f"\n  {'feature':14s}{'pooled single':>15s}"
+        f"{'pooled multi':>15s}{'interaction':>14s}"
+    )
     for f in feats:
-        print(f"  {f:14s}{c_single[f]:+10.4f}{c_multi[f]:+10.4f}{inter[f]:+14.4f}")
+        print(
+            f"  {f:14s}{main[f]:+15.4f}"
+            f"{main[f] + inter[f]:+15.4f}{inter[f]:+14.4f}"
+        )
 
     # Bootstrap the interaction coefficients (resample battles).
     print(f"  bootstrapping interactions ({N_BOOTSTRAP}x)...")
@@ -141,15 +148,22 @@ def run(feats, label, require_ling):
         lo, hi = np.percentile(arr, [2.5, 97.5])
         p = 2 * max(np.mean(arr <= 0) if pt >= 0 else np.mean(arr >= 0), 1 / (len(arr) + 1))
         pvals[f] = min(p, 1.0)
-        out_feats[f] = {"single": float(c_single[f]), "multi": float(c_multi[f]),
-                        "main": float(main[f]), "interaction": float(pt),
-                        "interaction_ci": [float(lo), float(hi)], "p": float(min(p, 1.0))}
+        out_feats[f] = {
+            "interaction_model_single": float(main[f]),
+            "interaction_model_multi": float(main[f] + pt),
+            "separate_fit_single": float(c_single[f]),
+            "separate_fit_multi": float(c_multi[f]),
+            "main": float(main[f]),
+            "interaction": float(pt),
+            "interaction_ci": [float(lo), float(hi)],
+            "p": float(min(p, 1.0)),
+        }
     adj = bh([pvals[f] for f in feats])
     for f, a in zip(feats, adj):
         out_feats[f]["p_bh"] = float(a)
         out_feats[f]["sig_bh"] = bool(a < 0.05)
 
-    print(f"\n  Interaction (multi-turn slope shift), BH-corrected:")
+    print("\n  Interaction (multi-turn slope shift), BH-corrected:")
     for f in feats:
         c = out_feats[f]
         star = "***" if c["sig_bh"] else "n.s."
@@ -163,14 +177,16 @@ def run(feats, label, require_ling):
 
 def main():
     results = {}
-    # Primary: formatting only, all vote battles (max power, no linguistic merge).
-    # This is exactly the "glance at the shape" channel: if presentation wins by a
-    # quick look, its pull should fall once the reader engages over several turns.
-    results["primary"] = run(FORMATTING, "Formatting only (all vote battles)",
-                             require_ling=False)
+    # Primary: formatting only on the broadest eligible vote-time sample.
+    results["primary"] = run(
+        FORMATTING,
+        "Formatting only (all vote battles)",
+    )
     # Secondary: joint set on the linguistically-covered subset.
-    results["joint"] = run(FORMATTING + ["length"] + LINGUISTIC,
-                           "Joint (formatting + length + linguistic)", require_ling=True)
+    results["joint"] = run(
+        FORMATTING + ["length"] + LINGUISTIC,
+        "Joint (formatting + length + linguistic)",
+    )
     with open(RESULTS / "turn_depth_results.json", "w") as fh:
         json.dump(results, fh, indent=2, default=float)
     print("\nSaved turn_depth_results.json")

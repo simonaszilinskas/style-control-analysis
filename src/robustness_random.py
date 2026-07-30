@@ -40,15 +40,29 @@ def main():
         dj = sub.dropna(subset=[f"{f}_{s}" for f in CORE for s in ("a", "b")])
         dj, mj = _prep(dj)
         _, jcoef, _, _, _ = fit_bt(dj, mj, CORE)   # joint (winsorized)
-        o = lambda c: float((np.exp(c) - 1) * 100)
+        def odds_pct(coef):
+            return float((np.exp(coef) - 1) * 100)
+
         res[label] = {
             "n_formatting": int(len(d)), "n_joint": int(len(dj)), "n_models": len(models),
-            "formatting": {f: o(fcoef[f]) for f in FORMATTING},
-            "joint": {f: o(jcoef[f]) for f in ["bold", "length", "mattr", "ttr", "headers", "lists"]},
+            "formatting": {f: odds_pct(fcoef[f]) for f in FORMATTING},
+            "joint": {
+                f: odds_pct(jcoef[f])
+                for f in ["bold", "length", "mattr", "ttr", "headers", "lists"]
+            },
         }
         print(f"\n{label} (formatting n={len(d):,}, joint n={len(dj):,}, models {len(models)})")
-        print("  formatting-only: " + "  ".join(f"{f}={o(fcoef[f]):+.1f}%" for f in FORMATTING))
-        print("  joint: " + "  ".join(f"{f}={o(jcoef[f]):+.1f}%" for f in ["bold", "length", "mattr", "ttr"]))
+        print(
+            "  formatting-only: "
+            + "  ".join(f"{f}={odds_pct(fcoef[f]):+.1f}%" for f in FORMATTING)
+        )
+        print(
+            "  joint: "
+            + "  ".join(
+                f"{f}={odds_pct(jcoef[f]):+.1f}%"
+                for f in ["bold", "length", "mattr", "ttr"]
+            )
+        )
 
     with open(RESULTS / "robustness_random_results.json", "w") as fh:
         json.dump(res, fh, indent=2)

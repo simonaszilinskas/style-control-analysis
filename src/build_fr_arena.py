@@ -21,6 +21,7 @@ Needs a HF token (CLI login or HF_TOKEN) for the gated dataset.
     python build_fr_arena.py            # -> fr_battles.parquet
 """
 
+import argparse
 import os
 import re
 import time
@@ -31,6 +32,11 @@ import pyarrow.parquet as pq
 import textstat
 from huggingface_hub import HfFileSystem, get_token
 
+from checkpoints import (
+    prepare_checkpoint_dir,
+    processor_sha256,
+    verify_local_sha256,
+)
 from paths import BATTLES, DATA
 
 HF_REVISION = "8cd6488c5d0c3b8dfcb9339d11ae9624c84359be"
@@ -39,6 +45,7 @@ HF_PATH = ("datasets/ministere-culture/comparia-fr-arena@"
 # A local file cannot expose its Hugging Face revision reliably.  Use one only
 # when the caller explicitly confirms it is the pinned revision above.
 LOCAL_ENV = "COMPARIA_FR_ARENA_PARQUET"
+LOCAL_SHA_ENV = "COMPARIA_FR_ARENA_SHA256"
 LOCAL_PATHS = [os.environ[LOCAL_ENV]] if os.environ.get(LOCAL_ENV) else []
 OUT = BATTLES
 COLS = ["comparison_id", "choice", "turn", "model_a", "model_b",
@@ -57,6 +64,8 @@ _EMOJI_RE = re.compile(
 _WORD_RE = re.compile(r"[\w']+")
 _SENT_RE = re.compile(r"[.!?]+")
 _VOWELS = "aeiouyàâäéèêëîïôùûüœæ"
+_THINK_OPEN_RE = re.compile(r"<think>", re.IGNORECASE)
+_THINK_CLOSE_RE = re.compile(r"</think>", re.IGNORECASE)
 
 FORMATTING = ["headers", "lists", "bold", "code_blocks", "emoji"]
 LINGUISTIC = ["rel", "cli", "fkg", "ttr", "mattr", "asl", "long_sent_ratio"]
@@ -74,15 +83,41 @@ def _syllables_fr(word):
 
 
 def _assistant_text(msgs):
-    """Concatenate all assistant messages (the cumulative text the voter saw)."""
+    """Concatenate visible final-answer text from assistant messages.
+
+    Some provider payloads embed hidden reasoning in paired ``<think>`` blocks
+    before the final answer.  The voter-facing answer is the text outside those
+    blocks, so remove only complete blocks rather than discarding the entire
+    message.  A dangling opening or closing tag is ambiguous; retain only the
+    unambiguous text before it and never include a possible reasoning span.
+    ``reasoning_content`` remains deliberately excluded from this final-answer
+    analysis.
+    """
     if msgs is None:
         return ""
     parts = []
     for m in msgs:
         if isinstance(m, dict) and m.get("role") == "assistant":
             c = m.get("content") or ""
-            if "<think>" not in c and "</think>" not in c:
-                parts.append(c)
+            visible = []
+            position = 0
+            while True:
+                opening = _THINK_OPEN_RE.search(c, position)
+                closing = _THINK_CLOSE_RE.search(c, position)
+                if opening is None and closing is None:
+                    visible.append(c[position:])
+                    break
+                if closing is not None and (opening is None or closing.start() < opening.start()):
+                    visible.append(c[position:closing.start()])
+                    break
+                visible.append(c[position:opening.start()])
+                closing = _THINK_CLOSE_RE.search(c, opening.end())
+                if closing is None:
+                    break
+                position = closing.end()
+            text = "".join(visible).strip()
+            if text:
+                parts.append(text)
     return "\n".join(parts)
 
 
@@ -149,7 +184,9 @@ def features(content):
     if sents:
         lens = [len(s.split()) for s in sents]
         out["asl"] = float(np.mean(lens))
-        out["long_sent_ratio"] = float(np.mean([1.0 if l > 25 else 0.0 for l in lens]))
+        out["long_sent_ratio"] = float(
+            np.mean([1.0 if sentence_length > 25 else 0.0 for sentence_length in lens])
+        )
     return out
 
 
@@ -238,14 +275,39 @@ def _attach_prefix_lengths(battles, tokens):
 def _open():
     for p in LOCAL_PATHS:
         if os.path.exists(p):
+            verify_local_sha256(p, os.environ.get(LOCAL_SHA_ENV))
             return pq.ParquetFile(p)
         raise FileNotFoundError(f"{LOCAL_ENV} does not exist: {p}")
     return pq.ParquetFile(HfFileSystem(token=get_token()).open(HF_PATH, "rb"))
 
 
-def main():
-    os.makedirs(PARTS, exist_ok=True)
-    os.makedirs(TOKEN_PARTS, exist_ok=True)
+def _checkpoint_manifest(kind):
+    return {
+        "format_version": 1,
+        "kind": kind,
+        "source": {
+            "dataset": "ministere-culture/comparia-fr-arena",
+            "revision": HF_REVISION,
+            "path": HF_PATH,
+        },
+        "columns": COLS,
+        "processor_sha256": processor_sha256(
+            (_assistant_text, _conversation_prefix, _user_turns, features, _process_rows)
+        ),
+    }
+
+
+def main(reset_checkpoints=False):
+    prepare_checkpoint_dir(
+        PARTS,
+        _checkpoint_manifest("battle_features"),
+        reset=reset_checkpoints,
+    )
+    prepare_checkpoint_dir(
+        TOKEN_PARTS,
+        _checkpoint_manifest("vote_time_tokens"),
+        reset=reset_checkpoints,
+    )
     pf = _open()
     n_rg = pf.num_row_groups
     t0 = time.time()
@@ -305,4 +367,11 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--reset-checkpoints",
+        action="store_true",
+        help="discard generated row-group checkpoints before rebuilding",
+    )
+    args = parser.parse_args()
+    main(reset_checkpoints=args.reset_checkpoints)

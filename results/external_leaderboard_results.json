@@ -5,7 +5,7 @@
     "secondary": "LMArena preference leaderboards"
   },
   "comparia_common_support": {
-    "battles": 127010,
+    "battles": 127092,
     "models": 116,
     "model_ids": [
       "Apertus-70B-Instruct-2509",
@@ -263,27 +263,27 @@
       "eligible": true,
       "spearman": {
         "raw": 0.7917346938775508,
-        "formatting_controlled": 0.8001020408163264,
-        "joint_controlled": 0.7138775510204082
+        "formatting_controlled": 0.7996938775510203,
+        "joint_controlled": 0.710204081632653
       },
       "kendall_tau_b": {
         "raw": 0.5884353741496599,
-        "formatting_controlled": 0.586734693877551,
-        "joint_controlled": 0.4982993197278911
+        "formatting_controlled": 0.5850340136054422,
+        "joint_controlled": 0.5017006802721088
       },
       "delta_vs_raw": {
         "formatting_controlled": {
-          "point": 0.00836734693877561,
+          "point": 0.007959183673469483,
           "bootstrap_95_ci": [
-            -0.04445665242575785,
-            0.06641556525458828
+            -0.04479361332781435,
+            0.0658091385900578
           ]
         },
         "joint_controlled": {
-          "point": -0.07785714285714262,
+          "point": -0.08153061224489777,
           "bootstrap_95_ci": [
-            -0.15613620324377114,
-            -0.009817444115975472
+            -0.16238248772163727,
+            -0.010023511784018588
           ]
         }
       }
@@ -381,27 +381,27 @@
       "eligible": true,
       "spearman": {
         "raw": 0.7791744840525331,
-        "formatting_controlled": 0.7949343339587243,
-        "joint_controlled": 0.7009380863039401
+        "formatting_controlled": 0.7958724202626641,
+        "joint_controlled": 0.6975609756097563
       },
       "kendall_tau_b": {
         "raw": 0.6025641025641026,
-        "formatting_controlled": 0.6102564102564103,
-        "joint_controlled": 0.5282051282051282
+        "formatting_controlled": 0.6128205128205129,
+        "joint_controlled": 0.5307692307692309
       },
       "delta_vs_raw": {
         "formatting_controlled": {
-          "point": 0.01575984990619117,
+          "point": 0.016697936210131048,
           "bootstrap_95_ci": [
-            -0.06376200916071667,
-            0.10789524396156776
+            -0.06350813803335643,
+            0.1093045987867699
           ]
         },
         "joint_controlled": {
-          "point": -0.07823639774859303,
+          "point": -0.08161350844277682,
           "bootstrap_95_ci": [
-            -0.17800793708705454,
-            0.02350767432860901
+            -0.1834255043377387,
+            0.022400170726820975
           ]
         }
       }
@@ -517,27 +517,27 @@
       "eligible": true,
       "spearman": {
         "raw": 0.7680612244897959,
-        "formatting_controlled": 0.8082653061224488,
-        "joint_controlled": 0.7393877551020407
+        "formatting_controlled": 0.808469387755102,
+        "joint_controlled": 0.7345918367346937
       },
       "kendall_tau_b": {
         "raw": 0.5612244897959183,
-        "formatting_controlled": 0.6071428571428571,
-        "joint_controlled": 0.5391156462585033
+        "formatting_controlled": 0.608843537414966,
+        "joint_controlled": 0.5425170068027211
       },
       "delta_vs_raw": {
         "formatting_controlled": {
-          "point": 0.04020408163265299,
+          "point": 0.04040816326530616,
           "bootstrap_95_ci": [
-            -0.01799984452602318,
-            0.11489435694754078
+            -0.01788686189493811,
+            0.11499584104965815
           ]
         },
         "joint_controlled": {
-          "point": -0.02867346938775517,
+          "point": -0.03346938775510211,
           "bootstrap_95_ci": [
-            -0.11008236560255931,
-            0.051526487680501484
+            -0.1196433181028169,
+            0.049647708647684516
           ]
         }
       }
@@ -635,27 +635,27 @@
       "eligible": true,
       "spearman": {
         "raw": 0.7009380863039401,
-        "formatting_controlled": 0.7709193245778612,
-        "joint_controlled": 0.7000000000000001
+        "formatting_controlled": 0.7726078799249533,
+        "joint_controlled": 0.6932457786116323
       },
       "kendall_tau_b": {
         "raw": 0.5307692307692309,
-        "formatting_controlled": 0.5743589743589744,
-        "joint_controlled": 0.5230769230769231
+        "formatting_controlled": 0.576923076923077,
+        "joint_controlled": 0.5205128205128206
       },
       "delta_vs_raw": {
         "formatting_controlled": {
-          "point": 0.06998123827392111,
+          "point": 0.07166979362101322,
           "bootstrap_95_ci": [
-            -0.028386526959454865,
-            0.18712182759357288
+            -0.02744154612679099,
+            0.18974254981180674
           ]
         },
         "joint_controlled": {
-          "point": -0.0009380863039399889,
+          "point": -0.007692307692307776,
           "bootstrap_95_ci": [
-            -0.1205465029687374,
-            0.13299786305351188
+            -0.13096408346617286,
+            0.13015041689940215
           ]
         }
       }
@@ -773,27 +773,27 @@
       "eligible": true,
       "spearman": {
         "raw": 0.7917346938775508,
-        "formatting_controlled": 0.8001020408163264,
-        "joint_controlled": 0.7138775510204082
+        "formatting_controlled": 0.7996938775510203,
+        "joint_controlled": 0.710204081632653
       },
       "kendall_tau_b": {
         "raw": 0.5884353741496599,
-        "formatting_controlled": 0.586734693877551,
-        "joint_controlled": 0.4982993197278911
+        "formatting_controlled": 0.5850340136054422,
+        "joint_controlled": 0.5017006802721088
       },
       "delta_vs_raw": {
         "formatting_controlled": {
-          "point": 0.00836734693877561,
+          "point": 0.007959183673469483,
           "bootstrap_95_ci": [
-            -0.04445665242575785,
-            0.06641556525458828
+            -0.04479361332781435,
+            0.0658091385900578
           ]
         },
         "joint_controlled": {
-          "point": -0.07785714285714262,
+          "point": -0.08153061224489777,
           "bootstrap_95_ci": [
-            -0.15613620324377114,
-            -0.009817444115975472
+            -0.16238248772163727,
+            -0.010023511784018588
           ]
         }
       }
@@ -891,27 +891,27 @@
       "eligible": true,
       "spearman": {
         "raw": 0.7791744840525331,
-        "formatting_controlled": 0.7949343339587243,
-        "joint_controlled": 0.7009380863039401
+        "formatting_controlled": 0.7958724202626641,
+        "joint_controlled": 0.6975609756097563
       },
       "kendall_tau_b": {
         "raw": 0.6025641025641026,
-        "formatting_controlled": 0.6102564102564103,
-        "joint_controlled": 0.5282051282051282
+        "formatting_controlled": 0.6128205128205129,
+        "joint_controlled": 0.5307692307692309
       },
       "delta_vs_raw": {
         "formatting_controlled": {
-          "point": 0.01575984990619117,
+          "point": 0.016697936210131048,
           "bootstrap_95_ci": [
-            -0.06376200916071667,
-            0.10789524396156776
+            -0.06350813803335643,
+            0.1093045987867699
           ]
         },
         "joint_controlled": {
-          "point": -0.07823639774859303,
+          "point": -0.08161350844277682,
           "bootstrap_95_ci": [
-            -0.17800793708705454,
-            0.02350767432860901
+            -0.1834255043377387,
+            0.022400170726820975
           ]
         }
       }
@@ -1027,27 +1027,27 @@
       "eligible": true,
       "spearman": {
         "raw": 0.7680612244897959,
-        "formatting_controlled": 0.8082653061224488,
-        "joint_controlled": 0.7393877551020407
+        "formatting_controlled": 0.808469387755102,
+        "joint_controlled": 0.7345918367346937
       },
       "kendall_tau_b": {
         "raw": 0.5612244897959183,
-        "formatting_controlled": 0.6071428571428571,
-        "joint_controlled": 0.5391156462585033
+        "formatting_controlled": 0.608843537414966,
+        "joint_controlled": 0.5425170068027211
       },
       "delta_vs_raw": {
         "formatting_controlled": {
-          "point": 0.04020408163265299,
+          "point": 0.04040816326530616,
           "bootstrap_95_ci": [
-            -0.01799984452602318,
-            0.11489435694754078
+            -0.01788686189493811,
+            0.11499584104965815
           ]
         },
         "joint_controlled": {
-          "point": -0.02867346938775517,
+          "point": -0.03346938775510211,
           "bootstrap_95_ci": [
-            -0.11008236560255931,
-            0.051526487680501484
+            -0.1196433181028169,
+            0.049647708647684516
           ]
         }
       }
@@ -1145,27 +1145,27 @@
       "eligible": true,
       "spearman": {
         "raw": 0.7009380863039401,
-        "formatting_controlled": 0.7709193245778612,
-        "joint_controlled": 0.7000000000000001
+        "formatting_controlled": 0.7726078799249533,
+        "joint_controlled": 0.6932457786116323
       },
       "kendall_tau_b": {
         "raw": 0.5307692307692309,
-        "formatting_controlled": 0.5743589743589744,
-        "joint_controlled": 0.5230769230769231
+        "formatting_controlled": 0.576923076923077,
+        "joint_controlled": 0.5205128205128206
       },
       "delta_vs_raw": {
         "formatting_controlled": {
-          "point": 0.06998123827392111,
+          "point": 0.07166979362101322,
           "bootstrap_95_ci": [
-            -0.028386526959454865,
-            0.18712182759357288
+            -0.02744154612679099,
+            0.18974254981180674
           ]
         },
         "joint_controlled": {
-          "point": -0.0009380863039399889,
+          "point": -0.007692307692307776,
           "bootstrap_95_ci": [
-            -0.1205465029687374,
-            0.13299786305351188
+            -0.13096408346617286,
+            0.13015041689940215
           ]
         }
       }
@@ -1175,8 +1175,10 @@
     "url": "https://epoch.ai/data/benchmark_data.zip",
     "snapshot_date": "2026-07-27",
     "sha256": "08ed76781fe84ce0cf6c80500cdae7ed347aaf71b7ac74cd016d31198424f3e4",
-    "status": "available",
+    "status": "reused_cached_scores",
     "error": null,
+    "live_download_error": "Epoch snapshot changed; expected SHA-256 08ed76781fe84ce0cf6c80500cdae7ed347aaf71b7ac74cd016d31198424f3e4, received 87b9d50155aa94443062a6ba8cd0daf73081c1b1b6f44e94c1694c15918ee896. Audit and pin the new payload before using capability comparisons.",
+    "reused_audited_result_cache": true,
     "archive_manifest": [
       {
         "file": "README.md",
@@ -2706,7 +2708,7 @@
       "spearman": {
         "raw": 0.7168180326075062,
         "formatting_controlled": 0.7030309661888609,
-        "joint_controlled": 0.6343144764197396
+        "joint_controlled": 0.6354086880402671
       },
       "kendall_tau_b": {
         "raw": 0.5305832147937412,
@@ -2722,10 +2724,10 @@
           ]
         },
         "joint_controlled": {
-          "point": -0.08250355618776661,
+          "point": -0.08140934456723914,
           "bootstrap_95_ci": [
-            -0.198337502077225,
-            0.0028546646452296317
+            -0.19942957437472575,
+            0.004605364239175576
           ]
         }
       },
@@ -2738,8 +2740,8 @@
             0.006692406692406783
           ],
           "joint_controlled": [
-            -0.11653225806451617,
-            -0.04929971988795534
+            -0.12016129032258072,
+            -0.048179271708683524
           ]
         },
         "omissions": {
@@ -2748,11 +2750,11 @@
             "spearman": {
               "raw": 0.7434173669467788,
               "formatting_controlled": 0.7294117647058824,
-              "joint_controlled": 0.6941176470588235
+              "joint_controlled": 0.6952380952380953
             },
             "delta_vs_raw": {
               "formatting_controlled": -0.01400560224089642,
-              "joint_controlled": -0.04929971988795534
+              "joint_controlled": -0.048179271708683524
             }
           },
           "Anthropic": {
@@ -2760,11 +2762,11 @@
             "spearman": {
               "raw": 0.70990990990991,
               "formatting_controlled": 0.7027027027027027,
-              "joint_controlled": 0.646074646074646
+              "joint_controlled": 0.6473616473616475
             },
             "delta_vs_raw": {
               "formatting_controlled": -0.007207207207207245,
-              "joint_controlled": -0.06383526383526394
+              "joint_controlled": -0.06254826254826251
             }
           },
           "DeepSeek": {
@@ -2772,11 +2774,11 @@
             "spearman": {
               "raw": 0.7414565826330534,
               "formatting_controlled": 0.7257703081232493,
-              "joint_controlled": 0.6778711484593837
+              "joint_controlled": 0.6815126050420169
             },
             "delta_vs_raw": {
               "formatting_controlled": -0.015686274509804088,
-              "joint_controlled": -0.06358543417366969
+              "joint_controlled": -0.059943977591036424
             }
           },
           "Google DeepMind": {
@@ -2784,11 +2786,11 @@
             "spearman": {
               "raw": 0.705241935483871,
               "formatting_controlled": 0.6959677419354838,
-              "joint_controlled": 0.5887096774193549
+              "joint_controlled": 0.5850806451612903
             },
             "delta_vs_raw": {
               "formatting_controlled": -0.00927419354838721,
-              "joint_controlled": -0.11653225806451617
+              "joint_controlled": -0.12016129032258072
             }
           },
           "Google DeepMind,Google": {
@@ -2796,11 +2798,11 @@
             "spearman": {
               "raw": 0.7401612138454243,
               "formatting_controlled": 0.7297297297297297,
-              "joint_controlled": 0.654338549075391
+              "joint_controlled": 0.6555239449976292
             },
             "delta_vs_raw": {
               "formatting_controlled": -0.010431484115694611,
-              "joint_controlled": -0.08582266477003331
+              "joint_controlled": -0.0846372688477951
             }
           },
           "Meta AI": {
@@ -2808,11 +2810,11 @@
             "spearman": {
               "raw": 0.6241405653170359,
               "formatting_controlled": 0.6198624904507257,
-              "joint_controlled": 0.5092436974789916
+              "joint_controlled": 0.5107715813598166
             },
             "delta_vs_raw": {
               "formatting_controlled": -0.004278074866310155,
-              "joint_controlled": -0.11489686783804431
+              "joint_controlled": -0.11336898395721928
             }
           },
           "Microsoft Research": {
@@ -2820,11 +2822,11 @@
             "spearman": {
               "raw": 0.7055476529160738,
               "formatting_controlled": 0.6934566145092461,
-              "joint_controlled": 0.6199620673304883
+              "joint_controlled": 0.6211474632527263
             },
             "delta_vs_raw": {
               "formatting_controlled": -0.012091038406827681,
-              "joint_controlled": -0.08558558558558549
+              "joint_controlled": -0.0844001896633475
             }
           },
           "MiniMax": {
@@ -2832,11 +2834,11 @@
             "spearman": {
               "raw": 0.7583011583011583,
               "formatting_controlled": 0.7649935649935651,
-              "joint_controlled": 0.6867438867438868
+              "joint_controlled": 0.6880308880308881
             },
             "delta_vs_raw": {
               "formatting_controlled": 0.006692406692406783,
-              "joint_controlled": -0.07155727155727154
+              "joint_controlled": -0.07027027027027022
             }
           },
           "Mistral AI": {
@@ -2844,11 +2846,11 @@
             "spearman": {
               "raw": 0.6156417112299465,
               "formatting_controlled": 0.6133021390374331,
-              "joint_controlled": 0.5641711229946524
+              "joint_controlled": 0.5658422459893048
             },
             "delta_vs_raw": {
               "formatting_controlled": -0.0023395721925133506,
-              "joint_controlled": -0.051470588235294046
+              "joint_controlled": -0.049799465240641716
             }
           },
           "Moonshot": {
@@ -2856,11 +2858,11 @@
             "spearman": {
               "raw": 0.7459383753501402,
               "formatting_controlled": 0.7184873949579832,
-              "joint_controlled": 0.6490196078431373
+              "joint_controlled": 0.650140056022409
             },
             "delta_vs_raw": {
               "formatting_controlled": -0.027450980392156987,
-              "joint_controlled": -0.0969187675070029
+              "joint_controlled": -0.0957983193277312
             }
           },
           "OpenAI": {
@@ -2868,11 +2870,11 @@
             "spearman": {
               "raw": 0.6974789915966387,
               "formatting_controlled": 0.6638655462184875,
-              "joint_controlled": 0.5831932773109244
+              "joint_controlled": 0.584593837535014
             },
             "delta_vs_raw": {
               "formatting_controlled": -0.03361344537815125,
-              "joint_controlled": -0.11428571428571432
+              "joint_controlled": -0.11288515406162469
             }
           },
           "Z.ai (Zhipu AI)": {
@@ -2880,11 +2882,11 @@
             "spearman": {
               "raw": 0.7498599439775911,
               "formatting_controlled": 0.72296918767507,
-              "joint_controlled": 0.6787114845938376
+              "joint_controlled": 0.6817927170868349
             },
             "delta_vs_raw": {
               "formatting_controlled": -0.026890756302521135,
-              "joint_controlled": -0.07114845938375358
+              "joint_controlled": -0.06806722689075628
             }
           },
           "Z.ai (Zhipu AI),Tsinghua University": {
@@ -2892,11 +2894,11 @@
             "spearman": {
               "raw": 0.7351825509720247,
               "formatting_controlled": 0.7185870080606922,
-              "joint_controlled": 0.642958748221906
+              "joint_controlled": 0.644144144144144
             },
             "delta_vs_raw": {
               "formatting_controlled": -0.016595542911332473,
-              "joint_controlled": -0.09222380275011866
+              "joint_controlled": -0.09103840682788067
             }
           }
         }
@@ -3987,27 +3989,27 @@
       "eligible": true,
       "spearman": {
         "raw": 0.752565982404692,
-        "formatting_controlled": 0.7415689149560116,
-        "joint_controlled": 0.6649560117302052
+        "formatting_controlled": 0.7412023460410556,
+        "joint_controlled": 0.6642228739002932
       },
       "kendall_tau_b": {
         "raw": 0.5685483870967744,
-        "formatting_controlled": 0.5483870967741936,
+        "formatting_controlled": 0.5443548387096775,
         "joint_controlled": 0.48387096774193555
       },
       "delta_vs_raw": {
         "formatting_controlled": {
-          "point": -0.010997067448680342,
+          "point": -0.011363636363636354,
           "bootstrap_95_ci": [
-            -0.06255922612607387,
-            0.037167711596620745
+            -0.06292548298068079,
+            0.03543874085764633
           ]
         },
         "joint_controlled": {
-          "point": -0.08760997067448673,
+          "point": -0.08834310850439875,
           "bootstrap_95_ci": [
-            -0.22193800163482752,
-            0.00993377483443703
+            -0.2234543778253327,
+            0.010726668578168667
           ]
         }
       },
@@ -4017,11 +4019,11 @@
         "delta_vs_raw_range": {
           "formatting_controlled": [
             -0.02930402930402931,
-            -0.0016420361247948545
+            -0.0021893814997263616
           ],
           "joint_controlled": [
-            -0.12807881773399032,
-            -0.05090311986863716
+            -0.12917350848385334,
+            -0.05254515599343179
           ]
         },
         "omissions": {
@@ -4030,83 +4032,83 @@
             "spearman": {
               "raw": 0.7471264367816092,
               "formatting_controlled": 0.7378215654077723,
-              "joint_controlled": 0.696223316912972
+              "joint_controlled": 0.6945812807881774
             },
             "delta_vs_raw": {
               "formatting_controlled": -0.009304871373836843,
-              "joint_controlled": -0.05090311986863716
+              "joint_controlled": -0.05254515599343179
             }
           },
           "Anthropic": {
             "n_models": 30,
             "spearman": {
               "raw": 0.7530589543937708,
-              "formatting_controlled": 0.7481646273637375,
-              "joint_controlled": 0.6707452725250278
+              "formatting_controlled": 0.7477196885428253,
+              "joint_controlled": 0.6698553948832036
             },
             "delta_vs_raw": {
-              "formatting_controlled": -0.004894327030033341,
-              "joint_controlled": -0.082313681868743
+              "formatting_controlled": -0.005339265850945463,
+              "joint_controlled": -0.08320355951056724
             }
           },
           "DeepSeek": {
             "n_models": 28,
             "spearman": {
               "raw": 0.7673782156540777,
-              "formatting_controlled": 0.7657361795292829,
-              "joint_controlled": 0.7033388067870826
+              "formatting_controlled": 0.7651888341543513,
+              "joint_controlled": 0.7038861521620142
             },
             "delta_vs_raw": {
-              "formatting_controlled": -0.0016420361247948545,
-              "joint_controlled": -0.0640394088669951
+              "formatting_controlled": -0.0021893814997263616,
+              "joint_controlled": -0.06349206349206349
             }
           },
           "Google DeepMind": {
             "n_models": 27,
             "spearman": {
               "raw": 0.7393162393162392,
-              "formatting_controlled": 0.7332112332112332,
-              "joint_controlled": 0.6245421245421245
+              "formatting_controlled": 0.7326007326007326,
+              "joint_controlled": 0.6239316239316238
             },
             "delta_vs_raw": {
-              "formatting_controlled": -0.006105006105006083,
-              "joint_controlled": -0.1147741147741147
+              "formatting_controlled": -0.006715506715506692,
+              "joint_controlled": -0.11538461538461542
             }
           },
           "Google DeepMind,Google": {
             "n_models": 31,
             "spearman": {
               "raw": 0.7596774193548388,
-              "formatting_controlled": 0.7491935483870967,
-              "joint_controlled": 0.6665322580645162
+              "formatting_controlled": 0.7487903225806453,
+              "joint_controlled": 0.665725806451613
             },
             "delta_vs_raw": {
-              "formatting_controlled": -0.01048387096774206,
-              "joint_controlled": -0.09314516129032258
+              "formatting_controlled": -0.010887096774193528,
+              "joint_controlled": -0.09395161290322585
             }
           },
           "Meta AI": {
             "n_models": 28,
             "spearman": {
               "raw": 0.7170224411603723,
-              "formatting_controlled": 0.7033388067870826,
-              "joint_controlled": 0.588943623426382
+              "formatting_controlled": 0.702791461412151,
+              "joint_controlled": 0.5878489326765189
             },
             "delta_vs_raw": {
-              "formatting_controlled": -0.013683634373289677,
-              "joint_controlled": -0.12807881773399032
+              "formatting_controlled": -0.014230979748221295,
+              "joint_controlled": -0.12917350848385334
             }
           },
           "Microsoft Research": {
             "n_models": 31,
             "spearman": {
               "raw": 0.7649193548387098,
-              "formatting_controlled": 0.7564516129032258,
-              "joint_controlled": 0.6806451612903226
+              "formatting_controlled": 0.7560483870967742,
+              "joint_controlled": 0.6798387096774194
             },
             "delta_vs_raw": {
-              "formatting_controlled": -0.008467741935483941,
-              "joint_controlled": -0.08427419354838717
+              "formatting_controlled": -0.00887096774193552,
+              "joint_controlled": -0.08508064516129032
             }
           },
           "Mistral AI": {
@@ -4114,47 +4116,47 @@
             "spearman": {
               "raw": 0.7161172161172161,
               "formatting_controlled": 0.6868131868131868,
-              "joint_controlled": 0.6385836385836385
+              "joint_controlled": 0.6367521367521368
             },
             "delta_vs_raw": {
               "formatting_controlled": -0.02930402930402931,
-              "joint_controlled": -0.07753357753357759
+              "joint_controlled": -0.0793650793650793
             }
           },
           "Moonshot": {
             "n_models": 31,
             "spearman": {
               "raw": 0.7516129032258065,
-              "formatting_controlled": 0.7403225806451613,
-              "joint_controlled": 0.6620967741935484
+              "formatting_controlled": 0.7399193548387097,
+              "joint_controlled": 0.6612903225806452
             },
             "delta_vs_raw": {
-              "formatting_controlled": -0.011290322580645218,
-              "joint_controlled": -0.08951612903225814
+              "formatting_controlled": -0.011693548387096797,
+              "joint_controlled": -0.0903225806451613
             }
           },
           "OpenAI": {
             "n_models": 30,
             "spearman": {
               "raw": 0.757508342602892,
-              "formatting_controlled": 0.7472747497219132,
-              "joint_controlled": 0.6507230255839822
+              "formatting_controlled": 0.7468298109010011,
+              "joint_controlled": 0.649833147942158
             },
             "delta_vs_raw": {
-              "formatting_controlled": -0.010233592880978803,
-              "joint_controlled": -0.10678531701890981
+              "formatting_controlled": -0.010678531701890925,
+              "joint_controlled": -0.10767519466073405
             }
           },
           "Z.ai (Zhipu AI)": {
             "n_models": 29,
             "spearman": {
               "raw": 0.7625615763546796,
-              "formatting_controlled": 0.7448275862068964,
-              "joint_controlled": 0.7004926108374382
+              "formatting_controlled": 0.7443349753694579,
+              "joint_controlled": 0.7009852216748766
             },
             "delta_vs_raw": {
-              "formatting_controlled": -0.017733990147783207,
-              "joint_controlled": -0.06206896551724139
+              "formatting_controlled": -0.018226600985221664,
+              "joint_controlled": -0.061576354679802936
             }
           }
         }

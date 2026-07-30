@@ -1,7 +1,7 @@
 # Review status: Style Control Analysis for Compar:IA
 
 Tracker for the paper (`paper_draft.md`), rebuilt on the consolidated
-`comparia-fr-arena` dataset (137,214 retained decisive French battles, 116
+`comparia-fr-arena` dataset (137,293 retained decisive French battles, 116
 models, votes only).
 
 ## Addressed
@@ -22,8 +22,8 @@ models, votes only).
 - **Topic controls.** Bold is positive within every large subject class; the
   vote-time depth pattern survives topic × formatting controls (§4.7).
 - **Task-type robustness check.** A coarse rule-based task taxonomy and
-  within-task fits have been added. Its limited held-out agreement makes this
-  exploratory rather than a definitive task control (§4.8).
+  within-task fits have been added. It is explicitly unvalidated on this
+  release and exploratory rather than a definitive task control (§4.8).
 - **Vote-time reconstruction.** Response text, cumulative token totals, and
   depth are truncated at the retained vote and independently audited against
   the source release (§2.4, §4.6).
@@ -31,11 +31,13 @@ models, votes only).
   joint-controlled Compar:IA rankings are compared with four pinned LMArena
   preference rankings (§4.11).
 - **Independent capability comparison.** A content-hashed 27 July 2026 Epoch
-  archive is audited at file, schema, model-match, and exclusion level. Seven
-  benchmarks meet the pre-specified ten-model overlap rule. The live production
-  shifts are now reported separately as face-validity evidence. The aggregate
-  capability differences remain within bootstrap uncertainty and omit three
-  models behind the most prominent live shifts (§4.11).
+  archive was audited at file, schema, model-match, and exclusion level. The
+  original source URL is mutable and the repository now fails closed on changed
+  bytes, reusing only its audited derived cache. Seven benchmarks meet the
+  pre-specified ten-model overlap rule (§4.11).
+- **Release engineering.** The environment is locked, CI runs lint/tests and a
+  clean LaTeX build, checkpoint parts are provenance-checked, and distributed
+  artifacts have a SHA-256 manifest.
 - **References.** Arena / evaluation-bias literature and method citations added;
   inline and matched to entries.
 
@@ -52,9 +54,10 @@ models, votes only).
   metric) is GPU-only and was null on the earlier export; readability is also
   null here, so it was not recomputed. Noted as a limitation.
 - **No independent replication.** Single corpus from one platform.
-- **Authors.** Author list and order to be settled by the authors; Maayeesha
-  Farzana is credited in-text as the linguistic feature-set designer.
+- **Author declarations.** Affiliations, author consent, CRediT roles, funding,
+  competing interests, and authorization for the correspondence address must
+  be confirmed before deposit.
 
 ## Reproduce
 
-Everything reruns from `fr_battles.parquet` via the scripts in the README.
+The README documents `core`, `extended`, and gated-source `full` profiles.

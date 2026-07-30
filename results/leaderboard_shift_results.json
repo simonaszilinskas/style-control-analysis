@@ -1,24 +1,24 @@
 {
-  "n_battles": 127010,
+  "n_battles": 127092,
   "n_models": 116,
-  "corr_standard_vs_formatting": 0.9662,
-  "corr_standard_vs_joint_pearson": 0.9316,
-  "corr_standard_vs_joint_spearman": 0.9139,
-  "n_move_ge_10_ranks": 34,
+  "corr_standard_vs_formatting": 0.967,
+  "corr_standard_vs_joint_pearson": 0.9314,
+  "corr_standard_vs_joint_spearman": 0.9145,
+  "n_move_ge_10_ranks": 36,
   "biggest_fallers": {
-    "gpt-oss-120b": -49,
-    "mistral-small-2603": -36,
+    "gpt-oss-120b": -48,
+    "mistral-small-2603": -35,
     "mistral-large-2512": -33,
-    "glm-4.5": -30,
-    "qwen-3-8b": -28,
-    "glm-4.6": -25
+    "glm-4.5": -29,
+    "nemotron-3-super-120b-a12b": -26,
+    "qwen-3-8b": -26
   },
   "biggest_risers": {
     "gpt-5.3": 43,
     "claude-3-5-sonnet-v2": 34,
+    "trinity-large-preview": 29,
     "claude-3-7-sonnet": 28,
-    "o4-mini": 28,
-    "trinity-large-preview": 28,
-    "claude-4-sonnet": 27
+    "claude-4-sonnet": 28,
+    "o4-mini": 28
   }
 }

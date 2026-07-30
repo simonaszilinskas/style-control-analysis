@@ -1,0 +1,35 @@
+[project]
+name = "style-control-analysis"
+version = "1.0.0"
+description = "Reproducible analysis for the Compar:IA style-control preprint"
+requires-python = ">=3.11,<3.15"
+dependencies = [
+  "huggingface-hub==0.36.2",
+  "matplotlib==3.10.8",
+  "numpy==2.4.1",
+  "pandas==2.3.3",
+  "pyarrow==23.0.1",
+  "scikit-learn==1.7.2",
+  "scipy==1.17.0",
+  "textstat==0.7.13",
+]
+
+[dependency-groups]
+dev = [
+  "pytest==9.0.2",
+  "ruff==0.14.14",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F"]
+ignore = ["E501"]

@@ -38,6 +38,20 @@ class VoteTruncationTests(unittest.TestCase):
     def test_prefix_fails_closed_when_vote_turn_is_not_present(self):
         self.assertIsNone(_conversation_prefix(conversation("only answer"), 1))
 
+    def test_assistant_text_retains_final_answer_after_think_block(self):
+        messages = [{
+            "role": "assistant",
+            "content": "<think>private reasoning with **bold** text</think>Visible **answer**.",
+            "reasoning_content": "also not part of the final answer",
+        }]
+
+        self.assertEqual(_assistant_text(messages), "Visible **answer**.")
+
+    def test_assistant_text_drops_ambiguous_unclosed_think_span(self):
+        messages = [{"role": "assistant", "content": "Visible preface <think>unfinished trace"}]
+
+        self.assertEqual(_assistant_text(messages), "Visible preface")
+
     def test_process_rows_uses_visible_prefix_and_vote_time_depth(self):
         enough_words = " ".join(f"word{i}" for i in range(60))
         future_bold = "**future formatting must not be counted**"
@@ -65,6 +79,33 @@ class VoteTruncationTests(unittest.TestCase):
         self.assertEqual(battles[0]["conv_turns"], 1)
         self.assertEqual(battles[0]["bold_a"], 0.0)
         self.assertEqual(tokens[0]["tokens_a"], 60)
+
+    def test_process_rows_counts_final_text_not_think_trace(self):
+        enough_words = " ".join(f"word{i}" for i in range(60))
+        row = {
+            "comparison_id": "c-think",
+            "choice": "a_better",
+            "turn": 0,
+            "model_a": "a",
+            "model_b": "b",
+            "full_conversation_a": [
+                {"role": "user", "content": "question"},
+                {"role": "assistant", "content": "<think>**hidden** trace</think>" + enough_words},
+            ],
+            "full_conversation_b": conversation(enough_words),
+            "metadata": {
+                "languages": ["fr"],
+                "tokens_a": 60,
+                "tokens_b": 60,
+                "categories": ["test"],
+                "mode": "random",
+            },
+        }
+
+        battles, _ = _process_rows([row])
+
+        self.assertEqual(len(battles), 1)
+        self.assertEqual(battles[0]["bold_a"], 0.0)
 
     def test_prefix_length_sums_only_turns_through_vote(self):
         battles = pd.DataFrame([

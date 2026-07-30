@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite the preprint and archived code release."
+title: "What Wins a Vote? Formatting, Length, and Lexical Diversity in the French Compar:IA LLM Arena"
+type: article
+version: 1.0.0
+date-released: 2026-07-30
+authors:
+  - family-names: Zilinskas
+    given-names: Simonas
+    email: contact@comparia.beta.gouv.fr
+  - family-names: Farzana
+    given-names: Maayeesha
+  - family-names: Benavent
+    given-names: Christophe
+repository-code: "https://github.com/simonaszilinskas/style-control-analysis"
+license: etalab-2.0
+keywords:
+  - large language models
+  - human preferences
+  - evaluation arenas
+  - Bradley-Terry model
+  - presentation bias

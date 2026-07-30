@@ -3,11 +3,12 @@
 Time-block bootstrap (§4.9): are the headline CIs robust to temporal dependence?
 
 comparia-fr-arena carries no user identifier, so we cannot cluster by user. As a
-partial substitute for the independence assumption, we block-bootstrap by
-calendar week: resample the ~89 weekly blocks with replacement (keeping each
-week's battles together) and refit, which preserves within-week dependence
-(shifting model roster, user population, prompt mix). We compare the resulting
-95% intervals for bold and MATTR to the ordinary i.i.d. battle bootstrap.
+temporal sensitivity analysis, we block-bootstrap by calendar week: resample the
+~89 weekly blocks with replacement (keeping each week's battles together) and
+refit, which preserves within-week dependence from shifts in model roster, user
+population, and prompt mix. This is not a remedy for unobserved user-level
+clustering. We compare the resulting 95% intervals for bold and MATTR to the
+ordinary i.i.d. battle bootstrap.
 
     python src/time_block_bootstrap.py    # -> results/time_block_results.json
 """
@@ -43,10 +44,14 @@ def main():
     weeks = sorted(fmt["week"].unique())
     print(f"weeks: {len(weeks)}  formatting battles: {len(fmt):,}  joint battles: {len(jnt):,}")
 
-    o = lambda c: (np.exp(c) - 1) * 100
-    pt = {"bold_fmt": o(fit(fmt, models, FORMATTING)[1]["bold"]),
-          "bold_joint": o(fit_bt(jnt, models, CORE)[1]["bold"]),
-          "mattr_joint": o(fit_bt(jnt, models, CORE)[1]["mattr"])}
+    def odds_pct(coef):
+        return (np.exp(coef) - 1) * 100
+
+    pt = {
+        "bold_fmt": odds_pct(fit(fmt, models, FORMATTING)[1]["bold"]),
+        "bold_joint": odds_pct(fit_bt(jnt, models, CORE)[1]["bold"]),
+        "mattr_joint": odds_pct(fit_bt(jnt, models, CORE)[1]["mattr"]),
+    }
 
     fmt_by = {w: idx.to_numpy() for w, idx in fmt.groupby("week").groups.items()}
     jnt_by = {w: idx.to_numpy() for w, idx in jnt.groupby("week").groups.items()}
@@ -58,10 +63,12 @@ def main():
         fi = np.concatenate([fmt_by[w] for w in draw])
         ji = np.concatenate([jnt_by[w] for w in draw if w in jnt_by])
         try:
-            boot["bold_fmt"].append(o(fit(fmt.loc[fi], models, FORMATTING)[1]["bold"]))
+            boot["bold_fmt"].append(
+                odds_pct(fit(fmt.loc[fi], models, FORMATTING)[1]["bold"])
+            )
             c = fit_bt(jnt.loc[ji], models, CORE)[1]
-            boot["bold_joint"].append(o(c["bold"]))
-            boot["mattr_joint"].append(o(c["mattr"]))
+            boot["bold_joint"].append(odds_pct(c["bold"]))
+            boot["mattr_joint"].append(odds_pct(c["mattr"]))
         except Exception:
             continue
 
