@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 
 from analyze_core import fit, MIN_BATTLES, FORMATTING
-from linguistic_analysis import fit_bt, LINGUISTIC
+from modeling import fit_bt, LINGUISTIC
 from paths import BATTLES, RESULTS
 
 CORE = FORMATTING + ["length"] + LINGUISTIC

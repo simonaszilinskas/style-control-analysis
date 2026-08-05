@@ -9,7 +9,7 @@ Which presentation features retain an association with votes after joint adjustm
 ## Key Findings
 
 - **Presentation is mostly one collinear "verbosity" dimension.** Length, bold, and lists rise together and trade coefficient weight; their individual attributions are unstable across specifications.
-- **Two signals stand apart and survive full joint control:** **bold formatting** (+11.0% win odds per standard deviation in the joint model) and **length-independent lexical diversity** (MATTR, +16.8%). Both are conditional correlates, not causal effects.
+- **Two signals stand apart and survive full joint control:** **bold formatting** (+11.0% win odds per standard deviation in the joint model) and **comparatively length-robust lexical diversity** (MATTR, +16.8%). Both are conditional correlates, not causal effects.
 - **Much apparent linguistic association is between models:** several coefficients shrink substantially when per-model fixed effects are added. This does not identify presentation as either bias or a quality signal.
 - **Exploratory heterogeneity varies with depth visible at the vote.** In the pooled interaction model, the formatting-only bold association is smaller in genuine multi-turn conversations (+30.1% to +7.4% odds/SD), while MATTR is essentially unchanged. Length's interaction is not significant. Vote-time depth remains endogenous and is not a direct measure of attention.
 - **The bold association is not solely a subject-matter artefact.** It is positive within every large topic and remains after topic × formatting controls; this is still observational rather than causal.

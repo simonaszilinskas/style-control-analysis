@@ -79,7 +79,10 @@ class PublicationConsistencyTests(unittest.TestCase):
         self.assertTrue(all(delta < 0 for delta in formatting_deltas))
         paper = (ROOT / "paper_draft.md").read_text(encoding="utf-8")
         self.assertIn(results["epoch_snapshot"]["sha256"], paper)
-        self.assertIn("suggestive face validity but inconclusive external validation", paper)
+        self.assertIn(
+            "do not show that adjusted rankings better measure capability",
+            paper,
+        )
         for omitted_model in (
             "GPT-5.3",
             "Mistral Medium 2508",
@@ -103,11 +106,16 @@ class PublicationConsistencyTests(unittest.TestCase):
             ]
         )
 
-    def test_levels_of_reading_hypothesis_is_retained_and_qualified(self):
-        paper = (ROOT / "paper_draft.md").read_text(encoding="utf-8")
-        self.assertIn("level of reading", paper)
-        self.assertIn("deliberately speculative and imperfect", paper)
-        self.assertIn("do not test it directly", paper)
+    def test_levels_of_reading_is_present_and_qualified(self):
+        for path in (ROOT / "paper_draft.md", ROOT / "manuscript" / "paper.tex"):
+            paper = path.read_text(encoding="utf-8")
+            with self.subTest(path=path.name):
+                self.assertIn("levels of reading", paper)
+                self.assertIn("This is a hypothesis", paper)
+                self.assertRegex(
+                    paper,
+                    r"turn count does not\s+measure attention",
+                )
 
     def test_depth_table_uses_the_pooled_interaction_model(self):
         results = json.loads(TURN_DEPTH_RESULTS.read_text(encoding="utf-8"))

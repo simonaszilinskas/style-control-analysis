@@ -30,102 +30,15 @@ difference style features).
 import json
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import StandardScaler
-
 from paths import BATTLES, RESULTS
+from modeling import (
+    FORMATTING, LINGUISTIC, MIN_BATTLES, benjamini_hochberg as bh,
+    fit_bt, fit_pooled, log_likelihood,
+)
 
 np.random.seed(42)
 
-SCALE, BASE, INIT_RATING = 400, 10, 1000
-MIN_BATTLES = 100
 N_BOOTSTRAP = 1000
-
-FORMATTING = ["headers", "lists", "bold", "code_blocks", "emoji"]
-READABILITY = ["rel", "cli", "fkg"]
-DIVERSITY = ["ttr", "mattr"]
-STRUCTURE = ["asl", "long_sent_ratio"]
-LINGUISTIC = READABILITY + DIVERSITY + STRUCTURE
-
-
-# --------------------------------------------------------------------------- #
-# Bradley-Terry (identical construction to analyze_core.py)
-# --------------------------------------------------------------------------- #
-def _design(battles, models, style_features):
-    idx = {m: i for i, m in enumerate(models)}
-    n = len(models)
-    d = battles[battles["winner"].isin(["model_a", "model_b"])]
-    if style_features:
-        d = d.dropna(subset=[f"{s}_a" for s in style_features]
-                     + [f"{s}_b" for s in style_features])
-    d = d[d["model_a_name"].isin(models) & d["model_b_name"].isin(models)]
-
-    Xm = np.zeros((len(d), n))
-    rows = np.arange(len(d))
-    Xm[rows, d["model_a_name"].map(idx).to_numpy()] = 1
-    Xm[rows, d["model_b_name"].map(idx).to_numpy()] = -1
-    y = (d["winner"].to_numpy() == "model_a").astype(float)
-
-    if style_features:
-        cols = []
-        for s in style_features:
-            diff = d[f"{s}_a"].to_numpy(float) - d[f"{s}_b"].to_numpy(float)
-            # Winsorize each A-B contrast at 1/99% before standardizing. Several
-            # features are heavy-tailed (perplexity, readability grades, raw bold
-            # counts up to ~1000); without this a handful of extreme battles drive
-            # the coefficient. Bounded features (TTR/MATTR in [0,1]) are unaffected.
-            lo, hi = np.nanpercentile(diff, [1, 99])
-            cols.append(np.clip(diff, lo, hi))
-        Xs = StandardScaler().fit_transform(np.column_stack(cols))
-    else:
-        Xs = np.empty((len(d), 0))
-    return Xm, Xs, y
-
-
-def fit_bt(battles, models, style_features):
-    Xm, Xs, y = _design(battles, models, style_features)
-    X = np.hstack([Xm, Xs])
-    lr = LogisticRegression(fit_intercept=False, penalty=None, max_iter=5000)
-    lr.fit(X, y)
-    n = len(models)
-    # Ratings are identified only up to a common offset.  Enforce the published
-    # mean-1000 convention explicitly; pairwise predictions are unchanged.
-    model_coefs = lr.coef_[0][:n] - lr.coef_[0][:n].mean()
-    ratings = dict(
-        zip(models, INIT_RATING + SCALE * model_coefs / np.log(BASE))
-    )
-    coefs = dict(zip(style_features, lr.coef_[0][n:]))
-    return ratings, coefs, y, lr, X
-
-
-def fit_pooled(battles, models, style_features):
-    """Reduced-form logit: style contrasts + intercept, NO per-model dummies.
-    The gap between this and fit_bt describes between-model composition: how a
-    pooled association changes after adding model effects. It does not identify
-    a causal mediator or confounder."""
-    _, Xs, y = _design(battles, models, style_features)
-    X = np.column_stack([np.ones(len(Xs)), Xs])
-    lr = LogisticRegression(fit_intercept=False, penalty=None, max_iter=5000)
-    lr.fit(X, y)
-    return dict(zip(style_features, lr.coef_[0][1:]))
-
-
-def bh(pvals):
-    """Benjamini-Hochberg adjusted p-values (same procedure as the main script)."""
-    p = np.asarray(pvals, float)
-    m = len(p)
-    order = np.argsort(p)
-    adj = np.empty(m)
-    for i, idx in enumerate(order):
-        adj[idx] = p[idx] * m / (i + 1)
-    for i in range(m - 2, -1, -1):
-        adj[order[i]] = min(adj[order[i]], adj[order[i + 1]])
-    return np.minimum(adj, 1.0)
-
-
-def log_likelihood(y, X, lr):
-    p = np.clip(lr.predict_proba(X)[:, 1], 1e-12, 1 - 1e-12)
-    return float(np.sum(y * np.log(p) + (1 - y) * np.log(1 - p)))
 
 
 # --------------------------------------------------------------------------- #

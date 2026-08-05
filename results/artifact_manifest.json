@@ -21,8 +21,8 @@
       "sha256": "23c03f788be3b238071431c2da153727a0e4dbed7d4566ee846e35ed7e6aaf12"
     },
     "README.md": {
-      "bytes": 9662,
-      "sha256": "02d92f404a05dcff7941593d0294ee398dfa8c1062f3bda6b0c4616aa6c15c39"
+      "bytes": 9671,
+      "sha256": "2cb879205f60ada28be47e071c2a99f5c4aff8f6a2b389e80410cce558b7256a"
     },
     "data/README.md": {
       "bytes": 2216,
@@ -41,8 +41,8 @@
       "sha256": "bd418b4e2fae34c375d2d4a741b8209096b9274f05898c84980c4292ea61d160"
     },
     "data/prompts.parquet": {
-      "bytes": 19307148,
-      "sha256": "33d084b1074497aab5b5cbd4ac953048a414848422222461ddb5c1200a2fe10b"
+      "bytes": 19298102,
+      "sha256": "daeee980ebe26b4af9a4afd55f90cc3532c5c62ce6aee87e3f1046b2567a7e13"
     },
     "data/timestamps.parquet": {
       "bytes": 6435065,
@@ -89,16 +89,16 @@
       "sha256": "15a3b667263576365b4824a4557915f162a27c1789ddfbf9021c89405946ae38"
     },
     "manuscript/paper.pdf": {
-      "bytes": 242939,
-      "sha256": "cd353eda8abce3fe59317c4915ab664fd6e220fb4863b19bb5359bbc242947ed"
+      "bytes": 240292,
+      "sha256": "1f24f0cb13e3c981fe3415187f5da0b98b969ae58144d023b7d85095585e301f"
     },
     "manuscript/paper.tex": {
-      "bytes": 75471,
-      "sha256": "16d12dd40f9c73bf064bd3cf4cc31cd20c1ced446e8a03988388d42862d31693"
+      "bytes": 72890,
+      "sha256": "0ae5532e0c95292739715b32476353bd9d2b97ce7ae5e23a1d05d4c36a7a24d4"
     },
     "paper_draft.md": {
-      "bytes": 61272,
-      "sha256": "bcbaaa83b39049632daadc74b45e7e9a92f6034ca60cd879d3787ea81fd06ff1"
+      "bytes": 58873,
+      "sha256": "fdb0df5507e8c8c31311ca7943fdb1b8f19079fb035969a6f775e1dc5d09e40c"
     },
     "pyproject.toml": {
       "bytes": 625,
@@ -173,12 +173,12 @@
       "sha256": "4d532f7a560a58c5286748475826183cb5f7ee548eb166b6c2b00d8ceb16d764"
     },
     "src/analyze_core.py": {
-      "bytes": 7112,
-      "sha256": "5b2da83f96dc109e32175c6eab7617bf9be82665a080d113bc6633fe8b12388f"
+      "bytes": 5605,
+      "sha256": "665e60889a3b3cc55082eb46c5f76d1e816153ba377215258390afa21dc1bc7b"
     },
     "src/analyze_mattr_alt.py": {
-      "bytes": 2847,
-      "sha256": "f636f4005f99cdab309970369380da5519367f59837d31a3e0c00459ef88d17c"
+      "bytes": 2836,
+      "sha256": "123e55a521d59743a5242849567fd9c8ee6e801eb8b4a9ebbaaf37546deeaa4f"
     },
     "src/audit_reasoning_content.py": {
       "bytes": 5511,
@@ -201,8 +201,8 @@
       "sha256": "cfdb358aa5fee5064be1774357c6feb1b88e07c6b12352c4a71b8acef126e81e"
     },
     "src/external_leaderboard_analysis.py": {
-      "bytes": 23799,
-      "sha256": "30665406ee138cd77bf6c4507e8fc20bd3a0e644e398c211ccfdb7f413fd7c0d"
+      "bytes": 23788,
+      "sha256": "07cadae11645f3d13f1bf39390ec8172847f22bb8623991a0e9816150ab8f4a1"
     },
     "src/extract_prompts.py": {
       "bytes": 3588,
@@ -221,20 +221,24 @@
       "sha256": "1ce4c75cc9611743a0ee3333983a7ddd4dc6265ba3e04e074513a1f008fe0346"
     },
     "src/leaderboard_shift.py": {
-      "bytes": 3369,
-      "sha256": "21327791309ff656f165011ba697db7db58d6133df2a97a8433d598768e57efd"
+      "bytes": 3358,
+      "sha256": "5f8c76e9927992b2c5f735f4a0d25907d6fcd36d1b32349c39791dddce0da9e4"
     },
     "src/linguistic_analysis.py": {
-      "bytes": 9869,
-      "sha256": "0a4ad29392d25a18d7aa0594bbf0550ff7cb3b9448dd22e24e3ba4101f2a91ec"
+      "bytes": 6261,
+      "sha256": "462b0eadba44a34319d42c898ba56550864fd4cd87f33e427ce8d5d56dd39203"
     },
     "src/mattr_alt.py": {
       "bytes": 6215,
       "sha256": "fd1b472683cca5f74acd2e09e1bf0aa56b862168851818e2add4bad1f3a4513e"
     },
     "src/mattr_stress.py": {
-      "bytes": 3918,
-      "sha256": "b33856eeb170e74f059d251eb2a191ec40492bb8e10b70d110e0dd3b065726f0"
+      "bytes": 3907,
+      "sha256": "e0963ac9ffc3080dca8d440a3d651fa16ac9cf61905ea2e8b05d039d6e522f23"
+    },
+    "src/modeling.py": {
+      "bytes": 4786,
+      "sha256": "7b7f0a533811f87e282f11eae1c65e73080b7223dc316a5c4a003a1411c27ff9"
     },
     "src/paths.py": {
       "bytes": 341,
@@ -245,8 +249,8 @@
       "sha256": "c9b33156a3e5f54b1a13ab10e657b6af6878eafb38bd6b94ea91ef287335b66c"
     },
     "src/robustness_random.py": {
-      "bytes": 2703,
-      "sha256": "9c3090733d5f43de8a4a8579991eb17e42f0bb6c97c5e04430bd26ecd25cd25a"
+      "bytes": 2692,
+      "sha256": "51d56bf4ae935d72e356fdcdf4d710e83fccf4e01859b6b4a0ecfe7596547e30"
     },
     "src/task_analysis.py": {
       "bytes": 3604,
@@ -257,16 +261,16 @@
       "sha256": "f3bd745fff764634eb0f60c672c513cd7772c14990ab15dd0323fb9872130d85"
     },
     "src/time_block_bootstrap.py": {
-      "bytes": 3725,
-      "sha256": "d7c0dada1758388fa2d6b5a8319430c99030c49b4f7eccff093c8d8155f8f98d"
+      "bytes": 3714,
+      "sha256": "e50d890f4f1d03d4f726d7b1b4f7841325e8c3b39f9b7b9d977c3b2265ee6594"
     },
     "src/topic_analysis.py": {
-      "bytes": 9265,
-      "sha256": "44368f76b8d1374a6408bd5bf5cebd047abc17ce60accd5f1b3c00aab747cb3f"
+      "bytes": 9276,
+      "sha256": "f9648f3def45e625f003a583e118654a96d88cedd262116163af7d02093d4647"
     },
     "src/turn_depth_analysis.py": {
-      "bytes": 7402,
-      "sha256": "1267ffa2c4f1918c44659ce27223f189f70cd7b06ce0e25ffa0ed701763b28f3"
+      "bytes": 7248,
+      "sha256": "064bd6eee6512c22b4056d1b89efa8ec4c00d5cd556aaed9341f029675b5ca71"
     },
     "src/write_artifact_manifest.py": {
       "bytes": 2105,
@@ -280,9 +284,13 @@
       "bytes": 6184,
       "sha256": "402cfc97f9931cbbd378efe68b32043b13fdfaebfc6aa2543be1fc7700ead47c"
     },
+    "tests/test_modeling.py": {
+      "bytes": 2278,
+      "sha256": "b3bd9ea55b2cdab5a9968c72f1139e167e40803655835e3c03dfb86f9efcb315"
+    },
     "tests/test_publication_consistency.py": {
-      "bytes": 6437,
-      "sha256": "9bed0183ab7f519a870a851f79e74d2255311e9eecd859343600a3eb51cd0f97"
+      "bytes": 6657,
+      "sha256": "e47f7223f5c4660f2194e269afd6b041e7d6b1845ab584ec52401330840d4b65"
     },
     "tests/test_vote_truncation.py": {
       "bytes": 5231,
@@ -305,6 +313,6 @@
     "scipy": "1.17.0",
     "textstat": "0.7.13"
   },
-  "platform": "macOS-26.3-arm64-arm-64bit-Mach-O",
+  "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
   "python": "3.13.11"
 }

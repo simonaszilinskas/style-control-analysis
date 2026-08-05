@@ -34,7 +34,7 @@ import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 
-from linguistic_analysis import bh, FORMATTING
+from modeling import benjamini_hochberg as bh, FORMATTING
 from turn_depth_analysis import _contrasts
 from paths import BATTLES, RESULTS
 

@@ -25,7 +25,9 @@ import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 
-from linguistic_analysis import bh, FORMATTING, LINGUISTIC
+from modeling import (
+    FORMATTING, LINGUISTIC, benjamini_hochberg as bh, feature_contrasts,
+)
 from paths import BATTLES, RESULTS
 
 np.random.seed(42)
@@ -37,12 +39,7 @@ N_BOOTSTRAP = 1000
 def _contrasts(d, feats):
     """Standardized, winsorized A-B contrasts (same construction as
     linguistic_analysis._design), fit on whatever rows are passed."""
-    cols = []
-    for s in feats:
-        diff = d[f"{s}_a"].to_numpy(float) - d[f"{s}_b"].to_numpy(float)
-        lo, hi = np.nanpercentile(diff, [1, 99])
-        cols.append(np.clip(diff, lo, hi))
-    return np.column_stack(cols)
+    return feature_contrasts(d, feats)
 
 
 def _fit_interaction(d, models, feats, scaler):

@@ -14,62 +14,22 @@ reactions in comparia-fr-arena.
 import json
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import StandardScaler
-
 from paths import BATTLES, RESULTS
+from modeling import (
+    FORMATTING, benjamini_hochberg as bh, fit_bt, ranks,
+)
 
 np.random.seed(42)
-SCALE, BASE, INIT = 400, 10, 1000
 MIN_BATTLES = 100
 N_BOOT = 1000
-FORMATTING = ["headers", "lists", "bold", "code_blocks", "emoji"]
-
-
-def design(d, models, feats):
-    idx = {m: i for i, m in enumerate(models)}
-    n = len(models)
-    Xm = np.zeros((len(d), n))
-    rows = np.arange(len(d))
-    Xm[rows, d["model_a_name"].map(idx).to_numpy()] = 1
-    Xm[rows, d["model_b_name"].map(idx).to_numpy()] = -1
-    y = (d["winner"].to_numpy() == "model_a").astype(float)
-    if feats:
-        cols = [d[f"{f}_a"].to_numpy(float) - d[f"{f}_b"].to_numpy(float) for f in feats]
-        Xs = StandardScaler().fit_transform(np.column_stack(cols))
-    else:
-        Xs = np.empty((len(d), 0))
-    return Xm, Xs, y
 
 
 def fit(d, models, feats):
-    Xm, Xs, y = design(d, models, feats)
-    lr = LogisticRegression(fit_intercept=False, penalty=None, max_iter=5000)
-    lr.fit(np.hstack([Xm, Xs]), y)
-    n = len(models)
-    # The all-model contrast design is identified only up to an additive
-    # constant.  Recenter explicitly so the published rating convention is
-    # deterministic and has mean INIT without changing any pairwise difference.
-    model_coefs = lr.coef_[0][:n] - lr.coef_[0][:n].mean()
-    ratings = dict(zip(models, INIT + SCALE * model_coefs / np.log(BASE)))
-    coefs = dict(zip(feats, lr.coef_[0][n:]))
-    return ratings, coefs
-
-
-def bh(pvals):
-    p = np.asarray(pvals, float)
-    m = len(p)
-    order = np.argsort(p)
-    adj = np.empty(m)
-    for i, idx in enumerate(order):
-        adj[idx] = p[idx] * m / (i + 1)
-    for i in range(m - 2, -1, -1):
-        adj[order[i]] = min(adj[order[i]], adj[order[i + 1]])
-    return np.minimum(adj, 1.0)
-
-
-def ranks(r):
-    return {m: i + 1 for i, m in enumerate(sorted(r, key=lambda x: -r[x]))}
+    """Core model wrapper retaining the published untrimmed contrasts."""
+    ratings, coefficients, _, _, _ = fit_bt(
+        d, models, feats, winsorize=False
+    )
+    return ratings, coefficients
 
 
 def main():

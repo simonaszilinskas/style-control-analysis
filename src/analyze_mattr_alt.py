@@ -15,7 +15,7 @@ import json
 import numpy as np
 import pandas as pd
 
-from linguistic_analysis import FORMATTING, LINGUISTIC, MIN_BATTLES, fit_bt
+from modeling import FORMATTING, LINGUISTIC, MIN_BATTLES, fit_bt
 from paths import BATTLES, DATA, RESULTS
 
 

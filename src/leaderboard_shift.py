@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import spearmanr
 
-from linguistic_analysis import fit_bt, FORMATTING, LINGUISTIC, MIN_BATTLES
+from modeling import fit_bt, FORMATTING, LINGUISTIC, MIN_BATTLES
 from paths import BATTLES, RESULTS
 
 
