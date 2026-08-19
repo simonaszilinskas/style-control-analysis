@@ -1,5 +1,5 @@
 """
-Figures for the conversation-length (§4.6) and topic-control (§4.7) sections.
+Figures for the conversation-length (§4.3) and topic-control (§4.4) sections.
 Reads turn_depth_results.json and topic_results.json. Matches the house style of
 generate_figures.py / generate_linguistic_figure.py.
 
@@ -143,7 +143,7 @@ def fig_topic_controls():
     ax1.set_title("Bold formatting is positive in every topic\n(within-topic fit, 95% CI)")
     ax1.legend(loc="lower right", frameon=True)
 
-    # Right: conversation-length interaction, uncontrolled (§4.6) vs topic-controlled (§4.7).
+    # Right: conversation-length interaction, uncontrolled (§4.3) vs topic-controlled (§4.4).
     feats = ["bold", "lists", "headers", "code_blocks", "emoji"]
     y2 = np.arange(len(feats))[::-1]
     for yi, f in zip(y2, feats):
@@ -157,9 +157,9 @@ def fig_topic_controls():
     ax2.set_yticklabels(feats)
     ax2.set_xlabel("multi-turn interaction (log-odds per SD)")
     ax2.set_title("Vote-time depth association survives topic control\n"
-                  "(circle = §4.6, diamond = + topic x style)")
-    handles = [plt.Line2D([], [], marker="o", ls="", color=GREY, label="no topic control (§4.6)"),
-               plt.Line2D([], [], marker="D", ls="", color=FMT, label="topic-controlled (§4.7)")]
+                  "(circle = §4.3, diamond = + topic x style)")
+    handles = [plt.Line2D([], [], marker="o", ls="", color=GREY, label="no topic control (§4.3)"),
+               plt.Line2D([], [], marker="D", ls="", color=FMT, label="topic-controlled (§4.4)")]
     ax2.legend(handles=handles, loc="lower left", frameon=True)
 
     fig.tight_layout()

@@ -1,5 +1,5 @@
 """
-Figure for the linguistic extension (§4.5): joint style coefficients with
+Figure for the linguistic extension (§4.2): joint style coefficients with
 bootstrap CIs, coloured by feature family, and the formatting -> +length ->
 joint shrinkage. Reads linguistic_results.json. Matches the house style of
 generate_figures.py.

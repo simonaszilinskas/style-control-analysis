@@ -73,23 +73,24 @@ uv run python run.py --profile full
 | Script (`src/`) | Section | Output |
 |---|---|---|
 | `build_fr_arena.py` | §2 | `data/fr_battles.parquet` (one row per battle) |
-| `analyze_core.py` | §4.1–4.4 | `results/core_results.json` |
-| `linguistic_analysis.py` | §4.5 | `results/linguistic_results.json` |
-| `leaderboard_shift.py` | §4.5 | `results/leaderboard_shift_results.json` |
-| `turn_depth_analysis.py` | §4.6 | `results/turn_depth_results.json` |
-| `topic_analysis.py` | §4.7 | `results/topic_results.json` |
-| `extract_prompts.py` → `task_classify.py` → `task_analysis.py` | §4.8 | `results/task_results.json` (the extended profile uses the committed text-free task table; rebuilding that table requires the gated raw dataset) |
-| `robustness_random.py`; `time_block_bootstrap.py` | §4.9 | `results/robustness_random_results.json`, `time_block_results.json` (block bootstrap needs `data/timestamps.parquet`) |
-| `mattr_stress.py`; `mattr_alt.py`; `analyze_mattr_alt.py` | §4.10 | `results/mattr_stress_results.json`, `data/mattr_alt.parquet`, `results/mattr_alt_results.json` (`mattr_alt.py` needs the raw dataset) |
-| `external_leaderboard_analysis.py` | §4.11 | `results/external_leaderboard_results.json` (audited cached capability scores, pinned LMArena snapshots, model-match audits, correlations, and paired intervals) |
-| `generate_external_figure.py` | §4.11 | `figures/fig12_external_alignment.*` |
-| Live leaderboard audit | §4.11 | `results/production_ranking_examples.json` (dated production examples, kept distinct from the research release) |
-| `audit_vote_timing.py` | §2.4, §4.6 | `results/vote_timing_audit_results.json` |
+| `analyze_core.py` | §4.1 | `results/core_results.json` |
+| `formatting_interactions.py` | §4.1 | `results/formatting_interaction_results.json` |
+| `linguistic_analysis.py` | §4.2 | `results/linguistic_results.json` |
+| `leaderboard_shift.py` | §4.2 | `results/leaderboard_shift_results.json` |
+| `turn_depth_analysis.py` | §4.3 | `results/turn_depth_results.json` |
+| `topic_analysis.py` | §4.4 | `results/topic_results.json` |
+| `extract_prompts.py` → `task_classify.py` → `task_analysis.py` | §4.4 | `results/task_results.json` (the extended profile uses the committed text-free task table; rebuilding that table requires the gated raw dataset) |
+| `robustness_random.py`; `time_block_bootstrap.py` | §4.5 | `results/robustness_random_results.json`, `time_block_results.json` (block bootstrap needs `data/timestamps.parquet`) |
+| `mattr_stress.py`; `mattr_alt.py`; `analyze_mattr_alt.py` | §4.5 | `results/mattr_stress_results.json`, `data/mattr_alt.parquet`, `results/mattr_alt_results.json` (`mattr_alt.py` needs the raw dataset) |
+| `external_leaderboard_analysis.py` | §4.6 | `results/external_leaderboard_results.json` (audited cached capability scores, pinned LMArena snapshots, model-match audits, correlations, and paired intervals) |
+| `generate_external_figure.py` | §4.6 | `figures/fig12_external_alignment.*` |
+| Live leaderboard audit | §4.6 | `results/production_ranking_examples.json` (dated production examples, kept distinct from the research release) |
+| `audit_vote_timing.py` | §2.3, §4.3 | `results/vote_timing_audit_results.json` |
 | `audit_reasoning_content.py` | §2.3 | `results/reasoning_content_audit_results.json` |
-| `endogeneity_analysis.py` | §5.3 | `results/endogeneity_results.json` |
-| `qualitative_analysis.py` | §5.4 | `results/qualitative_results.json` |
-| `generate_linguistic_figure.py` | §4.5 | `figures/fig9_linguistic.*` (Figure 1) |
-| `generate_polish_figures.py` | §4.6–4.7 | `figures/fig10_*`, `fig11_*` (Figures 2–3) |
+| `endogeneity_analysis.py` | §5.2 | `results/endogeneity_results.json` |
+| `qualitative_analysis.py` | §5.2 | `results/qualitative_results.json` |
+| `generate_linguistic_figure.py` | §4.2 | `figures/fig9_linguistic.*` (Figure 1) |
+| `generate_polish_figures.py` | §4.3–4.4 | `figures/fig10_*`, `fig11_*` (Figures 2–3) |
 
 ## Reproducible environment and builds
 
@@ -110,7 +111,6 @@ data, result, figure, source-manuscript, and PDF artifact.
 
 ```
 ├── manuscript/         # publication LaTeX source and compiled PDF
-├── paper_draft.md      # readable manuscript source
 ├── run.py              # explicit core / extended / full pipeline profiles
 ├── pyproject.toml      # direct dependency pins
 ├── uv.lock             # complete tested environment lock

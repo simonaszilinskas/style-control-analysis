@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Plot capability-benchmark correlation changes reported in §4.11."""
+"""Plot capability-benchmark correlation changes reported in §4.6."""
 
 import json
 

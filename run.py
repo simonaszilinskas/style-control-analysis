@@ -42,6 +42,7 @@ RAW_STEPS = [
 
 CORE_ANALYSES = [
     "analyze_core.py",
+    "formatting_interactions.py",
     "linguistic_analysis.py",
     "leaderboard_shift.py",
     "turn_depth_analysis.py",

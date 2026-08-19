@@ -59,11 +59,30 @@ pull request has been created.
   retained vote prefixes with missing final content plus nonempty
   `reasoning_content`.
 
+## Re-verified after the August 2026 revision
+
+The paper was restructured and partly rewritten in response to Christophe
+Benavent's review (see `../feedback.md`). Re-run after that revision:
+
+- `uv run ruff check src tests run.py`: passed.
+- `uv run pytest -q`: 39 tests and 13 subtests passed.
+- Two-pass build: 20 pages, no overfull or underfull boxes and no LaTeX or
+  package warnings. Built with Tectonic (XeTeX) rather than the `make
+  manuscript` XeLaTeX target, because no TeX Live install was present. The
+  build should be repeated with `make manuscript` before deposit.
+- Figures 2 and 3 were regenerated; their legends carried the old section
+  numbers (§4.6, §4.7) and now read §4.3 and §4.4.
+- `paper.tex` is now the single manuscript source. The earlier Markdown
+  twin was removed, and the publication consistency tests read the LaTeX
+  directly.
+
 ## Author confirmation required before deposit
 
 1. Confirm that all three authors consent to publication and to this order:
    Simonas Zilinskas, Maayeesha Farzana, Christophe Benavent.
-2. Supply and approve each author's affiliation and, if desired, ORCID.
+2. Confirm each author's affiliation as printed and, if desired, add ORCIDs.
+   The title page reads: Zilinskas, Compar:IA; Farzana and Benavent,
+   Université Paris Dauphine-PSL.
 3. Confirm authorization to use `contact@comparia.beta.gouv.fr` as the shared
    correspondence address.
 4. Approve a CRediT author-contribution statement.

@@ -23,7 +23,6 @@ GLOBS = (
     "tests/*.py",
     "manuscript/paper.tex",
     "manuscript/paper.pdf",
-    "paper_draft.md",
     "run.py",
     "pyproject.toml",
     "uv.lock",

@@ -5,21 +5,24 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PUBLICATION_FILES = (
-    ROOT / "paper_draft.md",
-    ROOT / "README.md",
-    ROOT / "manuscript" / "paper.tex",
-)
+PAPER = ROOT / "manuscript" / "paper.tex"
+PUBLICATION_FILES = (PAPER, ROOT / "README.md")
 STATUS_FILE = ROOT / "feedback.md"
 EXTERNAL_RESULTS = ROOT / "results" / "external_leaderboard_results.json"
 PRODUCTION_EXAMPLES = ROOT / "results" / "production_ranking_examples.json"
 REASONING_AUDIT = ROOT / "results" / "reasoning_content_audit_results.json"
 TURN_DEPTH_RESULTS = ROOT / "results" / "turn_depth_results.json"
 TASK_RESULTS = ROOT / "results" / "task_results.json"
+INTERACTION_RESULTS = ROOT / "results" / "formatting_interaction_results.json"
 
 
 def read_all(paths):
     return "\n".join(path.read_text(encoding="utf-8") for path in paths)
+
+
+def flat(path):
+    """Paper text with line wrapping collapsed, so claims can be matched as prose."""
+    return re.sub(r"\s+", " ", path.read_text(encoding="utf-8"))
 
 
 class PublicationConsistencyTests(unittest.TestCase):
@@ -43,7 +46,7 @@ class PublicationConsistencyTests(unittest.TestCase):
         self.assertNotRegex(text, r"(?:about\s+138,000|~\s*137K)")
         self.assertIn("137,293", (ROOT / "README.md").read_text(encoding="utf-8"))
         self.assertIn("137,293", STATUS_FILE.read_text(encoding="utf-8"))
-        paper = (ROOT / "paper_draft.md").read_text(encoding="utf-8")
+        paper = flat(PAPER)
         self.assertIn("127,092", paper)
         self.assertNotIn("127,893", paper)
 
@@ -77,7 +80,7 @@ class PublicationConsistencyTests(unittest.TestCase):
             for record in eligible
         ]
         self.assertTrue(all(delta < 0 for delta in formatting_deltas))
-        paper = (ROOT / "paper_draft.md").read_text(encoding="utf-8")
+        paper = flat(PAPER)
         self.assertIn(results["epoch_snapshot"]["sha256"], paper)
         self.assertIn(
             "do not show that adjusted rankings better measure capability",
@@ -92,7 +95,7 @@ class PublicationConsistencyTests(unittest.TestCase):
 
     def test_live_examples_are_labelled_as_a_distinct_snapshot(self):
         examples = json.loads(PRODUCTION_EXAMPLES.read_text(encoding="utf-8"))
-        paper = (ROOT / "paper_draft.md").read_text(encoding="utf-8")
+        paper = flat(PAPER)
         self.assertEqual(examples["observed_at"], "2026-07-27")
         self.assertTrue(examples["live_page"]["counter_includes_ties"])
         self.assertIn("counter includes ties", paper)
@@ -107,15 +110,10 @@ class PublicationConsistencyTests(unittest.TestCase):
         )
 
     def test_levels_of_reading_is_present_and_qualified(self):
-        for path in (ROOT / "paper_draft.md", ROOT / "manuscript" / "paper.tex"):
-            paper = path.read_text(encoding="utf-8")
-            with self.subTest(path=path.name):
-                self.assertIn("levels of reading", paper)
-                self.assertIn("This is a hypothesis", paper)
-                self.assertRegex(
-                    paper,
-                    r"turn count does not\s+measure attention",
-                )
+        paper = flat(PAPER)
+        self.assertIn("levels of reading", paper)
+        self.assertIn("This is a hypothesis", paper)
+        self.assertIn("turn count does not measure attention", paper)
 
     def test_depth_table_uses_the_pooled_interaction_model(self):
         results = json.loads(TURN_DEPTH_RESULTS.read_text(encoding="utf-8"))
@@ -124,12 +122,10 @@ class PublicationConsistencyTests(unittest.TestCase):
         multi = (
             pow(2.718281828459045, bold["main"] + bold["interaction"]) - 1
         ) * 100
-        for path in (ROOT / "paper_draft.md", ROOT / "manuscript" / "paper.tex"):
-            text = path.read_text(encoding="utf-8")
-            with self.subTest(path=path.name):
-                self.assertIn(f"+{single:.1f}", text)
-                self.assertIn(f"+{multi:.1f}", text)
-                self.assertNotIn("+31.0% win odds in single-turn", text)
+        paper = flat(PAPER)
+        self.assertIn(f"+{single:.1f}", paper)
+        self.assertIn(f"+{multi:.1f}", paper)
+        self.assertNotIn("+31.0% win odds in single-turn", paper)
 
     def test_reasoning_audit_supports_the_manuscript_claim(self):
         audit = json.loads(REASONING_AUDIT.read_text(encoding="utf-8"))
@@ -145,8 +141,20 @@ class PublicationConsistencyTests(unittest.TestCase):
         self.assertEqual(results["analysis"]["bootstrap_seed"], 42)
         self.assertEqual(results["analysis"]["bootstrap_resamples"], 400)
 
+    def test_formatting_interactions_claim_matches_results(self):
+        results = json.loads(INTERACTION_RESULTS.read_text(encoding="utf-8"))
+        interactions = results["interactions"]
+        self.assertEqual(len(interactions), 10)
+        self.assertTrue(
+            all(not record["sig_bh"] for record in interactions.values()),
+            "The paper states that no pairwise formatting interaction "
+            "survives Benjamini-Hochberg correction.",
+        )
+        paper = flat(PAPER)
+        self.assertIn("None of the ten survives BH correction", paper)
+
     def test_figure_captions_do_not_duplicate_automatic_numbering(self):
-        latex = (ROOT / "manuscript" / "paper.tex").read_text(encoding="utf-8")
+        latex = PAPER.read_text(encoding="utf-8")
         self.assertNotRegex(latex, r"\\caption\{Figure\s+\d")
 
 
