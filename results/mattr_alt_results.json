@@ -1,0 +1,30 @@
+{
+  "specification": "joint BT model; MATTR replaced by one alternative at a time; metric-specific available-case support",
+  "estimates": {
+    "mattr": {
+      "n_battles": 127092,
+      "n_models": 116,
+      "odds_pct": 16.818287065017977
+    },
+    "mtld": {
+      "n_battles": 127092,
+      "n_models": 116,
+      "odds_pct": 12.66715397856828
+    },
+    "cwmattr": {
+      "n_battles": 119503,
+      "n_models": 116,
+      "odds_pct": 11.684424555571326
+    },
+    "nocapmattr": {
+      "n_battles": 125364,
+      "n_models": 116,
+      "odds_pct": 13.262676309241982
+    }
+  },
+  "spearman_with_mattr": {
+    "mtld": 0.9420726659685755,
+    "cwmattr": 0.7790080354181873,
+    "nocapmattr": 0.9235045461235926
+  }
+}

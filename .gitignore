@@ -1,0 +1,47 @@
+# Large source data (available on HuggingFace: ministere-culture/comparia-fr-arena)
+comparia-fr-arena.parquet
+comparia_conversations.parquet
+comparia_reactions.parquet
+comparia_votes.parquet
+
+# Build checkpoints
+data/fr_parts/
+data/fr_parts_vote_truncated_*/
+data/fr_token_parts_vote_truncated_*/
+
+# Archive
+archive/
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# IDE / tools
+.claude/
+CLAUDE.md
+
+# Run logs
+*.log
+tmp/
+
+# LaTeX build auxiliaries (keep the source and compiled manuscript)
+manuscript/*.aux
+manuscript/*.out
+manuscript/*.toc
+build/
+
+# Raw user prompts (gated dataset content) — keep out of the public repo
+data/prompts.parquet
+data/prompt_parts/
+data/prompt_parts_*/
+data/task_val_sample*.json
+
+data/mattr_alt_parts/
+data/mattr_alt_parts_vote_truncated_*/
+
+# Public external leaderboard snapshots (downloaded from pinned revisions)
+data/external/

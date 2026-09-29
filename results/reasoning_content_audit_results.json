@@ -1,0 +1,53 @@
+{
+  "source": {
+    "dataset": "ministere-culture/comparia-fr-arena",
+    "revision": "8cd6488c5d0c3b8dfcb9339d11ae9624c84359be",
+    "path": "datasets/ministere-culture/comparia-fr-arena@8cd6488c5d0c3b8dfcb9339d11ae9624c84359be/comparia-fr-arena.parquet"
+  },
+  "definition": {
+    "unit": "last decisive French vote per comparison",
+    "scope": "assistant messages through the retained vote only",
+    "missing_final_query": "last assistant message has blank content and non-blank reasoning_content on either side"
+  },
+  "n_retained_battles": 137293,
+  "n_legacy_retained_battles": 137214,
+  "n_newly_retained_by_span_parser": 86,
+  "n_legacy_battles_removed_by_fail_closed_parser": 7,
+  "net_retained_battle_change": 79,
+  "n_missing_final_with_reasoning_content": 0,
+  "recovered_model_appearances": {
+    "qwen2.5-coder-32b-instruct": 79,
+    "gemma-3-4b": 6,
+    "llama-3.3-70b": 6,
+    "deepseek-v3-0324": 5,
+    "gemma-3-27b": 5,
+    "gpt-oss-20b": 5,
+    "command-a": 4,
+    "gpt-4.1-mini": 4,
+    "hermes-3-llama-3.1-405b": 4,
+    "llama-3.1-405b": 4,
+    "minimax-m2.7": 4,
+    "ministral-8b-instruct-2410": 4,
+    "aya-expanse-32b": 3,
+    "gpt-4.1-nano": 3,
+    "llama-3.1-8b": 3,
+    "llama-4-scout": 3,
+    "mistral-large-2411": 3,
+    "mistral-saba": 3,
+    "deepseek-r1": 2,
+    "deepseek-r1-distill-llama-70b": 2,
+    "gemini-2.5-flash": 2,
+    "gemma-3-12b": 2,
+    "gemma-3n-e4b-it": 2,
+    "llama-3.1-nemotron-70b-instruct": 2,
+    "mistral-small-3.1-24b": 2,
+    "phi-4": 2,
+    "qwen3.5-397b-a17b": 2,
+    "c4ai-command-r-08-2024": 1,
+    "claude-4-sonnet": 1,
+    "gemini-3.1-pro-preview": 1,
+    "gpt-5.4-nano": 1,
+    "gpt-oss-120b": 1,
+    "granite-4.1-8b": 1
+  }
+}
