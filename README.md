@@ -139,4 +139,6 @@ source revisions, match audits, and hashes are included.
 
 ## Citation
 
+The code and data release is archived on Zenodo:
+[10.5281/zenodo.23043602](https://doi.org/10.5281/zenodo.23043602) (v1.0).
 Citation metadata are provided in [`CITATION.cff`](CITATION.cff).

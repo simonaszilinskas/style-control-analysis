@@ -1,8 +1,9 @@
 cff-version: 1.2.0
 message: "If you use this work, please cite the preprint and archived code release."
 title: "What Wins a Vote? Formatting, Length, and Lexical Diversity in the French Compar:IA LLM Arena"
-type: article
-version: 1.0.0
+type: software
+version: "1.0"
+doi: 10.5281/zenodo.23043602
 date-released: 2026-09-29
 authors:
   - family-names: Zilinskas
